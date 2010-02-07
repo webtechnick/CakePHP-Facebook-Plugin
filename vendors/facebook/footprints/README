@@ -1,0 +1,38 @@
+Welcome to the Facebook Platform!
+
+You can just grab the libraries out of the client/ directory and start building
+your own application.  It will probably be instructive, though, to first get
+our sample application up and running so you can see exactly how the library is
+meant to be used.
+
+We've created an application called Footprints that utilizes a lot of Platform
+functionality while remaining fairly simple.  If you don't want to set it all
+up you can still check out the code and see it in action by going to
+http://apps.facebook.com/footprints/.
+
+To get Footprints running on your own server, you'll want to first open up the
+"footprints/config.php" file and modify it with your mysql database
+configuration.  Also, create the necessary table in your database as described
+in the same file.
+
+Next, go to http://www.facebook.com/developers/apps.php, where you'll
+register for an application.  In the account creation page, set up your
+callback URL such that it is the directory on your web server that corresponds
+to the footprints/ directory of this package (if you loaded the callback URL
+directly, it would display this package's index.php).  In the same page, you
+may also want to register for a framed page URL.  You can also set up some
+default FBML - ours is set as follows:
+  <fb:if-is-own-profile><br />Hi <fb:name uid="profileowner"
+  firstnameonly="true" useyou="false"/>!  This is the default FBML as specified
+  in Footprints' account configuration page.  This will get replaced the first
+  time you get stepped on.</fb:if-is-own-profile>
+
+Finally, copy the API key and secret key from the developers account page into
+your config.php file.  Now go to http://apps.facebook.com/<your-frame-url>/
+and you should have Footprints up and running on your server!
+
+NOTE: If you only have PHP4, we've built a modified version of the client
+library to work with that.  Use the files inside the php4client directory
+instead of client.  You'll need to download simplexml44 and extract it into the
+php4client/ directory to get it to work - you can get it at:
+http://downloads.sourceforge.net/ister4framework/simplexml44-0_4_4.tar.gz
