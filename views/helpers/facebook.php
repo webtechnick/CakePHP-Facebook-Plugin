@@ -17,8 +17,8 @@ class FacebookHelper extends AppHelper {
   
   /**
     * Create a facebook login button
+    * $facebook->loader() and $facebook->init() are required for this
     * @param array of options
-    * - 
     */
   function login($options = array()){
     $options = array_merge(array('onlogin' => 'window.location.reload();'), $options);
@@ -27,6 +27,7 @@ class FacebookHelper extends AppHelper {
   
   
   /**
+    * Build a share link/button for the current page
     * url: url to share with facebook (default current page) 
     * options array.
     * - style: 'button' or 'link' (default'button')
@@ -54,6 +55,7 @@ class FacebookHelper extends AppHelper {
   
   /**
     * Build a become a fan, fanbox
+    * $facebook->loader() and $facebook->init() are required for this
     * @param array options to pass into fanbox
     * - stream : 1 turns stream on, 0 turns stream off (default 0)
     * - connections : 1 turns connections on, 0 turns connections off (default 0)
@@ -75,6 +77,7 @@ class FacebookHelper extends AppHelper {
   
   /**
     * Build a livestream window to your live stream app on facebook
+    * $facebook->loader() and $facebook->init() are required for this
     * @param array options to pass into livestream
     * - event_app_id : Your Application Id (default Configure::read('Facebook.application_id')
     * - xid : Your event XID
@@ -92,6 +95,14 @@ class FacebookHelper extends AppHelper {
       $options
     );
     return $this->__fbTag('fb:live-stream','',$options);
+  }
+  
+  /**
+    * Build a facebook comments area.
+    * $facebook->loader() and $facebook->init() are required for this
+    */
+  function comments($options = array()){
+    return $this->__fbTag('fb:comments', '', $options);
   }
   
   /**
