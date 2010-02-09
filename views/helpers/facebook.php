@@ -158,7 +158,7 @@ class FacebookHelper extends AppHelper {
     * - facebook-logo: (default true)
     * - width: width of the picture in pixels 
     * - height: height of the picture in pixels 
-    * @return fb tag for profile picture or empty string if uid is not present
+    * @return string fb tag for profile picture or empty string if uid is not present
     * @access public
     */
   function picture($uid = null, $options = array()){
