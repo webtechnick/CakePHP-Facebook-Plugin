@@ -60,12 +60,12 @@ class FacebookHelper extends AppHelper {
     * - stream : 1 turns stream on, 0 turns stream off (default 0)
     * - connections : 1 turns connections on, 0 turns connections off (default 0)
     * - logobar : 1 turns logobar on, 0 turns logobar off (default 0)
-    * - profile_id : Your Application Id (default Configure::read('Facebook.application_id')
+    * - profile_id : Your Application Id (default Configure::read('Facebook.app_id')
     */
   function fanbox($options = array()){
     $options = array_merge(
       array(
-        'profile_id' => Configure::read('Facebook.application_id'),
+        'profile_id' => Configure::read('Facebook.app_id'),
         'stream' => 0, 
         'logobar' => 0, 
         'connections' => 0,
@@ -76,10 +76,36 @@ class FacebookHelper extends AppHelper {
   }
   
   /**
+    * Profile Picture of Facebook User
+    * $facebook->loader() and $facebook->init() are required for this
+    * @param array options to pass into pic
+    * - uid : user_id to view profile picture
+    * - size : (default square)
+    * - facebook-logo: (default true)
+    * @return fb tag for profile picture or empty string if uid is not present
+    */
+  function picure($options = array()){
+    $options = array_merge(
+      array(
+        'size' => 'square',
+        'uid' => false,
+        'facebook-logo' => true,
+      ),
+      $options
+    );
+    if($options['uid']){
+      return $this->__fbTag('fb:profile-pic', '', $options);
+    }
+    else {
+      return "";
+    }
+  }
+  
+  /**
     * Build a livestream window to your live stream app on facebook
     * $facebook->loader() and $facebook->init() are required for this
     * @param array options to pass into livestream
-    * - event_app_id : Your Application Id (default Configure::read('Facebook.application_id')
+    * - event_app_id : Your Application Id (default Configure::read('Facebook.app_id')
     * - xid : Your event XID
     * - width : width of window in pixels
     * - height: height of window in pixels
@@ -87,7 +113,7 @@ class FacebookHelper extends AppHelper {
   function livestream($options = array()){
     $options = array_merge(
       array(
-        'event_app_id' => Configure::read('Facebook.application_id'),
+        'event_app_id' => Configure::read('Facebook.app_id'),
         'xid' => 'YOUR_EVENT_XID',
         'width' => '300',
         'height' => '500',

@@ -2,5 +2,4 @@
 class FacebookAppController extends AppController {
 
 }
-
 ?>
