@@ -36,7 +36,7 @@ class ConnectComponent extends Object {
     $this->Facebook = new Facebook(Configure::read('Facebook.api_key'), Configure::read('Facebook.secret'));
     
     $this->facebookUser = $this->Facebook->get_loggedin_user();
-    
+    //debug($this->facebookUser);
     if($this->facebookUser){
       $this->_handleFacebookUser();
     }
@@ -57,7 +57,7 @@ class ConnectComponent extends Object {
         $this->UserModel->recursive = -1;
         
         if(!$this->UserModel->hasField('facebook_id')){
-          $this->__error("Facebook.Connect::handleFacebookUser Error.  facebook_id not found in {$Auth::userModel} table.");
+          $this->__error("Facebook.Connect handleFacebookUser Error.  facebook_id not found in {$Auth->userModel} table.");
           return false;
         }
         

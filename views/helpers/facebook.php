@@ -3,7 +3,7 @@
   * Facebook.Facebook helper generates fbxml and loads javascripts
   *
   * @author Nick Baker <nick [at] webtechnick [dot] com>
-  * @version 1.0
+  * @version 1.2
   * @license MIT
   * @link http://www.webtechnick.com
   */
@@ -51,12 +51,47 @@ class FacebookHelper extends AppHelper {
     * Create a facebook login button
     * $facebook->loader() and $facebook->init() are required for this
     * @param array of options
+    * - size string specifing the button size, small, medium, large, or xlarge (default medium)
+    * - conditions string indicuates wiether the button is visible or hidden
+    * - background string specifies the image background, white, dark, light (default light)
     * @return string xfbhtml tag
     * @access public
     */
   function login($options = array()){
-    $options = array_merge(array('onlogin' => 'window.location.reload();'), $options);
+    $options = array_merge(
+      array('onlogin' => 'window.location.reload();'), 
+      $options
+    );
     return $this->__fbTag('fb:login-button', '', $options);
+  }
+  
+  /**
+    * Create Logout facebook button
+    * $facebook->loader() and $facebook->init() are required for this
+    * @param array of options
+    * - redirect string to your app's logout url (default null)
+    * - label string of text to use in link (default logout)
+    * - size string specifing the button size, small, medium, large, or xlarge (default medium)
+    * - conditions string indicuates wiether the button is visible or hidden
+    * - background string specifies the image background, white, dark, light (default light)
+    * @return string xfbhtml tag for logout button
+    * @access public
+    */
+  function logout($options = array()){
+    $options = array_merge(
+      array(
+        'autologoutlink' => 'true', 
+        'label' => 'logout'
+      ), 
+      $options
+    );
+    if(isset($options['redirect']) && $options['redirect']){
+      return $this->Html->link($options['label'], '#', array('onclick' => "FB.Connect.logoutAndRedirect('{$options['redirect']}')"));
+    }
+    else {
+      unset($options['label'], $options['escape']);
+      return $this->__fbTag('fb:login-button', '', $options);
+    }
   }
   
   
@@ -203,7 +238,7 @@ class FacebookHelper extends AppHelper {
     */
   function loader($options = array()){
     $locale = array_merge(array('locale' => $this->locale), $options);
-    return $this->Html->script($this->_fbFeatureLoaderScript . $local['locale'], $options);
+    return $this->Html->script($this->_fbFeatureLoaderScript . $locale['locale'], $options);
   }
   
   /**
