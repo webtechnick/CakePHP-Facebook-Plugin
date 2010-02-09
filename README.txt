@@ -68,7 +68,12 @@ Hoever, to use the more advanced features you'll need to prepare your page a lit
 Edit your Layout to take advantage of advanced facebook features
 ==================
 Replace <html> with <?= $facebook->html() ?>
+
 In your default.ctp it's highly suggest you replace your <html> tag with <?= $facebook->html() ?>  This is required for some of the facebook features to work in IE.
+
+Included <?= $facebook->loader(); ?> within your <head> tag.
+
+At the bottom of the page include <?= $facebook->init(); ?> To load the facebook javascript api to scan your page for fbxml and replace them with various dynamic content.
 
 
 Authentication (Facebook Connect):
