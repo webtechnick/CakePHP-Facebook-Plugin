@@ -1,17 +1,49 @@
 <?php
+/**
+  * Facebook.Facebook helper generates fbxml and loads javascripts
+  *
+  * @author Nick Baker <nick [at] webtechnick [dot] com>
+  * @version 1.0
+  * @license MIT
+  * @link http://www.webtechnick.com
+  */
 class FacebookHelper extends AppHelper {
-  
+  /**
+    * Helpers to load with this helper.
+    */
   var $helpers = array('Html');
+  
+  /**
+    * Default Locale
+    * @access public
+    */
   var $locale = 'en_US';
   
+  /**
+    * Default Facebook.Share javascript URL
+    * @access protected
+    */
   var $_fbShareScript = 'http://static.ak.fbcdn.net/connect.php/js/FB.Share';
+  
+  /**
+    * Default Facebook Loader javascript URL
+    * @access protected
+    */
   var $_fbFeatureLoaderScript = 'http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php/';
+  
+  /**
+    * Default xd_receiver.htm location (already installed with plugin)
+    * @access protected
+    */
   var $_fXdReceiver = 'facebook/receiver/xd_receiver.htm';
 
   /**
-  * TODO make this nicer
-  */
-  function html($options = array()){
+    * html header tag for xmlns of facebook.  This is necessary for IE
+    * @param array of options
+    * @return string of html header
+    * @access public
+    */
+  function html(){
     return '<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml">';
   }
   
@@ -19,6 +51,8 @@ class FacebookHelper extends AppHelper {
     * Create a facebook login button
     * $facebook->loader() and $facebook->init() are required for this
     * @param array of options
+    * @return string xfbhtml tag
+    * @access public
     */
   function login($options = array()){
     $options = array_merge(array('onlogin' => 'window.location.reload();'), $options);
@@ -28,11 +62,13 @@ class FacebookHelper extends AppHelper {
   
   /**
     * Build a share link/button for the current page
-    * url: url to share with facebook (default current page) 
-    * options array.
+    * @param string url: url to share with facebook (default current page) 
+    * @param array options to pass into share
     * - style: 'button' or 'link' (default'button')
     * - label: title of text to link(default 'share')
     * - anchor: a href anchor name (default 'fb_share')
+    * @return string xfbhtml tag along with shareJs script
+    * @access public
     */
   function share($url = null, $options = array()){
     if(!$url) $url = $this->here;
@@ -61,6 +97,8 @@ class FacebookHelper extends AppHelper {
     * - connections : 1 turns connections on, 0 turns connections off (default 0)
     * - logobar : 1 turns logobar on, 0 turns logobar off (default 0)
     * - profile_id : Your Application Id (default Configure::read('Facebook.app_id')
+    * @return string xfbhtml tag
+    * @access public
     */
   function fanbox($options = array()){
     $options = array_merge(
@@ -78,17 +116,20 @@ class FacebookHelper extends AppHelper {
   /**
     * Profile Picture of Facebook User
     * $facebook->loader() and $facebook->init() are required for this
+    * @param int facebook user id.
     * @param array options to pass into pic
     * - uid : user_id to view profile picture
-    * - size : (default square)
+    * - size : size of the picture represented as a string. 'thumb','small','normal','square' (default thumb)
     * - facebook-logo: (default true)
+    * - width: width of the picture in pixels 
+    * - height: height of the picture in pixels 
     * @return fb tag for profile picture or empty string if uid is not present
+    * @access public
     */
-  function picure($options = array()){
+  function picture($uid = null, $options = array()){
     $options = array_merge(
       array(
-        'size' => 'square',
-        'uid' => false,
+        'uid' => $uid,
         'facebook-logo' => true,
       ),
       $options
@@ -109,6 +150,8 @@ class FacebookHelper extends AppHelper {
     * - xid : Your event XID
     * - width : width of window in pixels
     * - height: height of window in pixels
+    * @return string xfbhtml tag
+    * @access public
     */
   function livestream($options = array()){
     $options = array_merge(
@@ -126,13 +169,19 @@ class FacebookHelper extends AppHelper {
   /**
     * Build a facebook comments area.
     * $facebook->loader() and $facebook->init() are required for this
+    * @param array of options for comments
+    * @return string xfbhtml tag
+    * @access public
     */
   function comments($options = array()){
     return $this->__fbTag('fb:comments', '', $options);
   }
   
   /**
-    * Required somewhere on your page if you want to to add some of the other features other than just 'share'
+    * Required at the bottom of your page if you plan to use any feature other than 'share'
+    * @param array of options
+    * @return string of scriptBlock for FB.init() or error
+    * @access public
     */
   function init($options = array()){
     $this->api_key = Configure::read('Facebook.api_key');
@@ -145,17 +194,27 @@ class FacebookHelper extends AppHelper {
   }
   
   /**
-    * Required for almost all features except for 'share'
+    * Required for all features except for 'share'
+    * @param array of options
+    * - locale : locale for facebook helper (default en_US
+    * - any_other_html_script option : Use any other options valid for Html->script
+    * @return string of html script
+    * @access public
     */
   function loader($options = array()){
-    $options = array_merge($options, array('locale' => $this->locale));
-    return $this->Html->script($this->_fbFeatureLoaderScript . $options['locale'], $options);
+    $locale = array_merge(array('locale' => $this->locale), $options);
+    return $this->Html->script($this->_fbFeatureLoaderScript . $local['locale'], $options);
   }
   
   /**
-    * TODO make this a little nicer, pron to errors if a value has a ' in it.
+    * Generate a facebook tag for me
+    * @param string fb:tag
+    * @param string label to pass inbetween the tag
+    * @param array of options as name=>value pairs to add to facebook tag attribute
+    * @access private
     */
   private function __fbTag($tag, $label, $options){
+    //TODO make this a little nicer, pron to errors if a value has a ' in it.
     $retval = "<$tag";
     foreach($options as $name => $value){
       $retval .= " " . $name . "='" . $value . "'";
