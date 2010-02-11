@@ -12,6 +12,7 @@ class FacebookInfo {
       'email',
       'link',
       'description',
+      'license',
     );
   
   /**

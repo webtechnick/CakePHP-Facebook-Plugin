@@ -10,23 +10,27 @@ class FacebookHelperTest extends CakeTestCase {
   }
   
   function testInfo(){
+    $error_text = " is not an available option";
     $results = $this->Facebook->info();
-    $this->assertNotEqual('version not a valid option.', $results);
+    $this->assertNotEqual('version' . $error_text, $results);
     
     $results = $this->Facebook->info('author');
-    $this->assertNotEqual('author not a valid option.', $results);
+    $this->assertNotEqual('author' . $error_text, $results);
     
     $results = $this->Facebook->info('email');
-    $this->assertNotEqual('email not a valid option.', $results);
+    $this->assertNotEqual('email' . $error_text, $results);
     
     $results = $this->Facebook->info('name');
-    $this->assertNotEqual('name not a valid option.', $results);
+    $this->assertNotEqual('name' . $error_text, $results);
     
     $results = $this->Facebook->info('description');
-    $this->assertNotEqual('description not a valid option.', $results);
+    $this->assertNotEqual('description' . $error_text, $results);
+    
+    $results = $this->Facebook->info('license');
+    $this->assertNotEqual('license' . $error_text, $results);
     
     $results = $this->Facebook->info('notvalid');
-    $this->assertEqual('notvalid is not an available option', $results);
+    $this->assertEqual('notvalid'. $error_text, $results);
   }
   
   function testHtml(){
