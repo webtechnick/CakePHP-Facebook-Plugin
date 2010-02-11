@@ -221,7 +221,7 @@ class FacebookHelper extends AppHelper {
   function init($options = array()){
     $this->api_key = Configure::read('Facebook.api_key');
     if($this->api_key){
-      return $this->Html->scriptBlock("FB.init('$this->api_key','$this->_fXdReceiver')", $options); 
+      return $this->Html->scriptBlock("FB.init('$this->api_key','$this->webroot$this->_fXdReceiver')", $options); 
     }
     else {
       return "<span class='error'>No Facebook.api_key detected.  Please add Configure::write('Facebook.api_key', YOUR_API_KEY_HERE) somewhere in your application.</span>";

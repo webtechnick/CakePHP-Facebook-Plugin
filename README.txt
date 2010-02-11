@@ -1,13 +1,24 @@
 Facebook Plugin
 ==================
 by Nick Baker (nick@webtechnick.com)
-version 1.2
+version 1.2.1
 http://www.webtechnick.com
 license: MIT
+
+Changelog
+==================
+1.0 Initial release alpha
+1.1 Added API feature
+1.2 Initial release beta
+1.2.1 Minor Bug fixes and tests
 
 Docs
 ==================
 http://projects.webtechnick.com/docs/facebook
+
+Demo
+==================
+http://facebook.webtechnick.com
 
 Get the Plugin
 ==================
