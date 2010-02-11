@@ -36,7 +36,6 @@ class ConnectComponent extends Object {
     $this->Facebook = new Facebook(Configure::read('Facebook.api_key'), Configure::read('Facebook.secret'));
     
     $this->facebookUser = $this->Facebook->get_loggedin_user();
-    //debug($this->facebookUser);
     if($this->facebookUser){
       $this->_handleFacebookUser();
     }
