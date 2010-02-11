@@ -3,10 +3,11 @@
   * Facebook.Facebook helper generates fbxml and loads javascripts
   *
   * @author Nick Baker <nick [at] webtechnick [dot] com>
-  * @version 1.2
+  * @version 1.3
   * @license MIT
   * @link http://www.webtechnick.com
   */
+App::import('Lib', 'Facebook.FacebookInfo');
 class FacebookHelper extends AppHelper {
   /**
     * Helpers to load with this helper.
@@ -36,6 +37,25 @@ class FacebookHelper extends AppHelper {
     * @access protected
     */
   var $_fXdReceiver = 'facebook/receiver/xd_receiver.htm';
+  
+  /**
+    * Get the info on this plugin
+    * @param string name to retrieve (default 'version')
+    * - 'name' => Plugin Name
+    * - 'author' => Author Name
+    * - 'email' => Support Email
+    * - 'link' => Support Link
+    * - 'license' => License Info
+    * @return string plugin version
+    */
+  function info($name = 'version'){
+    if(FacebookInfo::_isAvailable($name)){ 
+      return FacebookInfo::$name();
+    }
+    else {
+      return "$name is not an available option";
+    }
+  }
 
   /**
     * html header tag for xmlns of facebook.  This is necessary for IE

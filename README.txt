@@ -1,7 +1,7 @@
 Facebook Plugin
 ==================
 by Nick Baker (nick@webtechnick.com)
-version 1.2.1
+version 1.3.0
 http://www.webtechnick.com
 license: MIT
 
@@ -11,6 +11,7 @@ Changelog
 1.1 Added API feature
 1.2 Initial release beta
 1.2.1 Minor Bug fixes and tests
+1.3 Added FacebookInfo class for easy reference to plugin details anywhere.
 
 Docs
 ==================
@@ -27,7 +28,7 @@ TAR: http://projects.webtechnick.com/facebook.tar.gz
 
 Description
 ==================
-The purpose if this plugin is to provide a complete interface to the facebook api, and to provide easy to install and manage various facebook features.
+The purpose of the Facebook plugin is to provide a seamless way to connect your cakePHP app to everyone's favorite social networking site -- Facebook. The goal for this plugin is to not only provide extremely useful dynamic features but to also provide a complete interface to the Facebook API.
 
 
 

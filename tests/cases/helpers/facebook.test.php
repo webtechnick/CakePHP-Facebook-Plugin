@@ -9,6 +9,26 @@ class FacebookHelperTest extends CakeTestCase {
     $this->Facebook->Html = new HtmlHelper();
   }
   
+  function testInfo(){
+    $results = $this->Facebook->info();
+    $this->assertNotEqual('version not a valid option.', $results);
+    
+    $results = $this->Facebook->info('author');
+    $this->assertNotEqual('author not a valid option.', $results);
+    
+    $results = $this->Facebook->info('email');
+    $this->assertNotEqual('email not a valid option.', $results);
+    
+    $results = $this->Facebook->info('name');
+    $this->assertNotEqual('name not a valid option.', $results);
+    
+    $results = $this->Facebook->info('description');
+    $this->assertNotEqual('description not a valid option.', $results);
+    
+    $results = $this->Facebook->info('notvalid');
+    $this->assertEqual('notvalid is not an available option', $results);
+  }
+  
   function testHtml(){
     $results = $this->Facebook->html();
     $this->assertTrue('<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml">', $results);
