@@ -165,7 +165,7 @@ class FacebookHelper extends AppHelper {
     $options = array_merge(
       array(
         'uid' => $uid,
-        'facebook-logo' => true,
+        'facebook-logo' => 1,
       ),
       $options
     );
@@ -238,6 +238,7 @@ class FacebookHelper extends AppHelper {
     */
   function loader($options = array()){
     $locale = array_merge(array('locale' => $this->locale), $options);
+    unset($options['locale']);
     return $this->Html->script($this->_fbFeatureLoaderScript . $locale['locale'], $options);
   }
   
@@ -252,6 +253,7 @@ class FacebookHelper extends AppHelper {
     //TODO make this a little nicer, pron to errors if a value has a ' in it.
     $retval = "<$tag";
     foreach($options as $name => $value){
+      if($value === false) $value = 0;
       $retval .= " " . $name . "='" . $value . "'";
     }
     $retval .= ">$label</$tag>";
