@@ -3,11 +3,11 @@
   * Facebook.Api component used to create an instanciated facebook API available to the user
   *
   * @author Nick Baker <nick [at] webtechnick [dot] com>
-  * @version 1.0
+  * @version 1.1
   * @link http://www.webtechnick.com
   * @license MIT
   */
-App::import('Vendor', 'Facebook.facebook/php/facebook');
+App::import('Lib', 'Facebook.FacebookApi');
 class ApiComponent extends Object {
   
   /**
@@ -21,10 +21,7 @@ class ApiComponent extends Object {
     * Load the API into a class property and allow access to it.
     */
   function initialize($controller){
-    if(!Configure::read('Facebook.api_key')){
-      Configure::load('facebook');
-    }
-    $this->FB = new Facebook(Configure::read('Facebook.api_key', Configure::read('Facebook.secret')));
+    $this->FB = new FacebookApi();
   }
   
   

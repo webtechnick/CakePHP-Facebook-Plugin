@@ -12,6 +12,7 @@ Changelog
 1.2 Initial release beta
 1.2.1 Minor Bug fixes and tests
 1.3 Added FacebookInfo class for easy reference to plugin details anywhere.
+1.4.0 Added FacebookApi library. Useful for access to FacebookApi from anywhere.
 
 Docs
 ==================
@@ -113,6 +114,30 @@ Example:
 <?= $facebook->logout(array('redirect' => 'users/logout')); ?>
 
 This will log out of the facebook authentication and then redirect to your authentication logout for you to finish the logout.
+
+Facebook Api
+==================
+You can access the Facebook Api from anywhere in your app.
+You'll need to include the Api first
+
+App::import('Lib', 'Facebook.FacebookApi');
+
+Then you can instanciate it or, if you're running PHP 5.3.x you can make static calls on it.
+
+<= PHP 5.2.x
+$Facebook = new FacebookApi();
+$Facebook->get_loggedin_user();
+
+PHP 5.3.x
+FacebookApi::get_loggedin_user();
+
+
+
+Alternatively, You can drop in Facebook.Api into your components array and access the API that way:
+Example:
+var $components = array('Facebook.Api');
+
+$this->Api->FB->get_loggedin_user();
 
 
 Read the Docs:

@@ -7,12 +7,10 @@
   *
   * @author Nick Baker <nick [at] webtechnick [dot] come>
   * @link http://www.webtechnick.com
-  * @version 1.0
+  * @version 1.1
   * @license MIT
   */
-
-App::import('Vendor', 'Facebook.facebook/php/facebook');
-Configure::load('facebook');
+App::import('Lib', 'Facebook.FacebookApi');
 class ConnectComponent extends Object {
   
   /**
@@ -33,11 +31,27 @@ class ConnectComponent extends Object {
     */
   function initialize($controller){
     $this->Controller = $controller;
-    $this->Facebook = new Facebook(Configure::read('Facebook.api_key'), Configure::read('Facebook.secret'));
-    
-    $this->facebookUser = $this->Facebook->get_loggedin_user();
+    $this->FacebookApi = new FacebookApi();
+    $this->facebookUser = $this->FacebookApi->get_loggedin_user();
     if($this->facebookUser){
       $this->_handleFacebookUser();
+    }
+  }
+  
+  /**
+    * Get the User information of the logged in user.
+    * @param array of options
+    * @link http://wiki.developers.facebook.com/index.php/Users.getInfo
+    */
+  function getUserInfo($params = null){
+    if($this->facebookUser){
+      if(!$params){
+        $params = array('last_name','first_name','email');
+      }
+      return $this->FacebookApi->api_client->users_getInfo($this->facebookUser, $params);
+    }
+    else {
+      return array();
     }
   }
   
