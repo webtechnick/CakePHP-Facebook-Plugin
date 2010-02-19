@@ -1,7 +1,7 @@
 Facebook Plugin
 ==================
 by Nick Baker (nick@webtechnick.com)
-version 1.5.1
+version 1.5.2
 http://www.webtechnick.com
 license: MIT
 
@@ -15,6 +15,7 @@ Changelog
 1.4.0 Added FacebookApi library. Useful for access to FacebookApi from anywhere.
 1.5.0 Added facebook Permissions prompts
 1.5.1 Facebook Connect can accept settings like all the core components in cake 1.3
+1.5.2 Added Facebook.Connect user method to retrieve user data much like Auth.
 
 Docs
 ==================

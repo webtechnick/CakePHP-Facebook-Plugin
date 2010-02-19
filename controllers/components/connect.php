@@ -7,7 +7,7 @@
   *
   * @author Nick Baker <nick [at] webtechnick [dot] come>
   * @link http://www.webtechnick.com
-  * @version 1.5.1
+  * @version 1.5.2
   * @license MIT
   */
 App::import('Lib', 'Facebook.FacebookApi');
@@ -31,7 +31,7 @@ class ConnectComponent extends Object {
   /**
     * Default user fields to retrieve when autoUserDetails is set to true
     */
-  var $userFields = array();
+  var $userFields = array('last_name','first_name','email');
   
   /**
     * The class name of the user model to use.
@@ -68,9 +68,6 @@ class ConnectComponent extends Object {
     if($this->facebookUserId){
       if(!$params){
         $params = $this->userFields;
-      }
-      if(!$params){
-        $params = array('last_name','first_name','email');
       }
       $userinfo = $this->FacebookApi->api_client->users_getInfo($this->facebookUserId, $params);
       if(isset($userinfo[0])){
@@ -121,6 +118,22 @@ class ConnectComponent extends Object {
     if($this->autoUserDetails){
       $this->getUserInfo($this->userFields);
     }
+  }
+  
+  /**
+    * User returns the logged in facebook user details.
+    * @param string key to retrieve
+    * @return mixed array of logged in user, or string of specific key
+    * @access public
+    */
+  function user($key = null){
+    if($key == 'id'){
+      $key = 'uid'; //facebook id key.
+    }
+    if($this->facebookUser && $key){
+      return $this->facebookUser[$key];
+    }
+    return $this->facebookUser;
   }
   
   /**

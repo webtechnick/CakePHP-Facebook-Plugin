@@ -150,6 +150,19 @@ class ConnectTest extends CakeTestCase {
     $this->assertTrue(is_a($result, 'TestUser'));
   }
   
+  function testUser(){
+    $this->Connect->facebookUser = array('email' => 'test@example.com', 'uid' => '12');
+    
+    $results = $this->Connect->user();
+    $this->assertEqual(array('email' => 'test@example.com', 'uid' => '12'), $results);
+    
+    $results = $this->Connect->user('email');
+    $this->assertEqual('test@example.com', $results);
+    
+    $results = $this->Connect->user('id');
+    $this->assertEqual('12', $results);
+  }
+  
   function endTest(){
     unset($this->Connect);
   }
