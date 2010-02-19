@@ -3,7 +3,7 @@
   * Facebook.Facebook helper generates fbxml and loads javascripts
   *
   * @author Nick Baker <nick [at] webtechnick [dot] com>
-  * @version 1.3
+  * @version 1.4.1
   * @license MIT
   * @link http://www.webtechnick.com
   */
@@ -233,15 +233,34 @@ class FacebookHelper extends AppHelper {
   }
   
   /**
+    * Prompts the user to allow private access to specific streams.
+    * @param string of permissions to prompt for
+    * @example $facebook->promptPermissions('email,read_stream,publish_stream');
+    * @return string xbfbhtml tag
+    * @access public
+    */
+  function promptPermission($perms = null){
+    $options = array('perms' => $perms);
+    return $this->__fbTag('fb:prompt-permission', '', $options);
+  }
+  
+  /**
     * Required at the bottom of your page if you plan to use any feature other than 'share'
     * @param array of options
+    * - perms string of permissions to request on connect
+    * @example $facebook->init(array('perms' => 'email,read_stream'));
     * @return string of scriptBlock for FB.init() or error
     * @access public
     */
   function init($options = array()){
     $this->api_key = Configure::read('Facebook.api_key');
     if($this->api_key){
-      return $this->Html->scriptBlock("FB.init('$this->api_key','$this->webroot$this->_fXdReceiver')", $options); 
+      $perms = "";
+      if(isset($options['perms'])){
+        $perms = ', {permsToRequestOnConnect : "' . $options['perms'] . '",}';
+        unset($options['perms']);
+      }
+      return $this->Html->scriptBlock("FB.init('$this->api_key','$this->webroot$this->_fXdReceiver'$perms)", $options); 
     }
     else {
       return "<span class='error'>No Facebook.api_key detected.  Please add Configure::write('Facebook.api_key', YOUR_API_KEY_HERE) somewhere in your application.</span>";

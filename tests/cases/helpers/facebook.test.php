@@ -131,6 +131,11 @@ class FacebookHelperTest extends CakeTestCase {
     $this->assertEqual("<fb:comments></fb:comments>",$results);
   }
   
+  function testPromptPermission(){
+    $results = $this->Facebook->promptPermission('email');
+    $this->assertEqual("<fb:prompt-permission perms='email'></fb:prompt-permission>", $results);
+  }
+  
   function testInit(){
     Configure::write('Facebook.api_key', 'KEY');
     Configure::write('Facebook.secret', 'SECRET');
@@ -138,6 +143,14 @@ class FacebookHelperTest extends CakeTestCase {
     $expected = "<script type=\"text/javascript\">
 //<![CDATA[
 FB.init('KEY','facebook/receiver/xd_receiver.htm')
+//]]>
+</script>";
+    $this->assertEqual($expected, $results);
+    
+    $results = $this->Facebook->init(array('perms' => 'email'));
+    $expected = "<script type=\"text/javascript\">
+//<![CDATA[
+FB.init('KEY','facebook/receiver/xd_receiver.htm', {permsToRequestOnConnect : \"email\",})
 //]]>
 </script>";
     $this->assertEqual($expected, $results);

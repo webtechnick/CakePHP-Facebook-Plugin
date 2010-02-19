@@ -2,6 +2,7 @@
 App::import('Component', 'Facebook.Connect');
 App::import('Core', 'Controller');
 App::import('Component', 'Auth');
+App::import('Lib', 'Facebook.FacebookApi');
 
 class TestUser extends CakeTestModel {
   var $name = 'TestUser';
@@ -20,6 +21,16 @@ class TestUser extends CakeTestModel {
   function findByFacebookId($id){
     $this->facebookId = $id;
     return array();
+  }
+}
+
+class TestFacebookApiClient{
+  var $facebookId;
+  var $params;
+  function users_getInfo($facebookId, $params){
+    $this->facebookId = $facebookId;
+    $this->params = $params;
+    return array(0 => array('email' => 'test', 'last_name' => 'baker', 'first_name' => 'nick'));
   }
 }
 
@@ -91,6 +102,23 @@ class ConnectTest extends CakeTestCase {
     $this->expectError("Facebook.Connect handleFacebookUser Error.  facebook_id not found in TestUserError table.");
     
     $this->Connect->_handleFacebookUser();
+  }
+  
+  function testGetUserInfoShouldBeEmptyIfNotLoggedIn(){
+    $results = $this->Connect->getUserInfo();
+    $this->assertTrue(empty($results));
+  }
+  
+  function testGetUserInfoIfLoggedIn(){
+    Mock::generate('FacebookApi');
+    $this->Connect->FacebookApi = new MockFacebookApi();
+    $this->Connect->FacebookApi->api_client = new TestFacebookApiClient();
+    $this->Connect->facebookUser = 12;
+    $results = $this->Connect->getUserInfo();
+    $expected = array(0 => array('email' => 'test', 'last_name' => 'baker', 'first_name' => 'nick'));
+    $this->assertTrue(!empty($results));
+    $this->assertEqual(12, $this->Connect->FacebookApi->api_client->facebookId);
+    $this->assertEqual($expected, $results);
   }
   
   function endTest(){
