@@ -7,21 +7,41 @@
   *
   * @author Nick Baker <nick [at] webtechnick [dot] come>
   * @link http://www.webtechnick.com
-  * @version 1.1
+  * @version 1.5.1
   * @license MIT
   */
 App::import('Lib', 'Facebook.FacebookApi');
 class ConnectComponent extends Object {
   
   /**
-    * FacebookUser is the Facebook ID of the logged in user, or null if not logged in
+    * FacebookUserId is the Facebook ID of the logged in user, or null if not logged in
     */
-  var $facebookUser = null;
+  var $facebookUserId = null;
   
   /**
-    * UserModel is the placeholder for the actual userModel defined by Auth
+    * FacebookUser is the Facebook User array of a logged in user.
     */
-  var $UserModel = null;
+  var $facebookUser = array();
+  
+  /**
+    * If set to true, autoUserDetails will retrieve the user details and save them into facebookUser for later access
+    */
+  var $autoUserDetails = true;
+  
+  /**
+    * Default user fields to retrieve when autoUserDetails is set to true
+    */
+  var $userFields = array();
+  
+  /**
+    * The class name of the user model to use.
+    */
+  var $userModel = null;
+  
+  /**
+    * __UserModel is the placeholder for the actual userModel defined by Auth
+    */
+  var $__UserModel = null;
   
   /**
     * Initialize, load the api, decide if we're logged in.
@@ -29,11 +49,12 @@ class ConnectComponent extends Object {
     * @return void
     * @access public
     */
-  function initialize($controller){
+  function initialize($controller, $settings = array()){
     $this->Controller = $controller;
+    $this->_set($settings);
     $this->FacebookApi = new FacebookApi();
-    $this->facebookUser = $this->FacebookApi->get_loggedin_user();
-    if($this->facebookUser){
+    $this->facebookUserId = $this->FacebookApi->get_loggedin_user();
+    if($this->facebookUserId){
       $this->_handleFacebookUser();
     }
   }
@@ -44,11 +65,21 @@ class ConnectComponent extends Object {
     * @link http://wiki.developers.facebook.com/index.php/Users.getInfo
     */
   function getUserInfo($params = null){
-    if($this->facebookUser){
+    if($this->facebookUserId){
+      if(!$params){
+        $params = $this->userFields;
+      }
       if(!$params){
         $params = array('last_name','first_name','email');
       }
-      return $this->FacebookApi->api_client->users_getInfo($this->facebookUser, $params);
+      $userinfo = $this->FacebookApi->api_client->users_getInfo($this->facebookUserId, $params);
+      if(isset($userinfo[0])){
+        $this->facebookUser = $userinfo[0];
+      }
+      else {
+        $this->facebookUser = $userinfo;
+      }
+      return $this->facebookUser;
     }
     else {
       return array();
@@ -65,27 +96,48 @@ class ConnectComponent extends Object {
     if(isset($this->Controller->Auth)){
       $Auth = $this->Controller->Auth;
       if(!$Auth->user()){
-        $this->UserModel = ClassRegistry::init($Auth->userModel);
+        $this->__UserModel = $this->__getUserModel();
         $this->defaultFields = $Auth->fields;
-        $this->UserModel->recursive = -1;
+        $this->__UserModel->recursive = -1;
         
-        if(!$this->UserModel->hasField('facebook_id')){
+        if(!$this->__UserModel->hasField('facebook_id')){
           $this->__error("Facebook.Connect handleFacebookUser Error.  facebook_id not found in {$Auth->userModel} table.");
           return false;
         }
         
-        $user = $this->UserModel->findByFacebookId($this->facebookUser);
+        $user = $this->__UserModel->findByFacebookId($this->facebookUserId);
         if(empty($user)){
-          $user['facebook_id'] = $this->facebookUser;
-          $user[$this->defaultFields['username']] = $this->facebookUser;
+          $user['facebook_id'] = $this->facebookUserId;
+          $user[$this->defaultFields['username']] = $this->facebookUserId;
           $user[$this->defaultFields['password']] = $Auth->password($this->__generatePassword());
-          $this->UserModel->save($user);
+          $this->__UserModel->save($user);
         }
         
         $Auth->fields = array('username' => 'facebook_id', 'password' => $this->defaultFields['password']);
         $Auth->login($user);
       }
     }
+    
+    if($this->autoUserDetails){
+      $this->getUserInfo($this->userFields);
+    }
+  }
+  
+  /**
+    * Return the actual User Model object defined by Auth or User.
+    * @return mixed object User Model or false if unable to determine.
+    * @access private
+    */
+  function __getUserModel(){
+    if($this->userModel){
+      return ClassRegistry::init($this->userModel);
+    }
+    
+    if(isset($this->Controller->Auth)){
+      return ClassRegistry::init($this->Controller->Auth->userModel);
+    }
+    
+    return false;
   }
   
   /**

@@ -65,6 +65,10 @@ class ConnectTest extends CakeTestCase {
     $this->Connect->Controller = new MockController();
     $this->Connect->Controller->Auth = new MockAuthComponent();
     $this->User = new TestUser();
+    
+    Mock::generate('FacebookApi');
+    $this->Connect->FacebookApi = new MockFacebookApi();
+    $this->Connect->FacebookApi->api_client = new TestFacebookApiClient();
   }
   
   function mockController(){
@@ -76,29 +80,29 @@ class ConnectTest extends CakeTestCase {
   
   function testInitialize(){
     $this->Connect->initialize($this->mockController());
-    $this->assertFalse($this->Connect->facebookUser);
+    $this->assertFalse($this->Connect->facebookUserId);
   }
   
   function testHandleFacebookUserWithValidFacebookDatabase(){
     $Controller = $this->mockController();
     $Controller->Auth->userModel = 'TestUser';
     $this->Connect->Controller = $Controller;
-    $this->Connect->facebookUser = 12;
+    $this->Connect->facebookUserId = 12;
     $this->Connect->Controller->Auth->expectOnce('password');
     $this->Connect->Controller->Auth->expectOnce('login');
     
     $this->Connect->_handleFacebookUser();
     $this->assertEqual(array('username' => 'facebook_id', 'password' => 'password'), $this->Connect->Controller->Auth->fields);
     $this->assertEqual('TestUser', $this->Connect->Controller->Auth->userModel);
-    $this->assertEqual(12, $this->Connect->UserModel->data['facebook_id']);
-    $this->assertEqual(12, $this->Connect->UserModel->data['username']);
+    $this->assertEqual(12, $this->Connect->__UserModel->data['facebook_id']);
+    $this->assertEqual(12, $this->Connect->__UserModel->data['username']);
   }
   
   function testHandleFacebookUserWithOutDatabase(){
     $Controller = $this->mockController();
     $Controller->Auth->userModel = 'TestUserError';
     $this->Connect->Controller = $Controller;
-    $this->Connect->facebookUser = 12;
+    $this->Connect->facebookUserId = 12;
     $this->expectError("Facebook.Connect handleFacebookUser Error.  facebook_id not found in TestUserError table.");
     
     $this->Connect->_handleFacebookUser();
@@ -110,15 +114,40 @@ class ConnectTest extends CakeTestCase {
   }
   
   function testGetUserInfoIfLoggedIn(){
-    Mock::generate('FacebookApi');
-    $this->Connect->FacebookApi = new MockFacebookApi();
-    $this->Connect->FacebookApi->api_client = new TestFacebookApiClient();
-    $this->Connect->facebookUser = 12;
+    $this->Connect->facebookUserId = 12;
     $results = $this->Connect->getUserInfo();
-    $expected = array(0 => array('email' => 'test', 'last_name' => 'baker', 'first_name' => 'nick'));
+    $expected = array('email' => 'test', 'last_name' => 'baker', 'first_name' => 'nick');
     $this->assertTrue(!empty($results));
     $this->assertEqual(12, $this->Connect->FacebookApi->api_client->facebookId);
     $this->assertEqual($expected, $results);
+  }
+  
+  function testGetUserInfoIfUserFieldsAreSet(){
+    $this->Connect->facebookUserId = 12;
+    $results = $this->Connect->getUserInfo(array('email'));
+    $this->assertTrue(!empty($results));
+    $this->assertEqual(12, $this->Connect->FacebookApi->api_client->facebookId);
+    $this->assertEqual(array('email'), $this->Connect->FacebookApi->api_client->params);
+    
+    
+    $this->Connect->facebookUserId = 12;
+    $this->Connect->userFields = array('email');
+    $results = $this->Connect->getUserInfo();
+    $this->assertTrue(!empty($results));
+    $this->assertEqual(12, $this->Connect->FacebookApi->api_client->facebookId);
+    $this->assertEqual(array('email'), $this->Connect->FacebookApi->api_client->params);
+  }
+  
+  function testGetUserModel(){
+    $Controller = $this->mockController();
+    $Controller->Auth->userModel = 'TestUserError';
+    $this->Connect->Controller = $Controller;
+    $result = $this->Connect->__getUserModel();
+    $this->assertTrue(is_a($result, 'TestUserError'));
+    
+    $this->Connect->userModel = 'TestUser';
+    $result = $this->Connect->__getUserModel();
+    $this->assertTrue(is_a($result, 'TestUser'));
   }
   
   function endTest(){
