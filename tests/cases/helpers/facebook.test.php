@@ -136,6 +136,11 @@ class FacebookHelperTest extends CakeTestCase {
     $this->assertEqual("<fb:prompt-permission perms='email'></fb:prompt-permission>", $results);
   }
   
+  function testStatus(){
+    $results = $this->Facebook->status('12345');
+    $this->assertEqual("<fb:user-status uid='12345' linked='true'></fb:user-status>", $results);
+  }
+  
   function testInit(){
     Configure::write('Facebook.api_key', 'KEY');
     Configure::write('Facebook.secret', 'SECRET');

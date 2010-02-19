@@ -245,6 +245,20 @@ class FacebookHelper extends AppHelper {
   }
   
   /**
+    * Display the status of a facebook_user
+    * @param int facebook user id to show status
+    * @param array of options for the fbtag
+    * - linked (default true)
+    * @example $facebook->status('45678954');
+    * @return string xbfbhtml tag
+    * @access public
+    */
+  function status($facebook_id = null, $options = array()){
+    $options = array_merge(array('uid' => $facebook_id, 'linked' => 'true'), $options);
+    return $this->__fbTag('fb:user-status','',$options);
+  }
+  
+  /**
     * Required at the bottom of your page if you plan to use any feature other than 'share'
     * @param array of options
     * - perms string of permissions to request on connect

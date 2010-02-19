@@ -16,6 +16,7 @@ Changelog
 1.5.0 Added facebook Permissions prompts
 1.5.1 Facebook Connect can accept settings like all the core components in cake 1.3
 1.5.2 Added Facebook.Connect user method to retrieve user data much like Auth.
+1.5.3 Added Facebook status() function to helper.
 
 Docs
 ==================
@@ -47,6 +48,7 @@ Feature list:
 -- Profile Pictures (display a logged in user's profile picture)
 -- Live Streams (create dynamic live stream events through facebook and give access through your site)
 -- Comments (connect with your uses by allowing them to comment on any part of your site with facebook comments)
+-- Status (display a user's status)
 
 - Access to Full Facebook API anywhere in your app.  Built custom content directly from the Facebook API with the built in access to the full Facebook API
 

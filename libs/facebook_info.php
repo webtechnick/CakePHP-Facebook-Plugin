@@ -20,7 +20,7 @@ class FacebookInfo {
     * @return string version number
     */
   static function version(){
-    return '1.5.2';
+    return '1.5.3';
   }
   
   /**
@@ -64,8 +64,8 @@ class FacebookInfo {
   }
   
   /**
-    * Get the license for Facebook Plugin
-    * @return string plugin license
+    * Get the description for Facebook Plugin
+    * @return string plugin description
     */
   static function description(){
     return "The purpose of the Facebook plugin is to provide a seamless way to connect your cakePHP app to everyone's favorite social networking site -- Facebook. The goal for this plugin is to not only provide extremely useful dynamic features but to also provide a complete interface to the Facebook API.";
