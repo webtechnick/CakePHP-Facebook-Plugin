@@ -1,7 +1,7 @@
 Facebook Plugin
 ==================
 by Nick Baker (nick@webtechnick.com)
-version 1.5.2
+version 1.5.4
 http://www.webtechnick.com
 license: MIT
 
@@ -17,6 +17,7 @@ Changelog
 1.5.1 Facebook Connect can accept settings like all the core components in cake 1.3
 1.5.2 Added Facebook.Connect user method to retrieve user data much like Auth.
 1.5.3 Added Facebook status() function to helper.
+1.5.4: Fixed a bug in Facebook.Connect that would white screen if session was in an unstable state coming in.
 
 Docs
 ==================

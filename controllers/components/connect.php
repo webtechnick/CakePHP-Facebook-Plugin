@@ -7,7 +7,7 @@
   *
   * @author Nick Baker <nick [at] webtechnick [dot] come>
   * @link http://www.webtechnick.com
-  * @version 1.5.2
+  * @version 1.5.4
   * @license MIT
   */
 App::import('Lib', 'Facebook.FacebookApi');
@@ -69,13 +69,18 @@ class ConnectComponent extends Object {
       if(!$params){
         $params = $this->userFields;
       }
-      $userinfo = $this->FacebookApi->api_client->users_getInfo($this->facebookUserId, $params);
-      if(isset($userinfo[0])){
-        $this->facebookUser = $userinfo[0];
+      try{
+        $userinfo = $this->FacebookApi->api_client->users_getInfo($this->facebookUserId, $params);
+        if(isset($userinfo[0])){
+          $this->facebookUser = $userinfo[0];
+        }
+        else {
+          $this->facebookUser = $userinfo;
+        }
+      } catch (Exception $ex){
+        $this->FacebookApi->clear_cookie_state();
       }
-      else {
-        $this->facebookUser = $userinfo;
-      }
+      
       return $this->facebookUser;
     }
     else {
