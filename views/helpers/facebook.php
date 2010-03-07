@@ -3,7 +3,7 @@
   * Facebook.Facebook helper generates fbxml and loads javascripts
   *
   * @author Nick Baker <nick [at] webtechnick [dot] com>
-  * @version 1.4.1
+  * @version 1.5.5
   * @license MIT
   * @link http://www.webtechnick.com
   */
@@ -37,6 +37,11 @@ class FacebookHelper extends AppHelper {
     * @access protected
     */
   var $_fXdReceiver = 'facebook/receiver/xd_receiver.htm';
+  
+  /**
+    * Caches the Api_key for many features
+    */
+  var $api_key = null;
   
   /**
     * Get the info on this plugin
@@ -267,8 +272,7 @@ class FacebookHelper extends AppHelper {
     * @access public
     */
   function init($options = array()){
-    $this->api_key = Configure::read('Facebook.api_key');
-    if($this->api_key){
+    if($this->__getApiKey()){
       $perms = "";
       if(isset($options['perms'])){
         $perms = ', {permsToRequestOnConnect : "' . $options['perms'] . '",}';
@@ -311,6 +315,29 @@ class FacebookHelper extends AppHelper {
     }
     $retval .= ">$label</$tag>";
     return $retval;
+  }
+  
+  /**
+    * Get the ApiKey from the configuration file or from cache
+    * @return string facebook api key
+    * @access private
+    */
+  function __getApiKey(){
+    //try cache
+    if($this->api_key){
+      return $this->api_key;
+    }
+    //try configure setting
+    if($this->api_key = Configure::read('Facebook.api_key')){
+      return $this->api_key; 
+    }
+    //try load configuration file
+    Configure::load('facebook');
+    if($this->api_key = Configure::read('Facebook.api_key')){
+      return $this->api_key;
+    }
+    
+    return null;
   }
   
 }

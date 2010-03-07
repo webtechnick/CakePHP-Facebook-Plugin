@@ -161,6 +161,18 @@ FB.init('KEY','facebook/receiver/xd_receiver.htm', {permsToRequestOnConnect : \"
     $this->assertEqual($expected, $results);
   }
   
+  function testGetApiKey(){
+    $this->Facebook->api_key = 'KEYSET';
+    Configure::write('Facebook.api_key', 'Ignore');
+    $results = $this->Facebook->__getApiKey();
+    $this->assertEqual('KEYSET', $results);
+    
+    $this->Facebook->api_key = null;
+    Configure::write('Facebook.api_key', 'KEYSET');
+    $results = $this->Facebook->__getApiKey();
+    $this->assertEqual('KEYSET', $results);
+  }
+  
   function testLoader(){
     $results = $this->Facebook->loader();
     $this->assertEqual('<script type="text/javascript" src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php/en_US"></script>', $results);
