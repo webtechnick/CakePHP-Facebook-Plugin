@@ -110,7 +110,7 @@ class ConnectTest extends CakeTestCase {
     $this->assertFalse($this->Connect->facebookUserId);
   }
   
-  function testHandleFacebookUserWithValidFacebookDatabase(){
+  function testHandleFacebookUserShouldUpdateUser(){
     $Controller = $this->mockController();
     $Controller->Auth->userModel = 'TestUserHasOne';
     $this->Connect->Controller = $Controller;
@@ -127,7 +127,7 @@ class ConnectTest extends CakeTestCase {
     $this->assertTrue(!empty($this->Connect->__UserModel->data['TestUserHasOne']['id']));
   }
   
-  function testHandleFacebookUserShouldUpdateUser(){
+  function testHandleFacebookUserWithValidFacebookDatabase(){
     $Controller = $this->mockController();
     $Controller->Auth->userModel = 'TestUser';
     $this->Connect->Controller = $Controller;
