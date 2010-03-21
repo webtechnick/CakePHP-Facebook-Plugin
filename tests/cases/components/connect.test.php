@@ -24,6 +24,33 @@ class TestUser extends CakeTestModel {
   }
 }
 
+class TestUserHasOne extends CakeTestModel {
+  var $name = 'TestUser';
+  var $data = null;
+  var $useDbConfig = 'test_suite';
+  var $useTable = false;
+  
+  function save($data){
+    $this->data = $data;
+  }
+  
+  function hasField(){
+    return true;
+  }
+  
+  function findByFacebookId($id){
+    $this->facebookId = $id;
+    return array(
+      'TestUserHasOne' => array(
+        'id' => 1,
+        'username' => 'test',
+        'password' => 'password',
+        'facebook_id' => ''
+      )
+    );
+  }
+}
+
 class TestFacebookApiClient{
   var $facebookId;
   var $params;
@@ -84,6 +111,23 @@ class ConnectTest extends CakeTestCase {
   }
   
   function testHandleFacebookUserWithValidFacebookDatabase(){
+    $Controller = $this->mockController();
+    $Controller->Auth->userModel = 'TestUserHasOne';
+    $this->Connect->Controller = $Controller;
+    $this->Connect->facebookUserId = 12;
+    $this->Connect->Controller->Auth->expectNever('password');
+    $this->Connect->Controller->Auth->expectOnce('login');
+    
+    $this->Connect->_handleFacebookUser();
+    $this->assertEqual(array('username' => 'facebook_id', 'password' => 'password'), $this->Connect->Controller->Auth->fields);
+    $this->assertEqual('TestUserHasOne', $this->Connect->Controller->Auth->userModel);
+    $this->assertEqual(12, $this->Connect->__UserModel->data['TestUserHasOne']['facebook_id']);
+    $this->assertEqual('test', $this->Connect->__UserModel->data['TestUserHasOne']['username']);
+    $this->assertEqual('password', $this->Connect->__UserModel->data['TestUserHasOne']['password']);
+    $this->assertTrue(!empty($this->Connect->__UserModel->data['TestUserHasOne']['id']));
+  }
+  
+  function testHandleFacebookUserShouldUpdateUser(){
     $Controller = $this->mockController();
     $Controller->Auth->userModel = 'TestUser';
     $this->Connect->Controller = $Controller;

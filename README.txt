@@ -1,7 +1,7 @@
 Facebook Plugin
 ==================
 by Nick Baker (nick@webtechnick.com)
-version 1.5.5
+version 1.6
 http://www.webtechnick.com
 license: MIT
 
@@ -19,6 +19,7 @@ Changelog
 1.5.3 Added Facebook status() function to helper.
 1.5.4: Fixed a bug in Facebook.Connect that would white screen if session was in an unstable state coming in.
 1.5.5: Bug fix for helper use only with init.  Was dependant on Connect Component, but not anymore
+1.6: Facebook.Connect will now update a user table if it exists but a facebook_id is not found.
 
 Docs
 ==================

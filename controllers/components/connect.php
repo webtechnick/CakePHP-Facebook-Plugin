@@ -114,6 +114,10 @@ class ConnectComponent extends Object {
           $user[$this->defaultFields['password']] = $Auth->password($this->__generatePassword());
           $this->__UserModel->save($user);
         }
+        elseif (empty($user[$this->__UserModel->alias]['facebook_id'])){
+          $user[$this->__UserModel->alias]['facebook_id'] = $this->facebookUserId;
+          $this->__UserModel->save($user);
+        }
         
         $Auth->fields = array('username' => 'facebook_id', 'password' => $this->defaultFields['password']);
         $Auth->login($user);
