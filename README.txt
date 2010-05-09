@@ -31,8 +31,7 @@ http://facebook.webtechnick.com
 
 Get the Plugin
 ==================
-SVN1: http://svn.xp-dev.com/svn/facebook-plugin/trunk
-SVN2: http://svn.github.com/webtechnick/CakePHP-Facebook-Plugin
+SVN:  http://svn.github.com/webtechnick/CakePHP-Facebook-Plugin
 GIT:  git@github.com:webtechnick/CakePHP-Facebook-Plugin.git
 TAR:  http://projects.webtechnick.com/facebook.tar.gz
 
