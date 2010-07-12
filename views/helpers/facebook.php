@@ -3,7 +3,7 @@
   * Facebook.Facebook helper generates fbxml and loads javascripts
   *
   * @author Nick Baker <nick [at] webtechnick [dot] com>
-  * @version 1.5.5
+  * @version since 1.6.1
   * @license MIT
   * @link http://www.webtechnick.com
   */
@@ -131,7 +131,7 @@ class FacebookHelper extends AppHelper {
     * @access public
     */
   function share($url = null, $options = array()){
-    if(!$url) $url = $this->here;
+    if(!$url) $url = env('SERVER_NAME') . $this->here;
     $defaults = array(
       'style' => 'button',
       'label' => 'share',

@@ -1,7 +1,7 @@
 Facebook Plugin
 ==================
 by Nick Baker (nick@webtechnick.com)
-version 1.6
+version 1.6.1
 http://www.webtechnick.com
 license: MIT
 
@@ -20,6 +20,7 @@ Changelog
 1.5.4: Fixed a bug in Facebook.Connect that would white screen if session was in an unstable state coming in.
 1.5.5: Bug fix for helper use only with init.  Was dependant on Connect Component, but not anymore
 1.6: Facebook.Connect will now update a user table if it exists but a facebook_id is not found.
+1.6.1: Facebook::share will now property set the beginning url if no url is passed in
 
 Docs
 ==================
