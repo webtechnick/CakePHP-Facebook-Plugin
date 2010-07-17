@@ -3,7 +3,7 @@
   * Facebook.Facebook helper generates fbxml and loads javascripts
   *
   * @author Nick Baker <nick [at] webtechnick [dot] com>
-  * @version since 1.6.1
+  * @version since 1.7
   * @license MIT
   * @link http://www.webtechnick.com
   */
@@ -12,36 +12,13 @@ class FacebookHelper extends AppHelper {
   /**
     * Helpers to load with this helper.
     */
-  var $helpers = array('Html');
-  
-  /**
-    * Default Locale
-    * @access public
-    */
-  var $locale = 'en_US';
+  var $helpers = array('Html', 'Session');
   
   /**
     * Default Facebook.Share javascript URL
-    * @access protected
+    * @access private
     */
-  var $_fbShareScript = 'http://static.ak.fbcdn.net/connect.php/js/FB.Share';
-  
-  /**
-    * Default Facebook Loader javascript URL
-    * @access protected
-    */
-  var $_fbFeatureLoaderScript = 'http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php/';
-  
-  /**
-    * Default xd_receiver.htm location (already installed with plugin)
-    * @access protected
-    */
-  var $_fXdReceiver = 'facebook/receiver/xd_receiver.htm';
-  
-  /**
-    * Caches the Api_key for many features
-    */
-  var $api_key = null;
+  var $__fbShareScript = 'http://static.ak.fbcdn.net/connect.php/js/FB.Share';
   
   /**
     * Get the info on this plugin
@@ -63,8 +40,7 @@ class FacebookHelper extends AppHelper {
   }
 
   /**
-    * html header tag for xmlns of facebook.  This is necessary for IE
-    * @param array of options
+    * HTML XMLNS tag (required)
     * @return string of html header
     * @access public
     */
@@ -73,33 +49,27 @@ class FacebookHelper extends AppHelper {
   }
   
   /**
-    * Create a facebook login button
-    * $facebook->loader() and $facebook->init() are required for this
+    * Login Button
+    * $this->Facebook->init() is required for this
     * @param array of options
-    * - size string specifing the button size, small, medium, large, or xlarge (default medium)
-    * - conditions string indicuates wiether the button is visible or hidden
-    * - background string specifies the image background, white, dark, light (default light)
-    * @return string xfbhtml tag
+    * - show-faces bool Show pictures of the user's friends who have joined your application
+    * - width int The width of the plugin in pixels
+    * - max-rows int The maximum number of rows of profile pictures to show
+    * @return string XFBML tag
     * @access public
     */
   function login($options = array()){
-    $options = array_merge(
-      array('onlogin' => 'window.location.reload();'), 
-      $options
-    );
     return $this->__fbTag('fb:login-button', '', $options);
   }
+
   
   /**
-    * Create Logout facebook button
-    * $facebook->loader() and $facebook->init() are required for this
+    * Logout Button
+    * $this->Facebook->init() is required for this
     * @param array of options
     * - redirect string to your app's logout url (default null)
     * - label string of text to use in link (default logout)
-    * - size string specifing the button size, small, medium, large, or xlarge (default medium)
-    * - conditions string indicuates wiether the button is visible or hidden
-    * - background string specifies the image background, white, dark, light (default light)
-    * @return string xfbhtml tag for logout button
+    * @return string XFBML tag for logout button
     * @access public
     */
   function logout($options = array()){
@@ -119,18 +89,18 @@ class FacebookHelper extends AppHelper {
     }
   }
   
-  
   /**
-    * Build a share link/button for the current page
+    * Share this page
     * @param string url: url to share with facebook (default current page) 
     * @param array options to pass into share
     * - style: 'button' or 'link' (default'button')
     * - label: title of text to link(default 'share')
     * - anchor: a href anchor name (default 'fb_share')
-    * @return string xfbhtml tag along with shareJs script
+    * @return string XFBML tag along with shareJs script
     * @access public
     */
   function share($url = null, $options = array()){
+  	// @todo this can be improved using the router
     if(!$url) $url = env('SERVER_NAME') . $this->here;
     $defaults = array(
       'style' => 'button',
@@ -145,162 +115,55 @@ class FacebookHelper extends AppHelper {
     }
     
     $retval = $this->Html->link($options['label'], 'http://www.facebook.com/sharer.php', array('share_url' => $url, 'type' => $options['type'], 'name' => $options['anchor']));
-    $retval .= $this->Html->script($this->_fbShareScript);
+    $retval .= $this->Html->script($this->__fbShareScript);
     return $retval;
   }
   
   /**
-    * Build a become a fan, fanbox
-    * $facebook->loader() and $facebook->init() are required for this
-    * @param array options to pass into fanbox
-    * - stream : 1 turns stream on, 0 turns stream off (default 0)
-    * - connections : 1 turns connections on, 0 turns connections off (default 0)
-    * - logobar : 1 turns logobar on, 0 turns logobar off (default 0)
-    * - profile_id : Your Application Id (default Configure::read('Facebook.app_id')
-    * @return string xfbhtml tag
-    * @access public
-    */
-  function fanbox($options = array()){
-    $options = array_merge(
-      array(
-        'profile_id' => Configure::read('Facebook.app_id'),
-        'stream' => 0, 
-        'logobar' => 0, 
-        'connections' => 0,
-      ),
-      $options
-    );
-    return $this->__fbTag('fb:fan', '', $options);
-  }
-  
-  /**
-    * Profile Picture of Facebook User
-    * $facebook->loader() and $facebook->init() are required for this
-    * @param int facebook user id.
-    * @param array options to pass into pic
-    * - uid : user_id to view profile picture
-    * - size : size of the picture represented as a string. 'thumb','small','normal','square' (default thumb)
-    * - facebook-logo: (default true)
-    * - width: width of the picture in pixels 
-    * - height: height of the picture in pixels 
-    * @return string fb tag for profile picture or empty string if uid is not present
-    * @access public
-    */
-  function picture($uid = null, $options = array()){
-    $options = array_merge(
-      array(
-        'uid' => $uid,
-        'facebook-logo' => 1,
-      ),
-      $options
-    );
-    if($options['uid']){
-      return $this->__fbTag('fb:profile-pic', '', $options);
-    }
-    else {
-      return "";
-    }
-  }
-  
-  /**
-    * Build a livestream window to your live stream app on facebook
-    * $facebook->loader() and $facebook->init() are required for this
-    * @param array options to pass into livestream
-    * - event_app_id : Your Application Id (default Configure::read('Facebook.app_id')
-    * - xid : Your event XID
-    * - width : width of window in pixels
-    * - height: height of window in pixels
-    * @return string xfbhtml tag
-    * @access public
-    */
-  function livestream($options = array()){
-    $options = array_merge(
-      array(
-        'event_app_id' => Configure::read('Facebook.app_id'),
-        'xid' => 'YOUR_EVENT_XID',
-        'width' => '300',
-        'height' => '500',
-      ),
-      $options
-    );
-    return $this->__fbTag('fb:live-stream','',$options);
-  }
-  
-  /**
-    * Build a facebook comments area.
-    * $facebook->loader() and $facebook->init() are required for this
-    * @param array of options for comments
-    * @return string xfbhtml tag
-    * @access public
-    */
-  function comments($options = array()){
-    return $this->__fbTag('fb:comments', '', $options);
-  }
-  
-  /**
-    * Prompts the user to allow private access to specific streams.
-    * @param string of permissions to prompt for
-    * @example $facebook->promptPermissions('email,read_stream,publish_stream');
-    * @return string xbfbhtml tag
-    * @access public
-    */
-  function promptPermission($perms = null){
-    $options = array('perms' => $perms);
-    return $this->__fbTag('fb:prompt-permission', '', $options);
-  }
-  
-  /**
-    * Display the status of a facebook_user
-    * @param int facebook user id to show status
-    * @param array of options for the fbtag
-    * - linked (default true)
-    * @example $facebook->status('45678954');
-    * @return string xbfbhtml tag
-    * @access public
-    */
-  function status($facebook_id = null, $options = array()){
-    $options = array_merge(array('uid' => $facebook_id, 'linked' => 'true'), $options);
-    return $this->__fbTag('fb:user-status','',$options);
-  }
-  
-  /**
-    * Required at the bottom of your page if you plan to use any feature other than 'share'
+    * HTML XMLNS tag (required)
     * @param array of options
-    * - perms string of permissions to request on connect
-    * @example $facebook->init(array('perms' => 'email,read_stream'));
+    * @example $this->Facebook->init();
     * @return string of scriptBlock for FB.init() or error
     * @access public
     */
   function init($options = array()){
-    if($this->__getApiKey()){
-      $perms = "";
-      if(isset($options['perms'])){
-        $perms = ', {permsToRequestOnConnect : "' . $options['perms'] . '",}';
-        unset($options['perms']);
-      }
-      return $this->Html->scriptBlock("FB.init('$this->api_key','$this->webroot$this->_fXdReceiver'$perms)", $options); 
+    if(Configure::read('Facebook')){
+    	$appId = Configure::read('Facebook.appId');
+    	$session = json_encode($this->Session->read('FB.Session'));
+    	$init = '<div id="fb-root"></div>';
+    	$init .=  $this->Html->scriptBlock(
+      	"
+		      window.fbAsyncInit = function() {
+		        FB.init({
+		          appId   : '{$appId}',
+		          session : {$session}, // don't refetch the session when PHP already has it
+		          status  : true, // check login status
+		          cookie  : true, // enable cookies to allow the server to access the session
+		          xfbml   : true // parse XFBML
+		        });
+		        // whenever the user logs in, we refresh the page
+		        FB.Event.subscribe('auth.login', function() {
+		          window.location.reload();
+		        });
+		      };
+		      (function() {
+		        var e = document.createElement('script');
+		        e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
+		        e.async = true;
+		        document.getElementById('fb-root').appendChild(e);
+		      }());
+      	",
+      	$options
+      );
+      return $init;
     }
     else {
-      return "<span class='error'>No Facebook.api_key detected.  Please add Configure::write('Facebook.api_key', YOUR_API_KEY_HERE) somewhere in your application.</span>";
+      return "<span class='error'>No Facebook configuration detected. Please add the facebook configuration file to your config folder.</span>";
     } 
   }
   
   /**
-    * Required for all features except for 'share'
-    * @param array of options
-    * - locale : locale for facebook helper (default en_US
-    * - any_other_html_script option : Use any other options valid for Html->script
-    * @return string of html script
-    * @access public
-    */
-  function loader($options = array()){
-    $locale = array_merge(array('locale' => $this->locale), $options);
-    unset($options['locale']);
-    return $this->Html->script($this->_fbFeatureLoaderScript . $locale['locale'], $options);
-  }
-  
-  /**
-    * Generate a facebook tag for me
+    * Generate a facebook tag
     * @param string fb:tag
     * @param string label to pass inbetween the tag
     * @param array of options as name=>value pairs to add to facebook tag attribute
@@ -317,28 +180,4 @@ class FacebookHelper extends AppHelper {
     return $retval;
   }
   
-  /**
-    * Get the ApiKey from the configuration file or from cache
-    * @return string facebook api key
-    * @access private
-    */
-  function __getApiKey(){
-    //try cache
-    if($this->api_key){
-      return $this->api_key;
-    }
-    //try configure setting
-    if($this->api_key = Configure::read('Facebook.api_key')){
-      return $this->api_key; 
-    }
-    //try load configuration file
-    Configure::load('facebook');
-    if($this->api_key = Configure::read('Facebook.api_key')){
-      return $this->api_key;
-    }
-    
-    return null;
-  }
-  
 }
-?>
