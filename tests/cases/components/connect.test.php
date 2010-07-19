@@ -157,7 +157,7 @@ class ConnectTest extends CakeTestCase {
     $this->Connect->createUser = false;
     $this->Connect->Controller->Auth->setReturnValue('user', false);
     $this->Connect->Controller->Auth->setReturnValue('password', 'password');
-    $this->Connect->Controller->Auth->expectOnce('login');
+    $this->Connect->Controller->Auth->expectNever('login');
     $this->assertTrue($this->Connect->__syncFacebookUser());
     $this->assertEqual(null, $this->Connect->User->data); //user create wasn't called
   }

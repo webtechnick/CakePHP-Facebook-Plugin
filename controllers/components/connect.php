@@ -113,9 +113,11 @@ class ConnectComponent extends Object {
 		    $user[$this->User->alias][$Auth->fields['password']] = $Auth->password('disabled');
 		    $this->hasAccount = ($this->User->save($user, array('validate' => false)));
 	  	}
-	  	
-	  	$Auth->fields = array('username' => 'facebook_id', 'password' => $Auth->fields['password']);    		
-      $Auth->login($user);
+	  	//Login user if we have one
+	  	if($user){
+        $Auth->fields = array('username' => 'facebook_id', 'password' => $Auth->fields['password']);    		
+        $Auth->login($user);
+      }
       return true;
 	  }
   }
