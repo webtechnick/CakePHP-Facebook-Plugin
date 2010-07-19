@@ -1,12 +1,15 @@
 <?php
 App::import('Helper', 'Facebook.Facebook');
 App::import('Helper', 'Html');
+App::import('Helper', 'Session');
+Mock::generate('SessionHelper');
 class FacebookHelperTest extends CakeTestCase {
   var $Facebook = null;
 
   function startTest(){
     $this->Facebook = new FacebookHelper();
     $this->Facebook->Html = new HtmlHelper();
+    $this->Facebook->Session = new MockSessionHelper();
   }
   
   function testInfo(){
@@ -40,16 +43,16 @@ class FacebookHelperTest extends CakeTestCase {
   
   function testLogin(){
     $results = $this->Facebook->login();
-    $this->assertEqual("<fb:login-button onlogin='window.location.reload();'></fb:login-button>", $results);
+    $this->assertEqual("<fb:login-button></fb:login-button>", $results);
     
     $results = $this->Facebook->login(array('size' => 'small'));
-    $this->assertEqual("<fb:login-button onlogin='window.location.reload();' size='small'></fb:login-button>", $results);
+    $this->assertEqual("<fb:login-button size='small'></fb:login-button>", $results);
     
     $results = $this->Facebook->login(array('size' => 'large'));
-    $this->assertEqual("<fb:login-button onlogin='window.location.reload();' size='large'></fb:login-button>", $results);
+    $this->assertEqual("<fb:login-button size='large'></fb:login-button>", $results);
     
     $results = $this->Facebook->login(array('background' => 'dark'));
-    $this->assertEqual("<fb:login-button onlogin='window.location.reload();' background='dark'></fb:login-button>", $results);
+    $this->assertEqual("<fb:login-button background='dark'></fb:login-button>", $results);
     
     $results = $this->Facebook->login(array('onlogin' => 'blah'));
     $this->assertEqual("<fb:login-button onlogin='blah'></fb:login-button>", $results);
@@ -60,10 +63,13 @@ class FacebookHelperTest extends CakeTestCase {
     $this->assertEqual("<fb:login-button autologoutlink='true'></fb:login-button>", $results);
     
     $results = $this->Facebook->logout(array('redirect' => 'users/logout'));
-    $this->assertEqual('<a href="#" onclick="FB.Connect.logoutAndRedirect(&#039;users/logout&#039;)">logout</a>', $results);
+    $this->assertEqual('<a href="#" onclick="FB.logout(function(response){ window.location = &#039;/users/logout&#039;});">logout</a>', $results);
     
     $results = $this->Facebook->logout(array('redirect' => 'users/logout', 'label' => 'Sign Out'));
-    $this->assertEqual('<a href="#" onclick="FB.Connect.logoutAndRedirect(&#039;users/logout&#039;)">Sign Out</a>', $results);
+    $this->assertEqual('<a href="#" onclick="FB.logout(function(response){ window.location = &#039;/users/logout&#039;});">Sign Out</a>', $results);
+    
+    $results = $this->Facebook->logout(array('redirect' => array('controller' => 'users', 'action' => 'logout'), 'label' => 'Sign Out'));
+    $this->assertEqual('<a href="#" onclick="FB.logout(function(response){ window.location = &#039;/users/logout&#039;});">Sign Out</a>', $results);
   }
   
   function testShare(){
@@ -84,7 +90,7 @@ class FacebookHelperTest extends CakeTestCase {
   }
   
   function testFanBox(){
-    Configure::write('Facebook.app_id', '12345');
+    Configure::write('Facebook.appId', '12345');
     
     $results = $this->Facebook->fanbox();
     $this->assertEqual("<fb:fan profile_id='12345' stream='0' logobar='0' connections='0'></fb:fan>", $results);
@@ -116,8 +122,40 @@ class FacebookHelperTest extends CakeTestCase {
     $this->assertEqual("<fb:profile-pic uid='12345' facebook-logo='0'></fb:profile-pic>", $results);
   }
   
+  function testLike(){
+    $results = $this->Facebook->like();
+    $this->assertEqual('<fb:like></fb:like>', $results);
+    
+    $results = $this->Facebook->like(array('layout' => 'button_count'));
+    $this->assertEqual("<fb:like layout='button_count'></fb:like>", $results);
+  }
+  
+  function testActivity(){
+    $results = $this->Facebook->activity();
+    $this->assertEqual('<fb:activity></fb:activity>', $results);
+    
+    $results = $this->Facebook->activity(array('colorscheme' => 'dark'));
+    $this->assertEqual("<fb:activity colorscheme='dark'></fb:activity>", $results);
+  }
+  
+  function testFriendPile(){
+    $results = $this->Facebook->friendpile();
+    $this->assertEqual('<fb:friendpile></fb:friendpile>', $results);
+    
+    $results = $this->Facebook->friendpile(array('colorscheme' => 'dark'));
+    $this->assertEqual("<fb:friendpile colorscheme='dark'></fb:friendpile>", $results);
+  }
+  
+  function testRecommendantions(){
+    $results = $this->Facebook->recommendations();
+    $this->assertEqual('<fb:recommendations></fb:recommendations>', $results);
+    
+    $results = $this->Facebook->recommendations(array('colorscheme' => 'dark'));
+    $this->assertEqual("<fb:recommendations colorscheme='dark'></fb:recommendations>", $results);
+  }
+  
   function testLivestream(){
-    Configure::write('Facebook.app_id', '12345');
+    Configure::write('Facebook.appId', '12345');
     
     $results = $this->Facebook->livestream();
     $this->assertEqual("<fb:live-stream event_app_id='12345' xid='YOUR_EVENT_XID' width='300' height='500'></fb:live-stream>", $results);
@@ -131,54 +169,36 @@ class FacebookHelperTest extends CakeTestCase {
     $this->assertEqual("<fb:comments></fb:comments>",$results);
   }
   
-  function testPromptPermission(){
-    $results = $this->Facebook->promptPermission('email');
-    $this->assertEqual("<fb:prompt-permission perms='email'></fb:prompt-permission>", $results);
-  }
-  
-  function testStatus(){
-    $results = $this->Facebook->status('12345');
-    $this->assertEqual("<fb:user-status uid='12345' linked='true'></fb:user-status>", $results);
-  }
-  
   function testInit(){
-    Configure::write('Facebook.api_key', 'KEY');
-    Configure::write('Facebook.secret', 'SECRET');
+    Configure::write('Facebook.appId', '12345');
+    $this->Facebook->Session->setReturnValue('read', '4567');
     $results = $this->Facebook->init();
-    $expected = "<script type=\"text/javascript\">
+    $expected = "<div id=\"fb-root\"></div><script type=\"text/javascript\">
 //<![CDATA[
-FB.init('KEY','facebook/receiver/xd_receiver.htm')
+
+		      window.fbAsyncInit = function() {
+		        FB.init({
+		          appId   : '12345',
+		          session : \"4567\", // don't refetch the session when PHP already has it
+		          status  : true, // check login status
+		          cookie  : true, // enable cookies to allow the server to access the session
+		          xfbml   : true // parse XFBML
+		        });
+		        // whenever the user logs in, we refresh the page
+		        FB.Event.subscribe('auth.login', function() {
+		          window.location.reload();
+		        });
+		      };
+		      (function() {
+		        var e = document.createElement('script');
+		        e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
+		        e.async = true;
+		        document.getElementById('fb-root').appendChild(e);
+		      }());
+      	
 //]]>
 </script>";
     $this->assertEqual($expected, $results);
-    
-    $results = $this->Facebook->init(array('perms' => 'email'));
-    $expected = "<script type=\"text/javascript\">
-//<![CDATA[
-FB.init('KEY','facebook/receiver/xd_receiver.htm', {permsToRequestOnConnect : \"email\",})
-//]]>
-</script>";
-    $this->assertEqual($expected, $results);
-  }
-  
-  function testGetApiKey(){
-    $this->Facebook->api_key = 'KEYSET';
-    Configure::write('Facebook.api_key', 'Ignore');
-    $results = $this->Facebook->__getApiKey();
-    $this->assertEqual('KEYSET', $results);
-    
-    $this->Facebook->api_key = null;
-    Configure::write('Facebook.api_key', 'KEYSET');
-    $results = $this->Facebook->__getApiKey();
-    $this->assertEqual('KEYSET', $results);
-  }
-  
-  function testLoader(){
-    $results = $this->Facebook->loader();
-    $this->assertEqual('<script type="text/javascript" src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php/en_US"></script>', $results);
-    
-    $results = $this->Facebook->loader(array('locale' => 'eu_FR'));
-    $this->assertEqual('<script type="text/javascript" src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php/eu_FR"></script>', $results);
   }
   
   function endTest(){

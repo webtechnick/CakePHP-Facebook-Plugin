@@ -29,6 +29,11 @@ class ConnectComponent extends Object {
   var $hasAccount = false;
   
   /**
+    * Error log
+    */
+  var $errors = array();
+  
+  /**
     * Initialize, load the api, decide if we're logged in
     * Sync the connected Facebook user with your application
     * @return void
@@ -58,57 +63,74 @@ class ConnectComponent extends Object {
 		  return;
 		}
 		// let's delete their Facebook session info if they are not connected
-		$this->Controller->Session->delete('Facebook');
+		$this->Controller->Session->delete('FB');
   }
 
   
   /**
     * Sync the connected Facebook user
-    * @return void
+    * @return boolean true if successful, false otherwise
     * @access protected
     */
   function __syncFacebookUser(){
-  	// check if Auth exists
     if(!isset($this->Controller->Auth)){
-    	return;
+    	return false;
     }
   	// set Auth to a convenience variable
     $Auth = $this->Controller->Auth;
-  	// initialize the User model if possible
   	if (!$this->__initUserModel()) {
-  		return;
+  		return false;
   	}
     // if you don't have a facebook_id field in your user table, throw an error
     if(!$this->User->hasField('facebook_id')){
       $this->__error("Facebook.Connect handleFacebookUser Error.  facebook_id not found in {$Auth->userModel} table.");
-      return;
+      return false;
     }
+    
     // check if the user already has an account
+    // User is logged in but doesn't have a 
     if($Auth->user()){
-    	// let's assume they have an account in your application if they are already logged in
     	$this->hasAccount = true;
-    	// let's set the model to their id
     	$this->User->id = $Auth->user('id');
-    	// see if they have a facebook_id in the database already
     	if (!$this->User->field('facebook_id')) {
-    		// if they don't, we want to save it
     		$this->User->saveField('facebook_id', $this->uid);
     	}
-    	// let's kick them out of here
-    	return;
-    } else {
+    	return true;
+    } 
+    else {
 	  	// attempt to find the user by their facebook id
 	  	$user = $this->User->findByFacebookId($this->uid);
-	  	// if we found the user
-	  	if (!empty($user)) {
-	  		// this user has an account in your application
-    		$this->hasAccount = true;
-    		// tell auth that the user's username is their facebook_id
-		    $Auth->fields = array('username' => 'facebook_id', 'password' => $Auth->fields['password']);
-    		// log the user in
-		    $Auth->login($user);
+	  	$this->hasAccount = true;
+	  	
+	  	//create the user if we don't have one
+	  	if(empty($user)) {
+		    $user[$this->User->alias]['facebook_id'] = $this->uid;
+		    $user[$this->User->alias][$Auth->fields['password']] = $Auth->password('disabled');
+		    $this->User->save($user, array('validate' => false));
 	  	}
+	  	
+	  	$Auth->fields = array('username' => 'facebook_id', 'password' => $Auth->fields['password']);    		
+      $Auth->login($user);
+      return true;
 	  }
+  }
+  
+  /**
+    * Read the logged in user
+    * @param field key to return (xpath without leading slash)
+    * @param mixed return
+    */
+  function user($field = null){
+    if(!$this->me){
+      return null;
+    }
+    
+    if($field){
+      $retval = Set::extract("/$field", $this->me);
+      return empty($retval) ? null : $retval[0];
+    }
+    
+    return $this->me;
   }
   
   /**
@@ -122,7 +144,7 @@ class ConnectComponent extends Object {
       $this->User->recursive = -1;
     	return true;
     }
-    return;
+    return false;
   }
   
   /**
@@ -132,7 +154,7 @@ class ConnectComponent extends Object {
     * @access private
     */
   function __error($msg){
-    trigger_error($msg, E_USER_WARNING);
+    $this->errors[] = __($msg, true);
   }
 
 }

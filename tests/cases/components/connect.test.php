@@ -2,7 +2,8 @@
 App::import('Component', 'Facebook.Connect');
 App::import('Core', 'Controller');
 App::import('Component', 'Auth');
-App::import('Lib', 'Facebook.FacebookApi');
+App::import('Component', 'Session');
+App::import('Lib', 'Facebook.FB');
 
 class TestUser extends CakeTestModel {
   var $name = 'TestUser';
@@ -38,6 +39,15 @@ class TestUserHasOne extends CakeTestModel {
     return true;
   }
   
+  function field(){
+    return false;
+  }
+  
+  function saveField($field,$facebook_id){
+    $this->facebookId = $facebook_id;
+    return true;
+  }
+  
   function findByFacebookId($id){
     $this->facebookId = $id;
     return array(
@@ -48,16 +58,6 @@ class TestUserHasOne extends CakeTestModel {
         'facebook_id' => ''
       )
     );
-  }
-}
-
-class TestFacebookApiClient{
-  var $facebookId;
-  var $params;
-  function users_getInfo($facebookId, $params){
-    $this->facebookId = $facebookId;
-    $this->params = $params;
-    return array(0 => array('email' => 'test', 'last_name' => 'baker', 'first_name' => 'nick'));
   }
 }
 
@@ -88,123 +88,103 @@ class ConnectTest extends CakeTestCase {
   function startTest(){
     Mock::generate('AuthComponent');
     Mock::generate('Controller');
+    Mock::generate('SessionComponent');
     $this->Connect = new ConnectComponent();
     $this->Connect->Controller = new MockController();
     $this->Connect->Controller->Auth = new MockAuthComponent();
+    $this->Connect->Controller->Session = new MockSessionComponent();
     $this->User = new TestUser();
     
-    Mock::generate('FacebookApi');
-    $this->Connect->FacebookApi = new MockFacebookApi();
-    $this->Connect->FacebookApi->api_client = new TestFacebookApiClient();
+    Mock::generate('FB');
+    $this->Connect->FB = new MockFB();
   }
   
   function mockController(){
     $Controller = new MockController();
     $Controller->Auth = new MockAuthComponent();
+    $Controller->Session = new MockSessionComponent();
     
     return $Controller;
   }
   
   function testInitialize(){
-    $this->Connect->initialize($this->mockController());
-    $this->assertFalse($this->Connect->facebookUserId);
+    $this->Connect->Controller->Session->expectOnce('delete');
+    $this->Connect->initialize($this->Connect->Controller);
+    $this->assertFalse($this->Connect->hasAccount);
+    $this->assertFalse($this->Connect->me);
+    $this->assertFalse($this->Connect->uid);
   }
   
-  function testHandleFacebookUserShouldUpdateUser(){
-    $Controller = $this->mockController();
-    $Controller->Auth->userModel = 'TestUserHasOne';
-    $this->Connect->Controller = $Controller;
-    $this->Connect->facebookUserId = 12;
-    $this->Connect->Controller->Auth->expectNever('password');
+  function testFacebookSyncShouldDoNothingIfAuthIsNotDetected(){
+    unset($this->Connect->Controller->Auth);
+    $this->assertFalse($this->Connect->__syncFacebookUser()); 
+  }
+  
+  function testFacebookSyncShouldLoginAlreadyLinkedUser(){
+    $this->Connect->Controller->Auth->userModel = 'TestUserHasOne';
+    $this->Connect->Controller->Auth->expectOnce('login', array(array(
+      'TestUserHasOne' => array(
+        'id' => 1,
+        'username' => 'test',
+        'password' => 'password',
+        'facebook_id' => ''
+      )
+    )));
+    $this->assertTrue($this->Connect->__syncFacebookUser());
+  }
+  
+  function testFacebookSyncShouldUpdateTheFacebookIdIfNotFound(){
+    $this->Connect->Controller->Auth->userModel = 'TestUserHasOne';
+    $this->Connect->Controller->Auth->setReturnValue('user', 1);
+    $this->Connect->Controller->Auth->expectNever('login');
+    $this->Connect->uid = 12;
+    $this->assertTrue($this->Connect->__syncFacebookUser());
+    $this->assertEqual(1, $this->Connect->User->id);
+    $this->assertEqual(12, $this->Connect->User->facebookId);
+  }
+  
+  function testFacebookSyncShouldReturnFalseIfWeDontHaveFacebookIDInTable(){
+    $this->Connect->Controller->Auth->userModel = 'TestUserError';
+    $this->Connect->Controller->Auth->setReturnValue('user', 1);
+    $this->Connect->Controller->Auth->expectNever('login');
+    $this->assertFalse($this->Connect->__syncFacebookUser());
+    $this->assertEqual('Facebook.Connect handleFacebookUser Error.  facebook_id not found in TestUserError table.', $this->Connect->errors[0]);
+  }
+  
+  function testFacebookSyncShouldCreateUser(){
+    $this->Connect->Controller->Auth->userModel = 'TestUser';
+    $this->Connect->uid = '12';
+    $this->Connect->Controller->Auth->setReturnValue('user', false);
+    $this->Connect->Controller->Auth->setReturnValue('password', 'password');
     $this->Connect->Controller->Auth->expectOnce('login');
-    
-    $this->Connect->_handleFacebookUser();
-    $this->assertEqual(array('username' => 'facebook_id', 'password' => 'password'), $this->Connect->Controller->Auth->fields);
-    $this->assertEqual('TestUserHasOne', $this->Connect->Controller->Auth->userModel);
-    $this->assertEqual(12, $this->Connect->__UserModel->data['TestUserHasOne']['facebook_id']);
-    $this->assertEqual('test', $this->Connect->__UserModel->data['TestUserHasOne']['username']);
-    $this->assertEqual('password', $this->Connect->__UserModel->data['TestUserHasOne']['password']);
-    $this->assertTrue(!empty($this->Connect->__UserModel->data['TestUserHasOne']['id']));
+    $this->assertTrue($this->Connect->__syncFacebookUser());
+    $this->assertEqual(array('TestUser' => array('facebook_id' => 12, 'password' => 'password')), $this->Connect->User->data);
   }
   
-  function testHandleFacebookUserWithValidFacebookDatabase(){
-    $Controller = $this->mockController();
-    $Controller->Auth->userModel = 'TestUser';
-    $this->Connect->Controller = $Controller;
-    $this->Connect->facebookUserId = 12;
-    $this->Connect->Controller->Auth->expectOnce('password');
-    $this->Connect->Controller->Auth->expectOnce('login');
-    
-    $this->Connect->_handleFacebookUser();
-    $this->assertEqual(array('username' => 'facebook_id', 'password' => 'password'), $this->Connect->Controller->Auth->fields);
-    $this->assertEqual('TestUser', $this->Connect->Controller->Auth->userModel);
-    $this->assertEqual(12, $this->Connect->__UserModel->data['facebook_id']);
-    $this->assertEqual(12, $this->Connect->__UserModel->data['username']);
-  }
-  
-  function testHandleFacebookUserWithOutDatabase(){
-    $Controller = $this->mockController();
-    $Controller->Auth->userModel = 'TestUserError';
-    $this->Connect->Controller = $Controller;
-    $this->Connect->facebookUserId = 12;
-    $this->expectError("Facebook.Connect handleFacebookUser Error.  facebook_id not found in TestUserError table.");
-    
-    $this->Connect->_handleFacebookUser();
-  }
-  
-  function testGetUserInfoShouldBeEmptyIfNotLoggedIn(){
-    $results = $this->Connect->getUserInfo();
-    $this->assertTrue(empty($results));
-  }
-  
-  function testGetUserInfoIfLoggedIn(){
-    $this->Connect->facebookUserId = 12;
-    $results = $this->Connect->getUserInfo();
-    $expected = array('email' => 'test', 'last_name' => 'baker', 'first_name' => 'nick');
-    $this->assertTrue(!empty($results));
-    $this->assertEqual(12, $this->Connect->FacebookApi->api_client->facebookId);
-    $this->assertEqual($expected, $results);
-  }
-  
-  function testGetUserInfoIfUserFieldsAreSet(){
-    $this->Connect->facebookUserId = 12;
-    $results = $this->Connect->getUserInfo(array('email'));
-    $this->assertTrue(!empty($results));
-    $this->assertEqual(12, $this->Connect->FacebookApi->api_client->facebookId);
-    $this->assertEqual(array('email'), $this->Connect->FacebookApi->api_client->params);
-    
-    
-    $this->Connect->facebookUserId = 12;
-    $this->Connect->userFields = array('email');
-    $results = $this->Connect->getUserInfo();
-    $this->assertTrue(!empty($results));
-    $this->assertEqual(12, $this->Connect->FacebookApi->api_client->facebookId);
-    $this->assertEqual(array('email'), $this->Connect->FacebookApi->api_client->params);
-  }
-  
-  function testGetUserModel(){
-    $Controller = $this->mockController();
-    $Controller->Auth->userModel = 'TestUserError';
-    $this->Connect->Controller = $Controller;
-    $result = $this->Connect->__getUserModel();
-    $this->assertTrue(is_a($result, 'TestUserError'));
-    
-    $this->Connect->userModel = 'TestUser';
-    $result = $this->Connect->__getUserModel();
-    $this->assertTrue(is_a($result, 'TestUser'));
-  }
-  
-  function testUser(){
-    $this->Connect->facebookUser = array('email' => 'test@example.com', 'uid' => '12');
+  function testUserIfLoggedIn(){
+    $this->Connect->me = array('email' => 'test@example.com', 'id' => '12');
     
     $results = $this->Connect->user();
-    $this->assertEqual(array('email' => 'test@example.com', 'uid' => '12'), $results);
+    $this->assertEqual(array('email' => 'test@example.com', 'id' => '12'), $results);
     
     $results = $this->Connect->user('email');
     $this->assertEqual('test@example.com', $results);
     
     $results = $this->Connect->user('id');
     $this->assertEqual('12', $results);
+  }
+  
+  function testUserIfLoggedOut(){
+    $this->Connect->me = null;
+    
+    $results = $this->Connect->user();
+    $this->assertEqual(null, $results);
+    
+    $results = $this->Connect->user('email');
+    $this->assertEqual(null, $results);
+    
+    $results = $this->Connect->user('id');
+    $this->assertEqual(null, $results);
   }
   
   function endTest(){

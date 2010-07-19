@@ -81,7 +81,10 @@ class FacebookHelper extends AppHelper {
       $options
     );
     if(isset($options['redirect']) && $options['redirect']){
-      return $this->Html->link($options['label'], '#', array('onclick' => "FB.Connect.logoutAndRedirect('{$options['redirect']}')"));
+      $options['redirect'] = Router::url($options['redirect']);
+      //return $this->Html->link($options['label'], '#', array('onclick' => "FB.Connect.logoutAndRedirect('{$options['redirect']}')"));
+      $onclick = "FB.logout(function(response){ window.location = '{$options['redirect']}'});";
+      return $this->Html->link($options['label'], '#', array('onclick' => $onclick));
     }
     else {
       unset($options['label'], $options['escape']);
@@ -117,6 +120,161 @@ class FacebookHelper extends AppHelper {
     $retval = $this->Html->link($options['label'], 'http://www.facebook.com/sharer.php', array('share_url' => $url, 'type' => $options['type'], 'name' => $options['anchor']));
     $retval .= $this->Html->script($this->__fbShareScript);
     return $retval;
+  }
+  
+  /**
+    * Profile Picture of Facebook User
+    * $facebook->init() is required for this
+    * @param int facebook user id.
+    * @param array options to pass into pic
+    * - uid : user_id to view profile picture
+    * - size : size of the picture represented as a string. 'thumb','small','normal','square' (default thumb)
+    * - facebook-logo: (default true)
+    * - width: width of the picture in pixels 
+    * - height: height of the picture in pixels 
+    * @return string fb tag for profile picture or empty string if uid is not present
+    * @access public
+    */
+  function picture($uid = null, $options = array()){
+    $options = array_merge(
+      array(
+        'uid' => $uid,
+        'facebook-logo' => 1,
+      ),
+      $options
+    );
+    if($options['uid']){
+      return $this->__fbTag('fb:profile-pic', '', $options);
+    }
+    else {
+      return "";
+    }
+  }
+  
+  /**
+    * Build a become a fan, fanbox
+    * $facebook->init() is required for this
+    * @param array options to pass into fanbox
+    * - stream : 1 turns stream on, 0 turns stream off (default 0)
+    * - connections : 1 turns connections on, 0 turns connections off (default 0)
+    * - logobar : 1 turns logobar on, 0 turns logobar off (default 0)
+    * - profile_id : Your Application Id (default Configure::read('Facebook.app_id')
+    * @return string xfbhtml tag
+    * @access public
+    */
+  function fanbox($options = array()){
+    $options = array_merge(
+      array(
+        'profile_id' => Configure::read('Facebook.appId'),
+        'stream' => 0, 
+        'logobar' => 0, 
+        'connections' => 0,
+      ),
+      $options
+    );
+    return $this->__fbTag('fb:fan', '', $options);
+  }
+  
+  /**
+    * Build a livestream window to your live stream app on facebook
+    * $facebook->init() is required for this
+    * @param array options to pass into livestream
+    * - event_app_id : Your Application Id (default Configure::read('Facebook.appId')
+    * - xid : Your event XID
+    * - width : width of window in pixels
+    * - height: height of window in pixels
+    * @return string xfbhtml tag
+    * @access public
+    */
+  function livestream($options = array()){
+    $options = array_merge(
+      array(
+        'event_app_id' => Configure::read('Facebook.appId'),
+        'xid' => 'YOUR_EVENT_XID',
+        'width' => '300',
+        'height' => '500',
+      ),
+      $options
+    );
+    return $this->__fbTag('fb:live-stream','',$options);
+  }
+  
+  /**
+    * Build a facebook comments area.
+    * $facebook->init() is required for this
+    * @param array of options for comments
+    * - numposts : number of posts to show (default 10)
+    * - width : int width of comments blog (default 550)
+    * @return string xfbhtml tag
+    * @access public
+    */
+  function comments($options = array()){
+    return $this->__fbTag('fb:comments', '', $options);
+  }
+  
+  /**
+    * Build a facebook recommendations area.
+    * $facebook->init() is required for this
+    * @param array of options for recommendations
+    * - width : int width of object (default 300)
+    * - height : int height of object (default 300)
+    * - header : boolean (default true)
+    * - colorscheme : light, dark (default light)
+    * - font : default arial
+    * - bordercolor : color of border (black, white, grey)
+    * @return string xfbhtml tag
+    * @access public
+    */
+  function recommendations($options = array()){
+    return $this->__fbTag('fb:recommendations', '', $options);
+  }
+  
+  /**
+    * Build a facebook friendpile area.
+    * $facebook->init() is required for this
+    * @param array of options for recommendations
+    * - numrows : int of rows object (default 1)
+    * - width : int width of object (default 300)
+    * @return string xfbhtml tag
+    * @access public
+    */
+  function friendpile($options = array()){
+    return $this->__fbTag('fb:friendpile', '', $options);
+  }
+  
+  /**
+    * Build a facebook activity feed area.
+    * $facebook->init() is required for this
+    * @param array of options for recommendations
+    * - width : int width of object (default 300)
+    * - height : int height of object (default 300)
+    * - header : boolean (default true)
+    * - colorscheme : light, dark (default light)
+    * - font : default arial
+    * - bordercolor : color of border (black, white, grey)
+    * - recommendations : show recommendations default "false"
+    * @return string xfbhtml tag
+    * @access public
+    */
+  function activity($options = array()){
+    return $this->__fbTag('fb:activity', '', $options);
+  }
+  
+  /**
+    * Build a facebook like box
+    * $facebook->init() is required for this
+    * @param array of options for like box
+    * - href : URL to like (default same page)
+    * - show_faces : boolean (default true)
+    * - font : font type (arial, lucida grande, segoe ui, tahoma, trebuchet ms, verdana)
+    * - layout : the layout type if the button (button_count, standard, default: standard)
+    * - action : the title of the action (like or recommend, default: like)
+    * - colorscheme : the look of the button (dark or light, default: light)
+    * @return string xfbhtml tag
+    * @access public
+    */
+  function like($options = array()){
+    return $this->__fbTag('fb:like', '', $options);
   }
   
   /**
