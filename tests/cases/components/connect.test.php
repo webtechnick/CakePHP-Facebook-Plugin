@@ -151,6 +151,17 @@ class ConnectTest extends CakeTestCase {
     $this->assertEqual('Facebook.Connect handleFacebookUser Error.  facebook_id not found in TestUserError table.', $this->Connect->errors[0]);
   }
   
+  function testFacebookSyncShouldNotCreateUser(){
+    $this->Connect->Controller->Auth->userModel = 'TestUser';
+    $this->Connect->uid = '12';
+    $this->Connect->createUser = false;
+    $this->Connect->Controller->Auth->setReturnValue('user', false);
+    $this->Connect->Controller->Auth->setReturnValue('password', 'password');
+    $this->Connect->Controller->Auth->expectOnce('login');
+    $this->assertTrue($this->Connect->__syncFacebookUser());
+    $this->assertEqual(null, $this->Connect->User->data); //user create wasn't called
+  }
+  
   function testFacebookSyncShouldCreateUser(){
     $this->Connect->Controller->Auth->userModel = 'TestUser';
     $this->Connect->uid = '12';

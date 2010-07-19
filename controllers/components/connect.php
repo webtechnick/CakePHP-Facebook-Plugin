@@ -34,27 +34,29 @@ class ConnectComponent extends Object {
   var $errors = array();
   
   /**
+    * createUser is true you want the component to attempt to create a CakePHP Auth user
+    * account by introspection on the Auth component.  If false, you can use $this->hasAccount
+    * as a reference to decide what to do with that user. (default true)
+    */
+  var $createUser = true;
+  
+  /**
     * Initialize, load the api, decide if we're logged in
     * Sync the connected Facebook user with your application
+    * @param Controller object to attach to
+    * @param settings for Connect
     * @return void
     * @access public
     */
-  function initialize($Controller){
-  	// setup our controller object for the other methods
+  function initialize($Controller, $settings = array()){
     $this->Controller = $Controller;
-    // instanciate the Facebook API
+    $this->_set($settings);
     $this->FB = new FB();
-    // get the connected user's session
-    $this->session = $this->FB->getSession();
-    // if they are connected, set the class properties
+    $this->session = $this->FB->getSession();    
 		if ($this->session) {
-			// set the connected user's Facebook UID
 	    $this->uid = $this->FB->getUser();
-	    // set the connected user's data object
 	    $this->me = $this->FB->api('/me');
-	    // store their Facebook user object in the session
 	    $this->Controller->Session->write('FB.Me', $this->me);
-	    // store their Facebook session in the session
 	    $this->Controller->Session->write('FB.Session', $this->session);
 		}
 		// if we successfully obtained the user's data object sync them with your application
@@ -100,13 +102,16 @@ class ConnectComponent extends Object {
     else {
 	  	// attempt to find the user by their facebook id
 	  	$user = $this->User->findByFacebookId($this->uid);
-	  	$this->hasAccount = true;
 	  	
+	  	//if we have a user, set hasAccount
+	  	if(!empty($user)){
+	  	  $this->hasAccount = true;
+	  	}
 	  	//create the user if we don't have one
-	  	if(empty($user)) {
+	  	elseif(empty($user) && $this->createUser) {
 		    $user[$this->User->alias]['facebook_id'] = $this->uid;
 		    $user[$this->User->alias][$Auth->fields['password']] = $Auth->password('disabled');
-		    $this->User->save($user, array('validate' => false));
+		    $this->hasAccount = ($this->User->save($user, array('validate' => false)));
 	  	}
 	  	
 	  	$Auth->fields = array('username' => 'facebook_id', 'password' => $Auth->fields['password']);    		
@@ -131,6 +136,24 @@ class ConnectComponent extends Object {
     }
     
     return $this->me;
+  }
+  
+  /**
+    * Run the callback if it exists
+    * @param string callback
+    * @param mixed passed in variable (optional)
+    * @return mixed result of the callback function
+    */ 
+  function __runCallback($callback, $passedIn = null){
+    if(is_callable(array($this, $callback))){
+      if($passedIn === null){
+        return $this->$callback();
+      }
+      else {
+        return $this->$callback($passedIn);
+      }
+    }
+    return false;
   }
   
   /**
