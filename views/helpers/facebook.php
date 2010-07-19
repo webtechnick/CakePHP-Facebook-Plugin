@@ -3,7 +3,7 @@
   * Facebook.Facebook helper generates fbxml and loads javascripts
   *
   * @author Nick Baker <nick [at] webtechnick [dot] com>
-  * @version since 1.7
+  * @version since 2.0
   * @license MIT
   * @link http://www.webtechnick.com
   */
@@ -37,6 +37,14 @@ class FacebookHelper extends AppHelper {
     else {
       return "$name is not an available option";
     }
+  }
+  
+  /**
+    * Loaoder is no longer needed and is now deprecated
+    * @return null
+    */
+  function loader(){
+    return null;
   }
 
   /**

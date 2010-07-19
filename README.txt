@@ -1,7 +1,7 @@
 Facebook Plugin
 ==================
 by Nick Baker (nick@webtechnick.com)
-version 1.6.1
+version 2.0.0
 http://www.webtechnick.com
 license: MIT
 
@@ -21,6 +21,17 @@ Changelog
 1.5.5: Bug fix for helper use only with init.  Was dependant on Connect Component, but not anymore
 1.6: Facebook.Connect will now update a user table if it exists but a facebook_id is not found.
 1.6.1: Facebook::share will now property set the beginning url if no url is passed in
+1.7.0: Updated to the latest version of the official Facebook PHP SDK and made everything more future-proof (Theaxiom / https://www.kinspir.com)
+1.7.1: Fixed broken tests from update 1.7.0
+2.0.0: Feature updates:
+         - FacebookHelper::loader() is no longer needed and is now deprecated
+         - Users now created if auth is detected and no user is present with logged in facebook_id
+         - FacebookHelper::logout redirect option now allows array based cakephp urls
+       New Features:
+         - FacebookHelper::like() creates like button with various options
+         - FacebookHelper::activity() created activity feed with various options
+         - FacebookHelper::friendpile() created friendpile widget with various options
+         - FacebookHelper::recommendations() create recommendations widget with various options
 
 Docs
 ==================
@@ -47,7 +58,11 @@ Feature list:
 
 - Create dynamic customizable facebook content with extreme ease.
 -- Share  (let your users share what they find on your site)
+-- Like  (let your users like what they find on your site)
 -- Login/Logout (facebook users can login and logout with a single click .. no registration required)
+-- Activity (allow users to show your applications and friends activity)
+-- Friend Pile (display your applications friends)
+-- Recommendations (display recommended urls based on the current page)
 -- Fan Boxes (allow users to become a fan of your application)
 -- Profile Pictures (display a logged in user's profile picture)
 -- Live Streams (create dynamic live stream events through facebook and give access through your site)
@@ -70,9 +85,10 @@ Once you generate an api_key and secret you'll need to create a file in your app
 app/config/facebook.php
 $config = array(
   'Facebook' => array(
-    'api_key' => 'YOUR_API_KEY',
-    'secret' => 'YOUR_SECRET'
-    'app_id' => 'YOUR_APP_ID'
+  	'appId' => 'YOUR_APP_ID',
+  	'cookie' => 'YOUR_APP_ID',
+    'apiKey' => 'YOUR_API_KEY',
+    'secret' => 'YOUR_SECRET',
   )
 );
 
@@ -92,8 +108,6 @@ Edit your Layout to take advantage of advanced facebook features
 Replace <html> with <?= $facebook->html() ?>
 
 In your default.ctp it's highly suggest you replace your <html> tag with <?= $facebook->html() ?>  This is required for some of the facebook features to work in IE.
-
-Included <?= $facebook->loader(); ?> within your <head> tag.
 
 At the bottom of the page include <?= $facebook->init(); ?> To load the facebook javascript api to scan your page for fbxml and replace them with various dynamic content.
 
@@ -121,6 +135,7 @@ If you already have an authentication system setup, the logout step will need to
 
 Example:
 <?= $facebook->logout(array('redirect' => 'users/logout')); ?>
+<?= $facebook->logout(array('redirect' => array('controller' => 'users', 'action' => 'logout'))); ?>
 
 This will log out of the facebook authentication and then redirect to your authentication logout for you to finish the logout.
 
@@ -129,24 +144,16 @@ Facebook Api
 You can access the Facebook Api from anywhere in your app.
 You'll need to include the Api first
 
-App::import('Lib', 'Facebook.FacebookApi');
+App::import('Lib', 'Facebook.FB');
 
 Then you can instanciate it or, if you're running PHP 5.3.x you can make static calls on it.
 
 <= PHP 5.2.x
-$Facebook = new FacebookApi();
-$Facebook->get_loggedin_user();
+$Facebook = new FB();
+$Facebook->api('/me');
 
 PHP 5.3.x
-FacebookApi::get_loggedin_user();
-
-
-
-Alternatively, You can drop in Facebook.Api into your components array and access the API that way:
-Example:
-var $components = array('Facebook.Api');
-
-$this->Api->FB->get_loggedin_user();
+FB::api('/me');
 
 
 Read the Docs:
