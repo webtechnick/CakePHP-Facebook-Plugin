@@ -32,6 +32,10 @@ Changelog
          - FacebookHelper::activity() created activity feed with various options
          - FacebookHelper::friendpile() created friendpile widget with various options
          - FacebookHelper::recommendations() create recommendations widget with various options
+2.0.1: New Setting ConnectComponent::createUser boolean.  If set to true (default) upon a successful
+       facebook login, and the facebook_id is not found in the User table, the component will attempt
+       to create a new user from introspection on the Auth component.  Turn this feature off by passing
+       in 'createUser' => false when setting up the Connect component.
 
 Docs
 ==================
@@ -85,10 +89,10 @@ Once you generate an api_key and secret you'll need to create a file in your app
 app/config/facebook.php
 $config = array(
   'Facebook' => array(
-  	'appId' => 'YOUR_APP_ID',
-  	'cookie' => 'YOUR_APP_ID',
+    'appId' => 'YOUR_APP_ID',
     'apiKey' => 'YOUR_API_KEY',
     'secret' => 'YOUR_SECRET',
+    'cookie' => true,
   )
 );
 

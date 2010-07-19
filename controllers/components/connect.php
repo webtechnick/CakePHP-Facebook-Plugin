@@ -7,7 +7,7 @@
   *
   * @author Nick Baker <nick [at] webtechnick [dot] come>
   * @link http://www.webtechnick.com
-  * @since 2.0
+  * @since 2.0.1
   * @license MIT
   */
 App::import('Lib', 'Facebook.FB');
