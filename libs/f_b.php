@@ -8,7 +8,7 @@
   * @license MIT
   */
 App::import('Vendor', 'Facebook.facebook/php/facebook');
-Configure::load('facebook');
+App::import('Lib', 'Facebook.FacebookInfo');
 class FB {
 
   /**
@@ -18,8 +18,9 @@ class FB {
   
   public function __construct() {
     if(!self::$Facebook){
+      FacebookInfo::getConfig();
       self::$Facebook = new Facebook(
-      	Configure::read('Facebook')
+      	FacebookInfo::$configs
       );
     }
   }

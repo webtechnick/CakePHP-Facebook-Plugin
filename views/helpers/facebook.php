@@ -293,8 +293,8 @@ class FacebookHelper extends AppHelper {
     * @access public
     */
   function init($options = array()){
-    if(Configure::read('Facebook')){
-    	$appId = Configure::read('Facebook.appId');
+    if(FacebookInfo::getConfig('appId')){
+    	$appId = FacebookInfo::getConfig('appId');
     	$session = json_encode($this->Session->read('FB.Session'));
     	$init = '<div id="fb-root"></div>';
     	$init .=  $this->Html->scriptBlock(

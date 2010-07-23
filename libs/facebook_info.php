@@ -5,6 +5,9 @@
   */
 class FacebookInfo {
   
+  /**
+    * Available options to call
+    */
   public static $options = array(
       'name',
       'version',
@@ -14,6 +17,37 @@ class FacebookInfo {
       'description',
       'license',
     );
+  
+  /**
+    * Facebook configurations stored in
+    * app/config/facebook.php
+    * @var array
+    */
+  public static $configs = array();
+  
+  /**
+    * Testing getting a configuration option.
+    * @param key to search for
+    * @return mixed result of configuration key.
+    * @access public
+    */
+  static function getConfig($key = null){
+    if(isset(self::$configs[$key])){
+      return self::$configs[$key];
+    }
+    //try configure setting
+    if(self::$configs[$key] = Configure::read("Facebook.$key")){
+      return self::$configs[$key];
+    }
+    //try load configuration file and try again.
+    Configure::load('facebook');
+    self::$configs = Configure::read('Facebook');
+    if(self::$configs[$key] = Configure::read("Facebook.$key")){
+      return self::$configs[$key];
+    }
+    
+    return null;
+  }
   
   /**
     * Get the version of the Facebook Plugin
