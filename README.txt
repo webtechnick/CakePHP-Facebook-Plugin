@@ -36,6 +36,8 @@ Changelog
        facebook login, and the facebook_id is not found in the User table, the component will attempt
        to create a new user from introspection on the Auth component.  Turn this feature off by passing
        in 'createUser' => false when setting up the Connect component.
+2.0.2: New helper method getConfig() available within the FacebookInfo library.  Use this to pull in facebook configurations
+       instead of trying to rely on loaded configuration files from other sources.
 
 Docs
 ==================
