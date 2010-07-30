@@ -1,7 +1,7 @@
 Facebook Plugin
 ==================
 by Nick Baker (nick@webtechnick.com)
-version 2.0.1
+version 2.0.2
 http://www.webtechnick.com
 license: MIT
 
