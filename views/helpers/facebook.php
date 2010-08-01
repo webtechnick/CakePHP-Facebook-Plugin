@@ -63,6 +63,7 @@ class FacebookHelper extends AppHelper {
     * - show-faces bool Show pictures of the user's friends who have joined your application
     * - width int The width of the plugin in pixels
     * - max-rows int The maximum number of rows of profile pictures to show
+    * - perms list of permissions to ask for when logging in separated by commas (eg: 'email,read_stream,publish_stream'). (http://developers.facebook.com/docs/authentication/permissions)
     * @return string XFBML tag
     * @access public
     */
