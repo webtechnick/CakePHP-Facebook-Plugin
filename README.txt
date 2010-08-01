@@ -1,7 +1,7 @@
 Facebook Plugin
 ==================
 by Nick Baker (nick@webtechnick.com)
-version 2.0.2
+version 2.0.3
 http://www.webtechnick.com
 license: MIT
 
@@ -38,6 +38,7 @@ Changelog
        in 'createUser' => false when setting up the Connect component.
 2.0.2: New helper method getConfig() available within the FacebookInfo library.  Use this to pull in facebook configurations
        instead of trying to rely on loaded configuration files from other sources.
+2.0.3: Updated Facebook::share to allow fbxml option instead of defaulting to not use fbxml.  fbxml => true is required if the page loads facebook->init(); 
 
 Docs
 ==================
@@ -132,6 +133,8 @@ That's it.  You're now ready to accept facebook authentication.
 
 Login/Logout buttons:
 <?= $facebook->login() ?> Creates a login button
+<?= $facebook->login(array('perms' => 'email,publish_stream')) ?> Creates a login button that asks for extended permissions
+
 <?= $facebook->logout() ?> Creates a logout button
 
 In your view, just add <?= $facebook->login(); ?> to create a login button.

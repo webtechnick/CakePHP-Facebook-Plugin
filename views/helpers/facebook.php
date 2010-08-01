@@ -108,6 +108,7 @@ class FacebookHelper extends AppHelper {
     * - style: 'button' or 'link' (default'button')
     * - label: title of text to link(default 'share')
     * - anchor: a href anchor name (default 'fb_share')
+    * - fbxml: true or false.  If true, use fb:share-button xml style instead of javascript share (default false)
     * @return string XFBML tag along with shareJs script
     * @access public
     */
@@ -117,7 +118,8 @@ class FacebookHelper extends AppHelper {
     $defaults = array(
       'style' => 'button',
       'label' => 'share',
-      'anchor' => 'fb_share'
+      'anchor' => 'fb_share',
+      'fbxml' => false
     );
     $options = array_merge($defaults, $options);
     
@@ -126,8 +128,15 @@ class FacebookHelper extends AppHelper {
       default: $options['type'] = 'button'; break;
     }
     
-    $retval = $this->Html->link($options['label'], 'http://www.facebook.com/sharer.php', array('share_url' => $url, 'type' => $options['type'], 'name' => $options['anchor']));
-    $retval .= $this->Html->script($this->__fbShareScript);
+    if($options['fbxml']){
+      unset($options['fbxml']);
+      $retval = $this->__fbTag('fb:share-button','',$options);
+    }
+    else {
+      $retval = $this->Html->link($options['label'], 'http://www.facebook.com/sharer.php', array('share_url' => $url, 'type' => $options['type'], 'name' => $options['anchor']));
+      $retval .= $this->Html->script($this->__fbShareScript);
+    }
+    
     return $retval;
   }
   
