@@ -7,7 +7,7 @@
   *
   * @author Nick Baker <nick [at] webtechnick [dot] come>
   * @link http://www.webtechnick.com
-  * @since 2.0.1
+  * @since 2.0.3
   * @license MIT
   */
 App::import('Lib', 'Facebook.FB');
@@ -56,16 +56,21 @@ class ConnectComponent extends Object {
 		if ($this->session) {
 	    $this->uid = $this->FB->getUser();
 	    $this->me = $this->FB->api('/me');
-	    $this->Controller->Session->write('FB.Me', $this->me);
-	    $this->Controller->Session->write('FB.Session', $this->session);
+	    if(isset($this->Controller->Session)){
+	      $this->Controller->Session->write('FB.Me', $this->me);
+	      $this->Controller->Session->write('FB.Session', $this->session);
+	    }
 		}
 		// if we successfully obtained the user's data object sync them with your application
 		if ($this->me) {
 		  $this->__syncFacebookUser();
 		  return;
 		}
+		
 		// let's delete their Facebook session info if they are not connected
-		$this->Controller->Session->delete('FB');
+		if(isset($this->Controller->Session)){
+		  $this->Controller->Session->delete('FB');
+		}
   }
 
   
