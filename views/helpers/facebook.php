@@ -123,9 +123,11 @@ class FacebookHelper extends AppHelper {
     );
     $options = array_merge($defaults, $options);
     
-    switch($options['style']){
-      case 'link': $options['type'] = 'icon_link'; break;
-      default: $options['type'] = 'button'; break;
+    if(!$options['fbxml']){
+      switch($options['style']){
+        case 'link': $options['type'] = 'icon_link'; break;
+        default: $options['type'] = 'button'; break;
+      }
     }
     
     if($options['fbxml']){
