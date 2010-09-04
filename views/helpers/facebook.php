@@ -91,7 +91,6 @@ class FacebookHelper extends AppHelper {
     );
     if(isset($options['redirect']) && $options['redirect']){
       $options['redirect'] = Router::url($options['redirect']);
-      //return $this->Html->link($options['label'], '#', array('onclick' => "FB.Connect.logoutAndRedirect('{$options['redirect']}')"));
       $onclick = "FB.logout(function(response){ window.location = '{$options['redirect']}'});";
       return $this->Html->link($options['label'], '#', array('onclick' => $onclick));
     }
