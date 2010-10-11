@@ -48,31 +48,16 @@ class ConnectComponent extends Object {
     * @return void
     * @access public
     */
-  function initialize($Controller, $settings = array()){
+  function initialize(&$Controller, $settings = array()){
     $this->Controller = $Controller;
     $this->_set($settings);
     $this->FB = new FB();
-    $this->session = $this->FB->getSession();    
-		if ($this->session) {
-	    $this->uid = $this->FB->getUser();
-	    $this->me = $this->FB->api('/me');
-	    if(isset($this->Controller->Session)){
-	      $this->Controller->Session->write('FB.Me', $this->me);
-	      $this->Controller->Session->write('FB.Session', $this->session);
-	    }
-		}
-		// if we successfully obtained the user's data object sync them with your application
-		if ($this->me) {
-		  $this->__syncFacebookUser();
-		  return;
-		}
-		
-		// let's delete their Facebook session info if they are not connected
-		if(isset($this->Controller->Session)){
-		  $this->Controller->Session->delete('FB');
-		}
+    $this->session = $this->FB->getSession();
+    //Prevent using Auth component only if there is noAuth setting proveded
+    if(!isset($settings['noAuth'])){
+      $this->__syncFacebookUser(); //Attempt to authenticate user using Facebook. Currently the uid is fetched from $this->session['uid']
+    }
   }
-
   
   /**
     * Sync the connected Facebook user
@@ -81,13 +66,13 @@ class ConnectComponent extends Object {
     */
   function __syncFacebookUser(){
     if(!isset($this->Controller->Auth)){
-    	return false;
+      return false;
     }
-  	// set Auth to a convenience variable
+    // set Auth to a convenience variable
     $Auth = $this->Controller->Auth;
-  	if (!$this->__initUserModel()) {
-  		return false;
-  	}
+    if (!$this->__initUserModel()) {
+	    return false;
+    }
     // if you don't have a facebook_id field in your user table, throw an error
     if(!$this->User->hasField('facebook_id')){
       $this->__error("Facebook.Connect handleFacebookUser Error.  facebook_id not found in {$Auth->userModel} table.");
@@ -97,34 +82,33 @@ class ConnectComponent extends Object {
     // check if the user already has an account
     // User is logged in but doesn't have a 
     if($Auth->user()){
-    	$this->hasAccount = true;
-    	$this->User->id = $Auth->user('id');
-    	if (!$this->User->field('facebook_id')) {
-    		$this->User->saveField('facebook_id', $this->uid);
-    	}
-    	return true;
-    } 
-    else {
-	  	// attempt to find the user by their facebook id
-	  	$user = $this->User->findByFacebookId($this->uid);
-	  	
-	  	//if we have a user, set hasAccount
-	  	if(!empty($user)){
-	  	  $this->hasAccount = true;
-	  	}
-	  	//create the user if we don't have one
-	  	elseif(empty($user) && $this->createUser) {
-		    $user[$this->User->alias]['facebook_id'] = $this->uid;
-		    $user[$this->User->alias][$Auth->fields['password']] = $Auth->password('disabled');
-		    $this->hasAccount = ($this->User->save($user, array('validate' => false)));
-	  	}
-	  	//Login user if we have one
-	  	if($user){
+      $this->hasAccount = true;
+      $this->User->id = $Auth->user('id');
+      if (!$this->User->field('facebook_id')) {
+	$this->User->saveField('facebook_id', $this->session['uid']);
+      }
+      return true;
+    } else {
+      // attempt to find the user by their facebook id
+      $user = $this->User->findByFacebookId($this->session['uid']);
+      
+      //if we have a user, set hasAccount
+      if(!empty($user)){
+	$this->hasAccount = true;
+      }
+      //create the user if we don't have one
+      elseif(empty($user) && $this->createUser) {
+	  $user[$this->User->alias]['facebook_id'] = $this->uid;
+	  $user[$this->User->alias][$Auth->fields['password']] = $Auth->password('disabled');
+	  $this->hasAccount = ($this->User->save($user, array('validate' => false)));
+      }
+      //Login user if we have one
+      if($user){
         $Auth->fields = array('username' => 'facebook_id', 'password' => $Auth->fields['password']);    		
         $Auth->login($user);
       }
       return true;
-	  }
+    }
   }
   
   /**
@@ -133,6 +117,16 @@ class ConnectComponent extends Object {
     * @param mixed return
     */
   function user($field = null){
+    if(isset($this->session)){
+      $this->uid = $this->session['uid'];
+      if($this->Controller->Session->read('FB.Me') == null){
+	$this->Controller->Session->write('FB.Me', $this->FB->api('/me'));
+      }
+      $this->me = $this->Controller->Session->read('FB.Me');
+    } else {
+      $this->Controller->Session->delete('FB');
+    }
+    
     if(!$this->me){
       return null;
     }
@@ -186,5 +180,4 @@ class ConnectComponent extends Object {
   function __error($msg){
     $this->errors[] = __($msg, true);
   }
-
 }
