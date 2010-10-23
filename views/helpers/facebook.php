@@ -78,6 +78,8 @@ class FacebookHelper extends AppHelper {
     * @param array of options
     * - redirect string to your app's logout url (default null)
     * - label string of text to use in link (default logout)
+    * - confirm string Alert dialog which will be visible if user clicks on the button/link
+    * - custom used to create custom link instead of standart fbml. if redirect option is set this one is not required.
     * @return string XFBML tag for logout button
     * @access public
     */
@@ -89,15 +91,52 @@ class FacebookHelper extends AppHelper {
       ), 
       $options
     );
-    if(isset($options['redirect']) && $options['redirect']){
-      $options['redirect'] = Router::url($options['redirect']);
-      $onclick = "FB.logout(function(response){ window.location = '{$options['redirect']}'});";
+    if(isset($options['redirect']) || $options['custom']){
+      if(isset($options['redirect']) && $options['redirect']){
+        $options['redirect'] = Router::url($options['redirect']);
+        $response = "window.location = '{$options['redirect']}'";
+      } else {
+        $response = "window.location.reload();";
+      }
+      $onclick = "FB.logout(function(response){".$response."});";
+      if(isset($options['confirm'])){
+        $onclick = 'if(confirm("'.$options['confirm'].'")){'.$onclick.'}';
+      }
       return $this->Html->link($options['label'], '#', array('onclick' => $onclick));
-    }
-    else {
+    } else {
       unset($options['label'], $options['escape']);
       return $this->__fbTag('fb:login-button', '', $options);
     }
+  }
+  
+  /**
+   * Unsubscribe Button - Function which creates link for disconnecting user from the specific application
+   * $this->Facebook->init() is required for this
+   * @param array of options
+   * - redirect string to your app's logout url (default null)
+   * - label string of text to use in link (default logout)
+   * - confirm string Alert dialog which will be visible if user clicks on the button/link
+   * @return string Link for disconnect button
+   * @access public
+   */
+  function disconnect($options = array()){
+    $options = array_merge(
+      array(
+        'label' => 'logout'
+      ), 
+      $options
+    );
+    if(isset($options['redirect']) && $options['redirect']){
+      $options['redirect'] = Router::url($options['redirect']);
+      $response = "window.location = '{$options['redirect']}'";
+    } else {
+      $response = "window.location.reload();";
+    }
+    $onclick = "FB.api({ method: 'Auth.revokeAuthorization' }, function(response) {".$response."});";
+    if(isset($options['confirm'])){
+      $onclick = 'if(confirm("'.$options['confirm'].'")){'.$onclick.'}';
+    }
+    return $this->Html->link($options['label'], '#', array('onclick' => $onclick));
   }
   
   /**
