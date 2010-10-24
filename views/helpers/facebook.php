@@ -3,7 +3,7 @@
   * Facebook.Facebook helper generates fbxml and loads javascripts
   *
   * @author Nick Baker <nick [at] webtechnick [dot] com>
-  * @version since 2.1.0
+  * @version since 2.1.1
   * @license MIT
   * @link http://www.webtechnick.com
   */

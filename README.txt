@@ -40,6 +40,7 @@ Changelog
        instead of trying to rely on loaded configuration files from other sources.
 2.0.3: Updated Facebook::share to allow fbxml option instead of defaulting to not use fbxml.  fbxml => true is required if the page loads facebook->init();
 2.1.0: Improved preformance and new Facebook::disconnect function.
+2.1.1: various minor bug fixes.
 
 Docs
 ==================
