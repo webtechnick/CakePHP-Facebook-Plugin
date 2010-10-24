@@ -104,7 +104,7 @@ class ConnectComponent extends Object {
       }
       //create the user if we don't have one
       elseif(empty($user) && $this->createUser) {
-        $user[$this->User->alias]['facebook_id'] = $this->uid;
+        $user[$this->User->alias]['facebook_id'] = $this->session['uid'];
         $user[$this->User->alias][$Auth->fields['password']] = $Auth->password('disabled');
         $this->hasAccount = ($this->User->save($user, array('validate' => false)));
       }

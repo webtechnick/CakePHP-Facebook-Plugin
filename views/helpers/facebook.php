@@ -87,7 +87,8 @@ class FacebookHelper extends AppHelper {
     $options = array_merge(
       array(
         'autologoutlink' => 'true', 
-        'label' => 'logout'
+        'label' => 'logout',
+        'custom' => false
       ), 
       $options
     );
@@ -104,7 +105,7 @@ class FacebookHelper extends AppHelper {
       }
       return $this->Html->link($options['label'], '#', array('onclick' => $onclick));
     } else {
-      unset($options['label'], $options['escape']);
+      unset($options['label'], $options['escape'], $options['custom']);
       return $this->__fbTag('fb:login-button', '', $options);
     }
   }

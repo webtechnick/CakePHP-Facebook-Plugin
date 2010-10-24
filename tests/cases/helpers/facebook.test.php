@@ -63,13 +63,13 @@ class FacebookHelperTest extends CakeTestCase {
     $this->assertEqual("<fb:login-button autologoutlink='true'></fb:login-button>", $results);
     
     $results = $this->Facebook->logout(array('redirect' => 'users/logout'));
-    $this->assertEqual('<a href="#" onclick="FB.logout(function(response){ window.location = &#039;/users/logout&#039;});">logout</a>', $results);
+    $this->assertEqual('<a href="#" onclick="FB.logout(function(response){window.location = &#039;/users/logout&#039;});">logout</a>', $results);
     
     $results = $this->Facebook->logout(array('redirect' => 'users/logout', 'label' => 'Sign Out'));
-    $this->assertEqual('<a href="#" onclick="FB.logout(function(response){ window.location = &#039;/users/logout&#039;});">Sign Out</a>', $results);
+    $this->assertEqual('<a href="#" onclick="FB.logout(function(response){window.location = &#039;/users/logout&#039;});">Sign Out</a>', $results);
     
     $results = $this->Facebook->logout(array('redirect' => array('controller' => 'users', 'action' => 'logout'), 'label' => 'Sign Out'));
-    $this->assertEqual('<a href="#" onclick="FB.logout(function(response){ window.location = &#039;/users/logout&#039;});">Sign Out</a>', $results);
+    $this->assertEqual('<a href="#" onclick="FB.logout(function(response){window.location = &#039;/users/logout&#039;});">Sign Out</a>', $results);
   }
   
   function testShare(){

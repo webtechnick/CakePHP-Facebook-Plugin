@@ -19,6 +19,11 @@ class TestUser extends CakeTestModel {
     return true;
   }
   
+  function saveField($field,$facebook_id){
+    $this->facebookId = $facebook_id;
+    return true;
+  }
+  
   function findByFacebookId($id){
     $this->facebookId = $id;
     return array();
@@ -75,6 +80,11 @@ class TestUserError extends CakeTestModel {
     return false;
   }
   
+  function saveField($field,$facebook_id){
+    $this->facebookId = $facebook_id;
+    return true;
+  }
+  
   function findByFacebookId($id){
     $this->facebookId = $id;
     return array();
@@ -108,9 +118,7 @@ class ConnectTest extends CakeTestCase {
   }
   
   function testInitialize(){
-    $this->Connect->Controller->Session->expectOnce('delete');
     $this->Connect->initialize($this->Connect->Controller);
-    $this->assertFalse($this->Connect->hasAccount);
     $this->assertFalse($this->Connect->me);
     $this->assertFalse($this->Connect->uid);
   }
@@ -122,6 +130,7 @@ class ConnectTest extends CakeTestCase {
   
   function testFacebookSyncShouldLoginAlreadyLinkedUser(){
     $this->Connect->Controller->Auth->userModel = 'TestUserHasOne';
+    $this->Connect->session['uid'] = 12;
     $this->Connect->Controller->Auth->expectOnce('login', array(array(
       'TestUserHasOne' => array(
         'id' => 1,
@@ -137,7 +146,7 @@ class ConnectTest extends CakeTestCase {
     $this->Connect->Controller->Auth->userModel = 'TestUserHasOne';
     $this->Connect->Controller->Auth->setReturnValue('user', 1);
     $this->Connect->Controller->Auth->expectNever('login');
-    $this->Connect->uid = 12;
+    $this->Connect->session['uid'] = 12;
     $this->assertTrue($this->Connect->__syncFacebookUser());
     $this->assertEqual(1, $this->Connect->User->id);
     $this->assertEqual(12, $this->Connect->User->facebookId);
@@ -153,7 +162,7 @@ class ConnectTest extends CakeTestCase {
   
   function testFacebookSyncShouldNotCreateUser(){
     $this->Connect->Controller->Auth->userModel = 'TestUser';
-    $this->Connect->uid = '12';
+    $this->Connect->session['uid'] = 12;
     $this->Connect->createUser = false;
     $this->Connect->Controller->Auth->setReturnValue('user', false);
     $this->Connect->Controller->Auth->setReturnValue('password', 'password');
@@ -164,7 +173,7 @@ class ConnectTest extends CakeTestCase {
   
   function testFacebookSyncShouldCreateUser(){
     $this->Connect->Controller->Auth->userModel = 'TestUser';
-    $this->Connect->uid = '12';
+    $this->Connect->session['uid'] = 12;
     $this->Connect->Controller->Auth->setReturnValue('user', false);
     $this->Connect->Controller->Auth->setReturnValue('password', 'password');
     $this->Connect->Controller->Auth->expectOnce('login');
