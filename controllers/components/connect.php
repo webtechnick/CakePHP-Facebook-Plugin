@@ -7,7 +7,7 @@
   *
   * @author Nick Baker <nick [at] webtechnick [dot] come>
   * @link http://www.webtechnick.com
-  * @since 2.0.3
+  * @since 2.1.0
   * @license MIT
   */
 App::import('Lib', 'Facebook.FB');
@@ -27,6 +27,11 @@ class ConnectComponent extends Object {
     * hasAccount is true if the connected Facebook user has an account in your application
     */
   var $hasAccount = false;
+  
+  /**
+    * No Auth, if set to true, syncFacebookUser will NOT be called
+    */
+  var $noAuth = false;
   
   /**
     * Error log
@@ -54,7 +59,7 @@ class ConnectComponent extends Object {
     $this->FB = new FB();
     $this->session = $this->FB->getSession();
     //Prevent using Auth component only if there is noAuth setting proveded
-    if(!isset($settings['noAuth'])){
+    if(!$this->noAuth){
       $this->__syncFacebookUser(); //Attempt to authenticate user using Facebook. Currently the uid is fetched from $this->session['uid']
     }
   }
@@ -85,22 +90,23 @@ class ConnectComponent extends Object {
       $this->hasAccount = true;
       $this->User->id = $Auth->user('id');
       if (!$this->User->field('facebook_id')) {
-	$this->User->saveField('facebook_id', $this->session['uid']);
+        $this->User->saveField('facebook_id', $this->session['uid']);
       }
       return true;
-    } else {
+    } 
+    else {
       // attempt to find the user by their facebook id
       $user = $this->User->findByFacebookId($this->session['uid']);
       
       //if we have a user, set hasAccount
       if(!empty($user)){
-	$this->hasAccount = true;
+        $this->hasAccount = true;
       }
       //create the user if we don't have one
       elseif(empty($user) && $this->createUser) {
-	  $user[$this->User->alias]['facebook_id'] = $this->uid;
-	  $user[$this->User->alias][$Auth->fields['password']] = $Auth->password('disabled');
-	  $this->hasAccount = ($this->User->save($user, array('validate' => false)));
+        $user[$this->User->alias]['facebook_id'] = $this->uid;
+        $user[$this->User->alias][$Auth->fields['password']] = $Auth->password('disabled');
+        $this->hasAccount = ($this->User->save($user, array('validate' => false)));
       }
       //Login user if we have one
       if($user){
@@ -120,10 +126,11 @@ class ConnectComponent extends Object {
     if(isset($this->session)){
       $this->uid = $this->session['uid'];
       if($this->Controller->Session->read('FB.Me') == null){
-	$this->Controller->Session->write('FB.Me', $this->FB->api('/me'));
+        $this->Controller->Session->write('FB.Me', $this->FB->api('/me'));
       }
       $this->me = $this->Controller->Session->read('FB.Me');
-    } else {
+    } 
+    else {
       $this->Controller->Session->delete('FB');
     }
     

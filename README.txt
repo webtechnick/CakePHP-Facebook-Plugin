@@ -1,7 +1,7 @@
 Facebook Plugin
 ==================
 by Nick Baker (nick@webtechnick.com)
-version 2.0.3
+version 2.1.0
 http://www.webtechnick.com
 license: MIT
 
@@ -38,7 +38,8 @@ Changelog
        in 'createUser' => false when setting up the Connect component.
 2.0.2: New helper method getConfig() available within the FacebookInfo library.  Use this to pull in facebook configurations
        instead of trying to rely on loaded configuration files from other sources.
-2.0.3: Updated Facebook::share to allow fbxml option instead of defaulting to not use fbxml.  fbxml => true is required if the page loads facebook->init(); 
+2.0.3: Updated Facebook::share to allow fbxml option instead of defaulting to not use fbxml.  fbxml => true is required if the page loads facebook->init();
+2.1.0: Improved preformance and new Facebook::disconnect function.
 
 Docs
 ==================
