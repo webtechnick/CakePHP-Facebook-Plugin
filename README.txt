@@ -1,7 +1,7 @@
 Facebook Plugin
 ==================
 by Nick Baker (nick@webtechnick.com)
-version 2.1.0
+version 2.2.0
 http://www.webtechnick.com
 license: MIT
 
@@ -41,6 +41,7 @@ Changelog
 2.0.3: Updated Facebook::share to allow fbxml option instead of defaulting to not use fbxml.  fbxml => true is required if the page loads facebook->init();
 2.1.0: Improved preformance and new Facebook::disconnect function.
 2.1.1: various minor bug fixes.
+2.2.0: Updated Facebook PHP SDK
 
 Docs
 ==================

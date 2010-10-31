@@ -3,7 +3,7 @@
   * Facebook.Api Library used to create an instanciated facebook API available to the user
   *
   * @author Nick Baker <nick [at] webtechnick [dot] com>
-  * @version 2.0.2
+  * @version 2.2.0
   * @link http://www.webtechnick.com
   * @license MIT
   */
