@@ -1,7 +1,7 @@
 Facebook Plugin
 ==================
 by Nick Baker (nick@webtechnick.com)
-version 2.2.0
+version 2.2.1
 http://www.webtechnick.com
 license: MIT
 
@@ -42,6 +42,7 @@ Changelog
 2.1.0: Improved preformance and new Facebook::disconnect function.
 2.1.1: various minor bug fixes.
 2.2.0: Updated Facebook PHP SDK
+2.3.0: Added new Facebook::likebox to replace Facebook::fanbox()
 
 Docs
 ==================

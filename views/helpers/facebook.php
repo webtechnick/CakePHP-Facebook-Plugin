@@ -3,7 +3,7 @@
   * Facebook.Facebook helper generates fbxml and loads javascripts
   *
   * @author Nick Baker <nick [at] webtechnick [dot] com>
-  * @version since 2.1.1
+  * @version since 2.3.0
   * @license MIT
   * @link http://www.webtechnick.com
   */
@@ -208,6 +208,31 @@ class FacebookHelper extends AppHelper {
     else {
       return "";
     }
+  }
+  
+  /**
+  	* Build a like box
+  	* $facebook->init() is required for this
+  	* @link http://developers.facebook.com/docs/reference/plugins/like-box
+  	* @param array of options to pass into likebox
+  	* - stream : 1 turns stream on, 0 turns stream off (default false)
+    * - header : 1 turns header on, 0 turns logobar off (default false)
+    * - width : width of the box (default 300)
+    * - connections : number of connections to show (default 10)
+    * - colorscheme : dark | light (default light)
+  	*/
+  function likebox($url = null, $options = array()){
+  	$options = array_merge(
+  		array(
+  			'href' => $url,
+  			'stream' => 'false',
+  			'header' => 'false',
+  			'width' => '300',
+  			'connections' => '10'
+  		),
+  		$options
+  	);
+  	return $this->__fbTag('fb:like-box', '', $options);
   }
   
   /**
