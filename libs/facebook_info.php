@@ -113,6 +113,15 @@ class FacebookInfo {
   }
   
   /**
+  	* Random strong string password generator
+  	* @param int length
+  	* @return string password
+  	*/
+  static function randPass($length = 8){
+  	return substr(md5(rand().rand()), 0, $length);
+  }
+  
+  /**
     * Utility method to test if this is available key.
     */
   static function _isAvailable($name){
