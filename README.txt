@@ -1,7 +1,7 @@
 Facebook Plugin
 ==================
 by Nick Baker (nick@webtechnick.com)
-version 2.2.1
+version 2.3.1
 http://www.webtechnick.com
 license: MIT
 
@@ -43,6 +43,7 @@ Changelog
 2.1.1: various minor bug fixes.
 2.2.0: Updated Facebook PHP SDK
 2.3.0: Added new Facebook::likebox to replace Facebook::fanbox()
+2.3.1: Security Update: facebook user creation now generates random passwords.
 
 Docs
 ==================
