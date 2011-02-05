@@ -118,7 +118,7 @@ Despite the name, the Facebook Connect component takes immediate advantage of th
 To use this feature you will first need to update your facebook application with the connect url of your application's url.  This is done on the facebook application settings. <http://www.facebook.com/developers/apps.php>
 Now all you need to do is add the `Facebook.Connect` component to your app_controller.
 
-	var $components = array('Auth', 'Facebook.Connect');
+	var $components = array('Facebook.Connect');
 
 That's it.  You're now ready to accept facebook authentication.
 
@@ -138,7 +138,10 @@ Each button has multiple options, review the API to see all available options
 <http://projects.webtechnick.com/docs/facebook/default/FacebookHelper.html>
 
 ## CakePHP Auth + Facebook.Connect
-Facebook.Connect will play nice with a variety of Authentication systesm.  It has seamless integration with CakePHP AuthComponent.  
+Facebook.Connect will play nice with a variety of Authentication systesm.  It has seamless integration with CakePHP AuthComponent.
+
+	var $components = array('Auth', 'Facebook.Connect');
+	
 To integrate with CakePHP Auth, you'll need to alter your users table (or whatever table your Auth component uses) and add a new field -> `facebook_id`.
 
 	ALTER TABLE `users` ADD `facebook_id` BIGINT(20) UNSIGNED NOT NULL
