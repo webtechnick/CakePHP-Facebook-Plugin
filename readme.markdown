@@ -48,7 +48,7 @@ The purpose of the Facebook plugin is to provide a seamless way to connect your 
 * Screencast: <http://tv.cakephp.org/video/webtechnick/2011/01/12/nick_baker_--_facebook_integration_with_cakephp> 
 
 
-# Feature list:
+# Feature List
 * Full featured authentication via facebook. Facebook Authentication will work with or without a user login system in place.  Works seemlessly with your already built user authentication via AuthComponent - OR - it can work as your primary authentication system.
 * Create dynamic customizable facebook content with extreme ease.
 	* Share  (let your users share what they find on your site)
@@ -112,12 +112,10 @@ Nothing else is required for the Facebook share feature. Hoever, to use the more
 	</html>
 
 
-# Authentication (Facebook Connect):
-You will first need to update your facebook application with the connect url of your application's url.  This is done on the facebook application settings. <http://www.facebook.com/developers/apps.php>
-Once that's complete you'll need to alter your users table (or whatever table your Auth component uses) and add a new field -> `facebook_id`.
+# Authentication (Facebook Connect/Graph System):
+Despite the name, the Facebook Connect component takes immediate advantage of the new powerful Facebook Graph API <http://developers.facebook.com/docs/api>
 
-	ALTER TABLE `users` ADD `facebook_id` BIGINT(20) UNSIGNED NOT NULL
-
+To use this feature you will first need to update your facebook application with the connect url of your application's url.  This is done on the facebook application settings. <http://www.facebook.com/developers/apps.php>
 Now all you need to do is add the `Facebook.Connect` component to your app_controller.
 
 	var $components = array('Auth', 'Facebook.Connect');
@@ -132,13 +130,21 @@ Create a login button that asks for extended permissions (<http://developers.fac
 	
 	<?php echo $facebook->login(array('perms' => 'email,publish_stream')); ?>
 
-	Create a logout button:
-<?php echo $this->Facebook->logout() ?>
+Create a logout button:
+
+	<?php echo $this->Facebook->logout() ?>
 
 Each button has multiple options, review the API to see all available options
+<http://projects.webtechnick.com/docs/facebook/default/FacebookHelper.html>
 
-## CakePHP Auth + Facebook.Connect 
-If you already have an authentication system setup, the logout step will need to also log out the user from your authentication system.   Simply pass in a redirect to $facebook->logout() to your system's logout authentication action.
+## CakePHP Auth + Facebook.Connect
+Facebook.Connect will play nice with a variety of Authentication systesm.  It has seamless integration with CakePHP AuthComponent.  
+To integrate with CakePHP Auth, you'll need to alter your users table (or whatever table your Auth component uses) and add a new field -> `facebook_id`.
+
+	ALTER TABLE `users` ADD `facebook_id` BIGINT(20) UNSIGNED NOT NULL
+
+Since you already have an authentication system, the logout step will need to also log out the user from your authentication system.
+You do this by passing a redirect to `$facebook->logout()` to your system's logout authentication action.
 
 	<?php echo $this->Facebook->logout(array('redirect' => 'users/logout')); ?>
 	<?php echo $this->Facebook->logout(array('redirect' => array('controller' => 'users', 'action' => 'logout'))); ?>
