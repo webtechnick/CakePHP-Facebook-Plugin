@@ -161,24 +161,24 @@ There are three callbacks available to use, each are defined in the controller a
 
 * `beforeFacebookSave` handle the user to save into the users table.  If returned false, creation is haulted.
 
-	//Add an email field to be saved along with creation.
-	function beforeFacebookSave(){
-		$this->Connect->authUser['User']['email'] = $this->Connect->user('email');
-		return true; //Must return true or will not save.
-	}
+		//Add an email field to be saved along with creation.
+		function beforeFacebookSave(){
+			$this->Connect->authUser['User']['email'] = $this->Connect->user('email');
+			return true; //Must return true or will not save.
+		}
 	
 * `beforeFacebookLogin` Handle the user before logging the user into Auth.
 
-	function beforeFacebookLogin($user){
-		//Logic to happen before a facebook login
-	}
+		function beforeFacebookLogin($user){
+			//Logic to happen before a facebook login
+		}
 	
 * `afterFacebookLogin` Handle any needed functionality right after a successful Auth Login
 
-	function afterFacebookLogin(){
-		//Logic to happen after successful facebook login.
-		$this->redirect('/custom_facebook_redirect');
-	}
+		function afterFacebookLogin(){
+			//Logic to happen after successful facebook login.
+			$this->redirect('/custom_facebook_redirect');
+		}
 
 # Advanced Helper Feature Examples
 	<?php echo $this->Facebook->comments(); ?>
