@@ -1,6 +1,6 @@
 # Facebook Plugin
 * Author:  Nick Baker (nick@webtechnick.com)
-* version 2.3.1
+* version 2.4
 * http://www.webtechnick.com
 * license: MIT
 
@@ -40,6 +40,7 @@ The purpose of the Facebook plugin is to provide a seamless way to connect your 
 * 2.2.0: Updated Facebook PHP SDK
 * 2.3.0: Added new Facebook::likebox to replace Facebook::fanbox()
 * 2.3.1: Security Update: facebook user creation now generates random passwords.
+* 2.4.0: Adding three Authentication callbacks: beforeFacebookSave, beforeFacebookLogin, and afterFacebookLogin
 
 # About Plugin
 * Blog: <http://www.webtechnick.com/blogs/view/229/CakePHP_Facebook_Plugin_Auth_Facebook_and_more>
@@ -153,6 +154,31 @@ You do this by passing a redirect to `$facebook->logout()` to your system's logo
 	<?php echo $this->Facebook->logout(array('redirect' => array('controller' => 'users', 'action' => 'logout'))); ?>
 
 This will log out of the facebook authentication and then redirect to your authentication logout for you to finish the logout.
+
+### Facebook Auth Callbacks
+
+There are three callbacks available to use, each are defined in the controller and are optional to use.
+
+* `beforeFacebookSave` handle the user to save into the users table.  If returned false, creation is haulted.
+
+	//Add an email field to be saved along with creation.
+	function beforeFacebookSave(){
+		$this->Connect->authUser['User']['email'] = $this->Connect->user('email');
+		return true; //Must return true or will not save.
+	}
+	
+* `beforeFacebookLogin` Handle the user before logging the user into Auth.
+
+	function beforeFacebookLogin($user){
+		//Logic to happen before a facebook login
+	}
+	
+* `afterFacebookLogin` Handle any needed functionality right after a successful Auth Login
+
+	function afterFacebookLogin(){
+		//Logic to happen after successful facebook login.
+		$this->redirect('/custom_facebook_redirect');
+	}
 
 # Advanced Helper Feature Examples
 	<?php echo $this->Facebook->comments(); ?>

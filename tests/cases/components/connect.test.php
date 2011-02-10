@@ -13,6 +13,7 @@ class TestUser extends CakeTestModel {
   
   function save($data){
     $this->data = $data;
+    return true;
   }
   
   function hasField(){
@@ -38,6 +39,7 @@ class TestUserHasOne extends CakeTestModel {
   
   function save($data){
     $this->data = $data;
+    return true;
   }
   
   function hasField(){
@@ -74,6 +76,7 @@ class TestUserError extends CakeTestModel {
   
   function save($data){
     $this->data = $data;
+    return true;
   }
   
   function hasField(){
@@ -91,6 +94,19 @@ class TestUserError extends CakeTestModel {
   }
 }
 
+class TestCallbackController extends Controller{
+	function beforeFacebookSave(){
+		return false;
+	}
+	
+	function beforeFacebookLogin(){
+		return false;
+	}
+	
+	function afterFacebookLogin(){
+		return false;
+	}
+}
 
 class ConnectTest extends CakeTestCase {
   var $Connect = null;
@@ -100,17 +116,21 @@ class ConnectTest extends CakeTestCase {
     Mock::generate('Controller');
     Mock::generate('SessionComponent');
     $this->Connect = new ConnectComponent();
-    $this->Connect->Controller = new MockController();
-    $this->Connect->Controller->Auth = new MockAuthComponent();
-    $this->Connect->Controller->Session = new MockSessionComponent();
+    $this->Connect->Controller = $this->mockController();
     $this->User = new TestUser();
     
     Mock::generate('FB');
     $this->Connect->FB = new MockFB();
   }
   
-  function mockController(){
-    $Controller = new MockController();
+  function mockController($callback = false){
+  	if($callback){
+  		Mock::generate('TestCallbackController');
+  		$Controller = new MockTestCallbackController();
+  	}
+  	else {		
+  		$Controller = new MockController();
+    }
     $Controller->Auth = new MockAuthComponent();
     $Controller->Session = new MockSessionComponent();
     
@@ -121,6 +141,41 @@ class ConnectTest extends CakeTestCase {
     $this->Connect->initialize($this->Connect->Controller);
     $this->assertFalse($this->Connect->me);
     $this->assertFalse($this->Connect->uid);
+  }
+  
+  function testBeforeLoginCallback(){
+  	$this->Connect->Controller = $this->mockController(true);
+  	$this->Connect->Controller->Auth->userModel = 'TestUser';
+    $this->Connect->session['uid'] = 12;
+    $this->Connect->Controller->setReturnValue('beforeFacebookSave', true);
+    $this->Connect->Controller->expectOnce('beforeFacebookLogin', array(array(
+    	'TestUser' => array(
+    		'facebook_id' => 12,
+    		'password' => 'password'
+    	)
+    )));
+    $this->Connect->Controller->Auth->setReturnValue('user', false);
+    $this->Connect->Controller->Auth->setReturnValue('password', 'password');
+    $this->Connect->Controller->Auth->expectOnce('login', array(array(
+    	'TestUser' => array(
+    		'facebook_id' => 12,
+    		'password' => 'password'
+    	)
+    )));
+    $this->assertTrue($this->Connect->__syncFacebookUser());
+    $this->assertTrue($this->Connect->hasAccount);
+  }
+  
+  function testSaveHaultedByBeforeFacebookSave(){
+  	$this->Connect->Controller = $this->mockController(true);
+  	$this->Connect->Controller->Auth->userModel = 'TestUser';
+    $this->Connect->session['uid'] = 12;
+    $this->Connect->Controller->setReturnValue('beforeFacebookSave', false);
+    $this->Connect->Controller->Auth->expectNever('login', false);
+    $this->Connect->Controller->Auth->setReturnValue('user', false);
+    $this->Connect->Controller->Auth->setReturnValue('password', 'password');
+    $this->assertTrue($this->Connect->__syncFacebookUser());
+    $this->assertFalse($this->Connect->hasAccount);
   }
   
   function testFacebookSyncShouldDoNothingIfAuthIsNotDetected(){
@@ -168,7 +223,7 @@ class ConnectTest extends CakeTestCase {
     $this->Connect->Controller->Auth->setReturnValue('password', 'password');
     $this->Connect->Controller->Auth->expectNever('login');
     $this->assertTrue($this->Connect->__syncFacebookUser());
-    $this->assertEqual(null, $this->Connect->User->data); //user create wasn't called
+    $this->assertFalse($this->Connect->hasAccount); //user create wasn't called
   }
   
   function testFacebookSyncShouldCreateUser(){
