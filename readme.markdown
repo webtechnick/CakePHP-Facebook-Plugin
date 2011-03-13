@@ -1,6 +1,6 @@
 # Facebook Plugin
 * Author:  Nick Baker (nick@webtechnick.com)
-* version 2.4
+* version 2.4.1
 * http://www.webtechnick.com
 * license: MIT
 
@@ -41,6 +41,7 @@ The purpose of the Facebook plugin is to provide a seamless way to connect your 
 * 2.3.0: Added new Facebook::likebox to replace Facebook::fanbox()
 * 2.3.1: Security Update: facebook user creation now generates random passwords.
 * 2.4.0: Adding three Authentication callbacks: beforeFacebookSave, beforeFacebookLogin, and afterFacebookLogin
+* 2.4.1: Adding custom locale to plugin.
 
 # About Plugin
 * Blog: <http://www.webtechnick.com/blogs/view/229/CakePHP_Facebook_Plugin_Auth_Facebook_and_more>
@@ -78,10 +79,11 @@ Once installed, if you wish to use any other features *other* than the share but
 	//app/config/facebook.php
 	$config = array(
 		'Facebook' => array(
-			'appId' => 'YOUR_APP_ID',
+			'appId'  => 'YOUR_APP_ID',
 			'apiKey' => 'YOUR_API_KEY',
 			'secret' => 'YOUR_SECRET',
 			'cookie' => true,
+			'locale' => 'en_US',
 		)
 	);
 
@@ -204,6 +206,14 @@ PHP version 5.2.x
 
 PHP 5.3.x
 	FB::api('/me');
+	
+	
+# Internationalization
+You can set the locale of the plugin through the helper declaration or through the `config/facebook.php` configuration file (see top of document).
+
+	var $helpers = array('Facebook.Facebook' => array('locale' => 'en_US'));
+	
+Facebook locales: <http://developers.facebook.com/docs/internationalization/>
 
 
 # Read the Docs
