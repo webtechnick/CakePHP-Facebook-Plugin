@@ -1,6 +1,6 @@
 # Facebook Plugin
 * Author:  Nick Baker (nick@webtechnick.com)
-* version 2.4.1
+* version 2.4.2
 * http://www.webtechnick.com
 * license: MIT
 
@@ -42,6 +42,7 @@ The purpose of the Facebook plugin is to provide a seamless way to connect your 
 * 2.3.1: Security Update: facebook user creation now generates random passwords.
 * 2.4.0: Adding three Authentication callbacks: beforeFacebookSave, beforeFacebookLogin, and afterFacebookLogin
 * 2.4.1: Adding custom locale to plugin.
+* 2.4.2: minor bug fixes.
 
 # About Plugin
 * Blog: <http://www.webtechnick.com/blogs/view/229/CakePHP_Facebook_Plugin_Auth_Facebook_and_more>

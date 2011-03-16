@@ -3,7 +3,7 @@
 * Facebook.Facebook helper generates fbxml and loads javascripts
 *
 * @author Nick Baker <nick [at] webtechnick [dot] com>
-* @version since 2.4.1
+* @version since 2.4.2
 * @license MIT
 * @link http://www.webtechnick.com
 */
@@ -32,7 +32,7 @@ class FacebookHelper extends AppHelper {
 	* Fail safe locale to 'en_US'
 	*/
 	function __construct($settings = array()){
-		$this->set($settings);
+		$this->_set($settings);
 		
 		if(!$this->locale){
 			$this->locale = FacebookInfo::getConfig('locale');

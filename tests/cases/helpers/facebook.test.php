@@ -12,6 +12,11 @@ class FacebookHelperTest extends CakeTestCase {
     $this->Facebook->Session = new MockSessionHelper();
   }
   
+  function testLocale(){
+  	$this->Facebook->__construct(array('locale' => 'es_LA'));
+  	$this->assertEqual('es_LA', $this->Facebook->locale);
+  }
+  
   function testDisconnect(){
     $results = $this->Facebook->disconnect();
     $this->assertEqual('<a href="#" onclick="FB.api({ method: &#039;Auth.revokeAuthorization&#039; }, function(response) {window.location.reload();});">logout</a>', $results);
