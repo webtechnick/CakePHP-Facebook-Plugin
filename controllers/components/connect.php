@@ -63,7 +63,7 @@ class ConnectComponent extends Object {
 		$this->_set($settings);
 		$this->FB = new FB();
 		$this->session = $this->FB->getSession();
-		//Prevent using Auth component only if there is noAuth setting proveded
+		//Prevent using Auth component only if there is noAuth setting provided
 		if(!$this->noAuth && isset($this->session['uid'])){
 			$this->__syncFacebookUser(); //Attempt to authenticate user using Facebook. Currently the uid is fetched from $this->session['uid']
 		}
