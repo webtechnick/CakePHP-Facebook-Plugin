@@ -7,7 +7,7 @@
 *
 * @author Nick Baker <nick [at] webtechnick [dot] come>
 * @link http://www.webtechnick.com
-* @since 2.4
+* @since 2.4.3
 * @license MIT
 */
 App::import('Lib', 'Facebook.FB');
@@ -93,7 +93,7 @@ class ConnectComponent extends Object {
 		// User is logged in but doesn't have a 
 		if($Auth->user()){
 			$this->hasAccount = true;
-			$this->User->id = $Auth->user('id');
+			$this->User->id = $Auth->user($this->User->primaryKey);
 			if (!$this->User->field('facebook_id')) {
 				$this->User->saveField('facebook_id', $this->session['uid']);
 			}
