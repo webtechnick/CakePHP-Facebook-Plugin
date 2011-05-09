@@ -7,7 +7,7 @@
 *
 * @author Nick Baker <nick [at] webtechnick [dot] come>
 * @link http://www.webtechnick.com
-* @since 2.4.3
+* @since 2.5.0
 * @license MIT
 */
 App::import('Lib', 'Facebook.FB');
@@ -63,16 +63,37 @@ class ConnectComponent extends Object {
 		$this->_set($settings);
 		$this->FB = new FB();
 		$this->session = $this->FB->getSession();
-		//Prevent using Auth component only if there is noAuth setting provided
-		if(!$this->noAuth && isset($this->session['uid'])){
-			$this->__syncFacebookUser(); //Attempt to authenticate user using Facebook. Currently the uid is fetched from $this->session['uid']
+	}
+	
+	/**
+	* Sync the connected Facebook user with your application.
+	*
+	* Attempt to authenticate user using Facebook.
+	* Currently the uid is fetched from $this->session['uid'].
+	*
+	* @param Controller object to attach to
+	* @return void
+	*/
+	function startup() {
+		// Prevent using Auth component only if there is noAuth setting provided
+		if (!$this->noAuth && !empty($this->session['uid'])) {
+			$this->syncFacebookUser();
 		}
 	}
 	
 	/**
-	* Sync the connected Facebook user
-	* @return boolean true if successful, false otherwise
-	* @access protected
+	* Sync the connected Facebook user.
+	*
+	* If User is logged in:
+	*  a. but doesn't have a facebook account associated, try to associate it.
+	*
+	* If User is not logged in:
+	*  b. but have a facebook account associated, try to log the user in.
+	*  c. and doesn't have a facebook account associated,
+	*    1. try to automatically create an account and associate it (if $this->createUser).
+	*    2. try to log the user in, afterwards.
+	*
+	* @return boolean True if successful, false otherwise.
 	*/
 	function __syncFacebookUser(){
 		if(!isset($this->Controller->Auth)){

@@ -10,6 +10,8 @@ class FacebookHelperTest extends CakeTestCase {
     $this->Facebook = new FacebookHelper();
     $this->Facebook->Html = new HtmlHelper();
     $this->Facebook->Session = new MockSessionHelper();
+    Configure::delete('Facebook.appId');
+    Configure::write('Facebook.appId', '12345');
   }
   
   function testLocale(){
@@ -92,10 +94,11 @@ class FacebookHelperTest extends CakeTestCase {
   }
   
   function testShare(){
-    $this->Facebook->here = 'some_where';
+    $results = $this->Facebook->share('http://www.example.com/some_where');
+    $this->assertEqual('<a href="http://www.facebook.com/sharer.php" share_url="http://www.example.com/some_where" type="button" name="fb_share">share</a><script type="text/javascript" src="http://static.ak.fbcdn.net/connect.php/js/FB.Share"></script>', $results);
     
     $results = $this->Facebook->share();
-    $this->assertEqual('<a href="http://www.facebook.com/sharer.php" share_url="some_where" type="button" name="fb_share">share</a><script type="text/javascript" src="http://static.ak.fbcdn.net/connect.php/js/FB.Share"></script>', $results);
+    $this->assertEqual('<a href="http://www.facebook.com/sharer.php" share_url="/" type="button" name="fb_share">share</a>', $results);
     
     //assert the script isn't loaded again on next call
     $results = $this->Facebook->share('not_here');
@@ -109,8 +112,6 @@ class FacebookHelperTest extends CakeTestCase {
   }
   
   function testFanBox(){
-    Configure::write('Facebook.appId', '12345');
-    
     $results = $this->Facebook->fanbox();
     $this->assertEqual("<fb:fan profile_id='12345' stream='0' logobar='0' connections='0'></fb:fan>", $results);
     
@@ -174,8 +175,6 @@ class FacebookHelperTest extends CakeTestCase {
   }
   
   function testLivestream(){
-    Configure::write('Facebook.appId', '12345');
-    
     $results = $this->Facebook->livestream();
     $this->assertEqual("<fb:live-stream event_app_id='12345' xid='YOUR_EVENT_XID' width='300' height='500'></fb:live-stream>", $results);
     
@@ -189,39 +188,38 @@ class FacebookHelperTest extends CakeTestCase {
   }
   
   function testInit(){
-    Configure::write('Facebook.appId', '12345');
     $this->Facebook->Session->setReturnValue('read', '4567');
-    $results = $this->Facebook->init();
-    $expected = "<div id=\"fb-root\"></div><script type=\"text/javascript\">
-//<![CDATA[
+    $locale = $this->Facebook->locale;
+		$this->Facebook->locale = 'en_US';
 
-		      window.fbAsyncInit = function() {
-		        FB.init({
-		          appId   : '12345',
-		          session : \"4567\", // don't refetch the session when PHP already has it
-		          status  : true, // check login status
-		          cookie  : true, // enable cookies to allow the server to access the session
-		          xfbml   : true // parse XFBML
-		        });
-		        // whenever the user logs in, we refresh the page
-		        FB.Event.subscribe('auth.login', function() {
-		          window.location.reload();
-		        });
-		      };
-		      (function() {
-		        var e = document.createElement('script');
-		        e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
-		        e.async = true;
-		        document.getElementById('fb-root').appendChild(e);
-		      }());
-      	
+		$results = $this->Facebook->init();
+		$expected = "<div id=\"fb-root\"></div><script type=\"text/javascript\">
+//<![CDATA[
+window.fbAsyncInit = function() {
+	FB.init({
+		appId : '12345',
+		session : \"4567\", // don't refetch the session when PHP already has it
+		status : true, // check login status
+		cookie : true, // enable cookies to allow the server to access the session
+		xfbml : true // parse XFBML
+	});
+	FB.Event.subscribe('auth.login',function(){window.location.reload()});
+};
+(function() {
+	var e = document.createElement('script');
+	e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
+	e.async = true;
+	document.getElementById('fb-root').appendChild(e);
+}());
 //]]>
 </script>";
-    $this->assertEqual($expected, $results);
+		$this->assertEqual($expected, $results);
   }
   
   function endTest(){
     unset($this->Facebook);
+    FacebookInfo::$configs = null;
+    Configure::delete('Facebook');
   }
 }
 ?>

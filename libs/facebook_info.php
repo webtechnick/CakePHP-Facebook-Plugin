@@ -32,21 +32,17 @@ class FacebookInfo {
     * @access public
     */
   static function getConfig($key = null){
-    if(isset(self::$configs[$key])){
-      return self::$configs[$key];
-    }
-    //try configure setting
-    if(self::$configs[$key] = Configure::read("Facebook.$key")){
-      return self::$configs[$key];
-    }
-    //try load configuration file and try again.
-    Configure::load('facebook');
-    self::$configs = Configure::read('Facebook');
-    if(self::$configs[$key] = Configure::read("Facebook.$key")){
-      return self::$configs[$key];
-    }
-    
-    return null;
+    if (!empty($key)) {
+			if (isset(self::$configs[$key]) || (self::$configs[$key] = Configure::read("Facebook.$key"))) {
+				return self::$configs[$key];
+			} elseif (Configure::load('facebook') && (self::$configs[$key] = Configure::read("Facebook.$key"))) {
+				return self::$configs[$key];
+			}
+		} else {
+			Configure::load('facebook');
+			return Configure::read('Facebook');
+		}
+		return null;
   }
   
   /**
@@ -54,7 +50,7 @@ class FacebookInfo {
     * @return string version number
     */
   static function version(){
-    return '2.4.3';
+    return '2.5.0';
   }
   
   /**

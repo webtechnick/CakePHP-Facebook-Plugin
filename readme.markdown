@@ -1,6 +1,6 @@
 # Facebook Plugin
 * Author:  Nick Baker (nick@webtechnick.com)
-* version 2.4.3
+* version 2.5.0
 * http://www.webtechnick.com
 * license: MIT
 
@@ -44,6 +44,10 @@ The purpose of the Facebook plugin is to provide a seamless way to connect your 
 * 2.4.1: Adding custom locale to plugin.
 * 2.4.2: minor bug fixes.
 * 2.4.3: Fixed duplicate user entry when User primaryKey is not 'id'.
+* 2.5.0: Optimizations and minor fixes (special thanks to <https://github.com/bar>)
+  * New callback feature for FacebookHelper::init() (page refresh is still default).
+  * Nicer FacebookHelper::share() now uses Router instead of environment and $this->here
+  * Optimization, Moving __syncFacebookUser to after Controller->beforeFilter() so $noAuth can be changed in the beforeFilter if need be.
 
 # About Plugin
 * Blog: <http://www.webtechnick.com/blogs/view/229/CakePHP_Facebook_Plugin_Auth_Facebook_and_more>

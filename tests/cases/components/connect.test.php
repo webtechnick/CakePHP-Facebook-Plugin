@@ -118,6 +118,8 @@ class ConnectTest extends CakeTestCase {
     $this->Connect = new ConnectComponent();
     $this->Connect->Controller = $this->mockController();
     $this->User = new TestUser();
+    Configure::write('Facebook.appId', '12345');
+    Configure::write('Facebook.secret', '1234567890');
     
     Mock::generate('FB');
     $this->Connect->FB = new MockFB();
@@ -264,6 +266,8 @@ class ConnectTest extends CakeTestCase {
   
   function endTest(){
     unset($this->Connect);
+    FacebookInfo::$configs = null;
+    Configure::delete('Facebook');
   }
 
 

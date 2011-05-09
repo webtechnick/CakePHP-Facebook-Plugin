@@ -3,7 +3,7 @@
 * Facebook.Facebook helper generates fbxml and loads javascripts
 *
 * @author Nick Baker <nick [at] webtechnick [dot] com>
-* @version since 2.4.2
+* @version since 2.5.0
 * @license MIT
 * @link http://www.webtechnick.com
 */
@@ -87,11 +87,12 @@ class FacebookHelper extends AppHelper {
 	* - width int The width of the plugin in pixels
 	* - max-rows int The maximum number of rows of profile pictures to show
 	* - perms list of permissions to ask for when logging in separated by commas (eg: 'email,read_stream,publish_stream'). (http://developers.facebook.com/docs/authentication/permissions)
+	* @param string label
 	* @return string XFBML tag
 	* @access public
 	*/
-	function login($options = array()){
-		return $this->__fbTag('fb:login-button', '', $options);
+	function login($options = array(), $label = ''){
+		return $this->__fbTag('fb:login-button', $label, $options);
 	}
 	
 	
@@ -103,10 +104,11 @@ class FacebookHelper extends AppHelper {
 	* - label string of text to use in link (default logout)
 	* - confirm string Alert dialog which will be visible if user clicks on the button/link
 	* - custom used to create custom link instead of standart fbml. if redirect option is set this one is not required.
+	* @param string label
 	* @return string XFBML tag for logout button
 	* @access public
 	*/
-	function logout($options = array()){
+	function logout($options = array(), $label = ''){
 		$options = array_merge(
 			array(
 				'autologoutlink' => 'true', 
@@ -129,7 +131,7 @@ class FacebookHelper extends AppHelper {
 			return $this->Html->link($options['label'], '#', array('onclick' => $onclick));
 		} else {
 			unset($options['label'], $options['escape'], $options['custom']);
-			return $this->__fbTag('fb:login-button', '', $options);
+			return $this->__fbTag('fb:login-button', $label, $options);
 		}
 	}
 	
@@ -175,8 +177,9 @@ class FacebookHelper extends AppHelper {
 	* @access public
 	*/
 	function share($url = null, $options = array()){
-		// @todo this can be improved using the router
-		if(!$url) $url = env('SERVER_NAME') . $this->here;
+		if(empty($url)){
+			$url = Router::url(null, true);
+		}
 		$defaults = array(
 			'style' => 'button',
 			'label' => 'share',
@@ -386,45 +389,46 @@ class FacebookHelper extends AppHelper {
 	
 	/**
 	* HTML XMLNS tag (required)
-	* @param array of options
+	* @param array $options
 	* @example $this->Facebook->init();
 	* @return string of scriptBlock for FB.init() or error
-	* @access public
 	*/
-	function init($options = array()){
-		if(FacebookInfo::getConfig('appId')){
-			$appId = FacebookInfo::getConfig('appId');
-			$session = json_encode($this->Session->read('FB.Session'));
-			$init = '<div id="fb-root"></div>';
-			$init .=  $this->Html->scriptBlock(
-				"
-				window.fbAsyncInit = function() {
-					FB.init({
-						appId   : '{$appId}',
-						session : {$session}, // don't refetch the session when PHP already has it
-						status  : true, // check login status
-						cookie  : true, // enable cookies to allow the server to access the session
-						xfbml   : true // parse XFBML
-					});
-					// whenever the user logs in, we refresh the page
-					FB.Event.subscribe('auth.login', function() {
-						window.location.reload();
-					});
-				};
-				(function() {
-					var e = document.createElement('script');
-					e.src = document.location.protocol + '//connect.facebook.net/{$this->locale}/all.js';
-					e.async = true;
-					document.getElementById('fb-root').appendChild(e);
-				}());
-				",
-				$options
-			);
-			return $init;
+	function init($options = null, $reload = true) {
+		if (empty($options)) {
+			$options = array();
 		}
-		else {
+		if ($appId = FacebookInfo::getConfig('appId')) {
+			$session = json_encode($this->Session->read('FB.Session'));
+			if ($reload) {
+				$callback = "FB.Event.subscribe('auth.login',function(){window.location.reload()});";
+			} else {
+				$callback = "if(typeof(facebookReady)=='function'){facebookReady()}";
+			}
+			$init = '<div id="fb-root"></div>';
+			$init .= $this->Html->scriptBlock(
+<<<JS
+window.fbAsyncInit = function() {
+	FB.init({
+		appId : '{$appId}',
+		session : {$session}, // don't refetch the session when PHP already has it
+		status : true, // check login status
+		cookie : true, // enable cookies to allow the server to access the session
+		xfbml : true // parse XFBML
+	});
+	{$callback}
+};
+(function() {
+	var e = document.createElement('script');
+	e.src = document.location.protocol + '//connect.facebook.net/{$this->locale}/all.js';
+	e.async = true;
+	document.getElementById('fb-root').appendChild(e);
+}());
+JS
+			, $options);
+			return $init;
+		} else {
 			return "<span class='error'>No Facebook configuration detected. Please add the facebook configuration file to your config folder.</span>";
-		} 
+		}
 	}
 	
 	/**

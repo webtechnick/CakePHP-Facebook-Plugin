@@ -3,7 +3,7 @@
   * Facebook.Api Library used to create an instanciated facebook API available to the user
   *
   * @author Nick Baker <nick [at] webtechnick [dot] com>
-  * @version 2.2.0
+  * @version 2.5.0
   * @link http://www.webtechnick.com
   * @license MIT
   */
@@ -17,12 +17,9 @@ class FB {
   public static $Facebook = null;
   
   public function __construct() {
-    if(!self::$Facebook){
-      FacebookInfo::getConfig();
-      self::$Facebook = new Facebook(
-      	FacebookInfo::$configs
-      );
-    }
+    if (empty(self::$Facebook)) {
+			self::$Facebook = new Facebook(FacebookInfo::getConfig());
+		}
   }
   
   /**
