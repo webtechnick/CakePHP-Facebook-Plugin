@@ -1,5 +1,5 @@
-Facebook PHP SDK (v.3.0.0)
-==========================
+Facebook PHP SDK
+================
 
 The [Facebook Platform](http://developers.facebook.com/) is
 a set of APIs that make your application more social. Read more about
@@ -18,34 +18,30 @@ Usage
 The [examples][examples] are a good place to start. The minimal you'll need to
 have is:
 
+    <?php
+
     require './facebook.php';
 
     $facebook = new Facebook(array(
-      'appId'  => 'YOUR_APP_ID',
-      'secret' => 'YOUR_APP_SECRET',
+      'appId'  => 'YOUR APP ID',
+      'secret' => 'YOUR API SECRET',
+      'cookie' => true, // enable optional cookie support
     ));
-
-    // Get User ID
-    $user = $facebook->getUser();
 
 To make [API][API] calls:
 
-    if ($user) {
-      try {
-        // Proceed knowing you have a logged in user who's authenticated.
-        $user_profile = $facebook->api('/me');
-      } catch (FacebookApiException $e) {
-        error_log($e);
-        $user = null;
-      }
+    try {
+      $me = $facebook->api('/me');
+    } catch (FacebookApiException $e) {
+      error_log($e);
     }
 
-Login or logout url will be needed depending on current user state.
+Logged in vs Logged out:
 
-    if ($user) {
-      $logoutUrl = $facebook->getLogoutUrl();
+    if ($facebook->getSession()) {
+      echo '<a href="' . $facebook->getLogoutUrl() . '">Logout</a>';
     } else {
-      $loginUrl = $facebook->getLoginUrl();
+      echo '<a href="' . $facebook->getLoginUrl() . '">Login</a>';
     }
 
 [examples]: http://github.com/facebook/php-sdk/blob/master/examples/example.php
@@ -55,9 +51,10 @@ Login or logout url will be needed depending on current user state.
 Feedback
 --------
 
-File bugs or other issues [here].
+We are relying on the [GitHub issues tracker][issues] linked from above for
+feedback. File bugs or other issues [here][issues].
 
-[here]: http://bugs.developers.facebook.net/
+[issues]: http://github.com/facebook/php-sdk/issues
 
 
 
