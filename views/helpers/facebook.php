@@ -406,7 +406,7 @@ class FacebookHelper extends AppHelper {
 			}
 
             if ($FBCanvasSetSize) {
-                $callback = "FB.Canvas.setSize();";
+                $callback .= "FB.Canvas.setSize();";
             }
 
 			$init = '<div id="fb-root"></div>';
