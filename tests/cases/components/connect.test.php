@@ -140,7 +140,7 @@ class ConnectTest extends CakeTestCase {
   }
   
   function testInitialize(){
-    $this->Connect->initialize($this->Connect->Controller);
+    @$this->Connect->initialize($this->Connect->Controller);
     $this->assertFalse($this->Connect->me);
     $this->assertFalse($this->Connect->uid);
   }
