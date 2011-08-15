@@ -7,7 +7,7 @@
 *
 * @author Nick Baker <nick [at] webtechnick [dot] come>
 * @link http://www.webtechnick.com
-* @since 2.6.0
+* @since 3.1.0
 * @license MIT
 */
 App::import('Lib', 'Facebook.FB');
@@ -79,6 +79,17 @@ class ConnectComponent extends Object {
 		if (!$this->noAuth && !empty($this->uid)) {
 			$this->__syncFacebookUser();
 		}
+	}
+	
+	/**
+	* Get registration Data
+	* @return associative array of registration data (if there is any)
+	*/
+	function registrationData(){
+		if(isset($this->Controller->params['form']['signed_request'])){
+			return FacebookInfo::parseSignedRequest($this->Controller->params['form']['signed_request']);
+		}
+		return array();
 	}
 	
 	/**

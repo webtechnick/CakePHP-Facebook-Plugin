@@ -1,6 +1,6 @@
 # Facebook Plugin
 * Author:  Nick Baker (nick@webtechnick.com)
-* version 2.6.1
+* version 3.1.0
 * http://www.webtechnick.com
 * license: MIT
 
@@ -48,8 +48,11 @@ The purpose of the Facebook plugin is to provide a seamless way to connect your 
   * New callback feature for FacebookHelper::init() (page refresh is still default).
   * Nicer FacebookHelper::share() now uses Router instead of environment and $this->here
   * Optimization, Moving __syncFacebookUser to after Controller->beforeFilter() so $noAuth can be changed in the beforeFilter if need be.
-* 2.6.0: Updated Facebook PHP SDK. FB->getSession() is no longer available, user FB->getUser() instead.
-* 2.6.1: Updated Facebook PHP SDK to version 3.1.1 Javascript SDK and PHP OAuth SDK now talking to one another again.  
+* 3.0.0: Updated Facebook PHP SDK 3.1.1. FB->getSession() is no longer available, user FB->getUser() instead.
+* 3.1.0: Added new facebook social features (registration and send)
+  * FacebookHelper::registration() creates a registration form prepopulated with their facebook information.
+  * ConnectComponent::registrationData() a useful shortcut to parsing a successful registration post to facebook.
+  * FacebookHelper::send() creates a nice send button.
 
 # About Plugin
 * Blog: <http://www.webtechnick.com/blogs/view/229/CakePHP_Facebook_Plugin_Auth_Facebook_and_more>
@@ -63,7 +66,9 @@ The purpose of the Facebook plugin is to provide a seamless way to connect your 
 * Create dynamic customizable facebook content with extreme ease.
 	* Share  (let your users share what they find on your site)
 	* Like  (let your users like what they find on your site)
+	* Send  (let your users send what they find on your site)
 	* Login/Logout (facebook users can login and logout with a single click .. no registration required)
+	* Registration (facebook users can register on your application with pre-populated data from their profile)
 	* Activity (allow users to show your applications and friends activity)
 	* Friend Pile (display your applications friends)
 	* Recommendations (display recommended urls based on the current page)
@@ -147,6 +152,25 @@ Create a logout button:
 
 Each button has multiple options, review the API to see all available options
 <http://projects.webtechnick.com/docs/facebook/default/FacebookHelper.html>
+
+## Registration Form
+Create a registration form with default fields and width.  Default is posting to self.
+	<?php echo $this->Facebook->registration(); ?>
+	
+Create a custom registration form.
+	<?php echo $this->Facebook->registration(array(
+		'fields' => 'name,gender,location,email',
+		'width' => 600,
+		'redirect-uri' => 'http://www.example.com/process_facebook_registration'
+	)); ?>
+
+### Processing Registration Data.
+To access the registartion data posted by your registration user, use the convienient ConnectComponent::registrationData() function.
+	if($user = $this->Connect->registrationData()){
+		print_r($user);
+	}
+
+Use the data in $user to finish the registration process on your own (save a new user, find/update the user, etc..) 
 
 ## CakePHP Auth + Facebook.Connect
 Facebook.Connect will play nice with a variety of Authentication systesm.  It has seamless integration with CakePHP AuthComponent.

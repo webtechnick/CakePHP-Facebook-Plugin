@@ -91,7 +91,7 @@ class FacebookHelper extends AppHelper {
 		$options = array_merge(
 			array(
 				'fields' => 'name,birthday,gender,location,email', 
-				'redirect-uri' => Router::url($this->here, true);
+				'redirect-uri' => Router::url($this->here, true),
 				'width' => 350
 			), 
 			$options
