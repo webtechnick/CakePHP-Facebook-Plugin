@@ -1,10 +1,6 @@
 # Facebook Plugin
 * Author:  Nick Baker (nick@webtechnick.com)
-<<<<<<< HEAD
-* version 2.5.0
-=======
 * version 3.1.0
->>>>>>> php_sdk_3
 * http://www.webtechnick.com
 * license: MIT
 
