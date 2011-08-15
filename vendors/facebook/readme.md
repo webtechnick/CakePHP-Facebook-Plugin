@@ -1,4 +1,4 @@
-Facebook PHP SDK (v.3.0.0)
+Facebook PHP SDK (v.3.1.1)
 ==========================
 
 The [Facebook Platform](http://developers.facebook.com/) is
@@ -18,7 +18,7 @@ Usage
 The [examples][examples] are a good place to start. The minimal you'll need to
 have is:
 
-    require './facebook.php';
+    require 'php-sdk/src/facebook.php';
 
     $facebook = new Facebook(array(
       'appId'  => 'YOUR_APP_ID',
@@ -70,3 +70,8 @@ We are including this in the open source repository to assure you of our
 commitment to quality, but also with the hopes that you will contribute back to
 help keep it stable. The easiest way to do so is to file bugs and include a
 test case.
+
+The tests can be executed by using this command from the base directory:
+
+    phpunit --stderr --bootstrap tests/bootstrap.php tests/tests.php
+

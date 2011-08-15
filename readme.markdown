@@ -1,6 +1,6 @@
 # Facebook Plugin
 * Author:  Nick Baker (nick@webtechnick.com)
-* version 2.6.0
+* version 2.6.1
 * http://www.webtechnick.com
 * license: MIT
 
@@ -49,6 +49,7 @@ The purpose of the Facebook plugin is to provide a seamless way to connect your 
   * Nicer FacebookHelper::share() now uses Router instead of environment and $this->here
   * Optimization, Moving __syncFacebookUser to after Controller->beforeFilter() so $noAuth can be changed in the beforeFilter if need be.
 * 2.6.0: Updated to newest 3.0.1 Facebook PHP SDK FB->getSession() is no longer available, user FB->getUser() instead.
+* 2.6.1: Updated to newest 3.1.1 Facebook PHP SDK FB->getSession() is no longer available, user FB->getUser() instead.
 
 # About Plugin
 * Blog: <http://www.webtechnick.com/blogs/view/229/CakePHP_Facebook_Plugin_Auth_Facebook_and_more>
