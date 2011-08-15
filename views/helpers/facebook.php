@@ -3,7 +3,7 @@
 * Facebook.Facebook helper generates fbxml and loads javascripts
 *
 * @author Nick Baker <nick [at] webtechnick [dot] com>
-* @version since 2.5.0
+* @version since 2.6.1
 * @license MIT
 * @link http://www.webtechnick.com
 */
@@ -77,6 +77,26 @@ class FacebookHelper extends AppHelper {
 	*/
 	function html(){
 		return '<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml">';
+	}
+	
+	/**
+	* Register Button
+	* $this->Facebook->init() is required for this
+	* @param array of options
+	* - fields: comma separated fields to use ('name','birthday','gender','location','email' default)
+	* - redirect-uri: Url to redirect the user to.  current page by default
+	* - width: width in pixels to show the registration form
+	*/
+	function registration($options = array(), $label = ''){
+		$options = array_merge(
+			array(
+				'fields' => 'name,birthday,gender,location,email', 
+				'redirect-uri' => Router::url($this->here, true);
+				'width' => 350
+			), 
+			$options
+		);
+		return $this->__fbTag('fb:registration',$label,$options);
 	}
 	
 	/**
@@ -234,6 +254,29 @@ class FacebookHelper extends AppHelper {
 		else {
 			return "";
 		}
+	}
+	
+	/**
+	* New send social plugin
+	* $facebook->init() is required for this
+	* @param string url: url to send with facebook (default current page) 
+	* @param array options to pass into share
+	* - colorscheme: 'light' or 'dark' (default'light')
+	* - font: Font of the send button (default 'arial')
+	* @return string XFBML tag along with shareJs script
+	* @access public
+	*/
+	function sendbutton($url = null, $options = array()){
+		if(empty($url)){
+			$url = Router::url(null, true);
+		}
+		$defaults = array(
+			'colorscheme' => 'light',
+			'href' => $url,
+			'font' => 'arial',
+		);
+		$options = array_merge($defaults, $options);
+		return $this->__fbTag('fb:send','',$options);
 	}
 	
 	/**
@@ -413,13 +456,14 @@ window.fbAsyncInit = function() {
 		session : {$session}, // don't refetch the session when PHP already has it
 		status : true, // check login status
 		cookie : true, // enable cookies to allow the server to access the session
-		xfbml : true // parse XFBML
+		xfbml : true, // parse XFBML
+		oauth : true // use Oauth
 	});
 	{$callback}
 };
 (function() {
 	var e = document.createElement('script');
-	e.src = document.location.protocol + '//connect.facebook.net/{$this->locale}/all.js';
+	e.src = document.location.protocol + '//connect.facebook.net/{$this->locale}/all.js#appId={$appId}&xfbml=1';
 	e.async = true;
 	document.getElementById('fb-root').appendChild(e);
 }());
