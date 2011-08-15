@@ -143,7 +143,7 @@ Creates a login button:
 	<?php echo $this->Facebook->login() ?>
 
 Create a login button that asks for extended permissions (<http://developers.facebook.com/docs/authentication/permissions>)
-	
+
 	<?php echo $facebook->login(array('perms' => 'email,publish_stream')); ?>
 
 Create a logout button:
@@ -155,9 +155,11 @@ Each button has multiple options, review the API to see all available options
 
 ## Registration Form
 Create a registration form with default fields and width.  Default is posting to self.
+
 	<?php echo $this->Facebook->registration(); ?>
 	
 Create a custom registration form.
+
 	<?php echo $this->Facebook->registration(array(
 		'fields' => 'name,gender,location,email',
 		'width' => 600,
@@ -166,6 +168,7 @@ Create a custom registration form.
 
 ### Processing Registration Data.
 To access the registartion data posted by your registration user, use the convienient ConnectComponent::registrationData() function.
+
 	if($user = $this->Connect->registrationData()){
 		print_r($user);
 	}
