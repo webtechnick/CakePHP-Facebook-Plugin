@@ -106,12 +106,24 @@ class FacebookHelper extends AppHelper {
 	* - show-faces bool Show pictures of the user's friends who have joined your application
 	* - width int The width of the plugin in pixels
 	* - max-rows int The maximum number of rows of profile pictures to show
-	* - perms list of permissions to ask for when logging in separated by commas (eg: 'email,read_stream,publish_stream'). (http://developers.facebook.com/docs/authentication/permissions)
+	* - scope string list of permissions to ask for when logging in separated by commas (eg: 'email,read_stream,publish_stream'). (http://developers.facebook.com/docs/authentication/permissions)
 	* @param string label
 	* @return string XFBML tag
 	* @access public
 	*/
 	function login($options = array(), $label = ''){
+		$options = array_merge(
+			array(
+				'show-faces' => 'false',
+				'width' => '200',
+				'max-rows' => '1',
+			),
+			$options
+		);
+		if(isset($options['perms'])){
+			$options['scope'] = $options['perms'];
+			unset($options['perms']);
+		}
 		return $this->__fbTag('fb:login-button', $label, $options);
 	}
 	
@@ -463,7 +475,7 @@ window.fbAsyncInit = function() {
 };
 (function() {
 	var e = document.createElement('script');
-	e.src = document.location.protocol + '//connect.facebook.net/{$this->locale}/all.js#appId={$appId}&xfbml=1';
+	e.src = document.location.protocol + '//connect.facebook.net/{$this->locale}/all.js#appId={$appId}&amp;xfbml=1';
 	e.async = true;
 	document.getElementById('fb-root').appendChild(e);
 }());
