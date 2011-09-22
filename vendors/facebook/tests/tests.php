@@ -22,8 +22,15 @@ class FacebookTest extends PHPUnit_Framework_TestCase
     'uid'          => '1677846385',
   );
 
+<<<<<<< HEAD
   private static $VALID_SIGNED_REQUEST = '1sxR88U4SW9m6QnSxwCEw_CObqsllXhnpP5j2pxD97c.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEyODEwNTI4MDAsIm9hdXRoX3Rva2VuIjoiMTE3NzQzOTcxNjA4MTIwfDIuVlNUUWpub3hYVVNYd1RzcDB1U2g5d19fLjg2NDAwLjEyODEwNTI4MDAtMTY3Nzg0NjM4NXx4NURORHBtcy1nMUM0dUJHQVYzSVdRX2pYV0kuIiwidXNlcl9pZCI6IjE2Nzc4NDYzODUifQ';
   private static $NON_TOSSED_SIGNED_REQUEST = 'c0Ih6vYvauDwncv0n0pndr0hP0mvZaJPQDPt6Z43O0k.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiJ9';
+=======
+  private static $kExpiredAccessToken = '206492729383450|2.N4RKywNPuHAey7CK56_wmg__.3600.1304560800.1-214707|6Q14AfpYi_XJB26aRQumouzJiGA';
+  private static $kValidSignedRequest = '1sxR88U4SW9m6QnSxwCEw_CObqsllXhnpP5j2pxD97c.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEyODEwNTI4MDAsIm9hdXRoX3Rva2VuIjoiMTE3NzQzOTcxNjA4MTIwfDIuVlNUUWpub3hYVVNYd1RzcDB1U2g5d19fLjg2NDAwLjEyODEwNTI4MDAtMTY3Nzg0NjM4NXx4NURORHBtcy1nMUM0dUJHQVYzSVdRX2pYV0kuIiwidXNlcl9pZCI6IjE2Nzc4NDYzODUifQ';
+  private static $kNonTosedSignedRequest = 'c0Ih6vYvauDwncv0n0pndr0hP0mvZaJPQDPt6Z43O0k.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiJ9';
+  private static $kSignedRequestWithBogusSignature = '1sxR32U4SW9m6QnSxwCEw_CObqsllXhnpP5j2pxD97c.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEyODEwNTI4MDAsIm9hdXRoX3Rva2VuIjoiMTE3NzQzOTcxNjA4MTIwfDIuVlNUUWpub3hYVVNYd1RzcDB1U2g5d19fLjg2NDAwLjEyODEwNTI4MDAtMTY3Nzg0NjM4NXx4NURORHBtcy1nMUM0dUJHQVYzSVdRX2pYV0kuIiwidXNlcl9pZCI6IjE2Nzc4NDYzODUifQ';
+>>>>>>> php_sdk_3
 
   public function testConstructor() {
     $facebook = new Facebook(array(
@@ -169,11 +176,49 @@ class FacebookTest extends PHPUnit_Framework_TestCase
                       'Expect access token back.');
   }
 
+<<<<<<< HEAD
   public function testGetSessionFromCookie() {
     $cookieName = 'fbs_' . self::APP_ID;
     $session = self::$VALID_EXPIRED_SESSION;
     $_COOKIE[$cookieName] = '"' . http_build_query($session) . '"';
     $facebook = new Facebook(array(
+=======
+  public function testGetLoginURLWithScopeParamsAsArray() {
+    $facebook = new Facebook(array(
+      'appId'  => self::APP_ID,
+      'secret' => self::SECRET,
+    ));
+
+    // fake the HPHP $_SERVER globals
+    $_SERVER['HTTP_HOST'] = 'www.test.com';
+    $_SERVER['REQUEST_URI'] = '/unit-tests.php';
+    $scope_params_as_array = array('email','sms','read_stream');
+    $extra_params = array('scope' => $scope_params_as_array,
+                          'nonsense' => 'nonsense');
+    $login_url = parse_url($facebook->getLoginUrl($extra_params));
+    $this->assertEquals($login_url['scheme'], 'https');
+    $this->assertEquals($login_url['host'], 'www.facebook.com');
+    $this->assertEquals($login_url['path'], '/dialog/oauth');
+    // expect api to flatten array params to comma separated list
+    // should do the same here before asserting to make sure API is behaving
+    // correctly;
+    $extra_params['scope'] = implode(',', $scope_params_as_array);
+    $expected_login_params =
+      array_merge(
+        array('client_id' => self::APP_ID,
+              'redirect_uri' => 'http://www.test.com/unit-tests.php'),
+        $extra_params);
+    $query_map = array();
+    parse_str($login_url['query'], $query_map);
+    $this->assertIsSubset($expected_login_params, $query_map);
+    // we don't know what the state is, but we know it's an md5 and should
+    // be 32 characters long.
+    $this->assertEquals(strlen($query_map['state']), $num_characters = 32);
+  }
+
+  public function testGetCodeWithValidCSRFState() {
+    $facebook = new FBCode(array(
+>>>>>>> php_sdk_3
       'appId'  => self::APP_ID,
       'secret' => self::SECRET,
       'cookie' => true,
@@ -244,8 +289,37 @@ class FacebookTest extends PHPUnit_Framework_TestCase
     }
   }
 
+<<<<<<< HEAD
   public function testGetUID() {
     $facebook = new Facebook(array(
+=======
+  public function testGetSignedRequestFromCookie() {
+    $facebook = new FBGetSignedRequestCookieFacebook(array(
+      'appId'  => self::APP_ID,
+      'secret' => self::SECRET,
+    ));
+
+    $_COOKIE[$facebook->publicGetSignedRequestCookieName()] =
+      self::$kValidSignedRequest;
+    $this->assertNotNull($facebook->publicGetSignedRequest());
+    $this->assertEquals('1677846385', $facebook->getUser(),
+                        'Failed to get user ID from a valid signed request.');
+  }
+
+  public function testGetSignedRequestWithIncorrectSignature() {
+    $facebook = new FBGetSignedRequestCookieFacebook(array(
+      'appId'  => self::APP_ID,
+      'secret' => self::SECRET,
+    ));
+
+    $_COOKIE[$facebook->publicGetSignedRequestCookieName()] =
+      self::$kSignedRequestWithBogusSignature;
+    $this->assertNull($facebook->publicGetSignedRequest());
+  }
+
+  public function testNonUserAccessToken() {
+    $facebook = new FBAccessToken(array(
+>>>>>>> php_sdk_3
       'appId'  => self::APP_ID,
       'secret' => self::SECRET,
     ));
@@ -340,7 +414,12 @@ class FacebookTest extends PHPUnit_Framework_TestCase
       $this->fail('Should not get here.');
     } catch(FacebookApiException $e) {
       // ProfileDelete means the server understood the DELETE
+<<<<<<< HEAD
       $msg = 'GraphMethodException: Unsupported delete request.';
+=======
+      $msg =
+        'OAuthException: A user access token is required to request this resource.';
+>>>>>>> php_sdk_3
       $this->assertEquals($msg, (string) $e,
                           'Expect the invalid session message.');
     }
@@ -419,6 +498,7 @@ class FacebookTest extends PHPUnit_Framework_TestCase
       'secret' => self::SECRET,
     ));
 
+<<<<<<< HEAD
     $response = $facebook->api('/331218348435/feed',
       array('limit' => 1, 'access_token' => ''));
     $this->assertEquals(1, count($response['data']), 'should get one entry');
@@ -426,6 +506,26 @@ class FacebookTest extends PHPUnit_Framework_TestCase
       strstr($response['paging']['next'], 'limit=1') !== false,
       'expect the same limit back in the paging urls'
     );
+=======
+    $response = $facebook->api('/jerry');
+    $this->assertTrue(isset($response['id']),
+                      'User ID should be public.');
+    $this->assertTrue(isset($response['name']),
+                      'User\'s name should be public.');
+    $this->assertTrue(isset($response['first_name']),
+                      'User\'s first name should be public.');
+    $this->assertTrue(isset($response['last_name']),
+                      'User\'s last name should be public.');
+    $this->assertFalse(isset($response['work']),
+                       'User\'s work history should only be available with '.
+                       'a valid access token.');
+    $this->assertFalse(isset($response['education']),
+                       'User\'s education history should only be '.
+                       'available with a valid access token.');
+    $this->assertFalse(isset($response['verified']),
+                       'User\'s verification status should only be '.
+                       'available with a valid access token.');
+>>>>>>> php_sdk_3
   }
 
   public function testLoginURLDefaults() {
@@ -748,5 +848,15 @@ class FBPublic extends Facebook {
   }
   public function publicCreateSessionFromSignedRequest($payload) {
     return $this->createSessionFromSignedRequest($payload);
+  }
+}
+
+class FBGetSignedRequestCookieFacebook extends TransientFacebook {
+  public function publicGetSignedRequest() {
+    return $this->getSignedRequest();
+  }
+
+  public function publicGetSignedRequestCookieName() {
+    return $this->getSignedRequestCookieName();
   }
 }
