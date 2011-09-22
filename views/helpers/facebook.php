@@ -152,7 +152,7 @@ class FacebookHelper extends AppHelper {
 		if(isset($options['redirect']) || $options['custom']){
 			if(isset($options['redirect']) && $options['redirect']){
 				$options['redirect'] = Router::url($options['redirect']);
-				$response = "window.location = '{$options['redirect']};'";
+				$response = "window.location = '{$options['redirect']}';";
 			} else {
 				$response = "window.location.reload();";
 			}
@@ -186,7 +186,7 @@ class FacebookHelper extends AppHelper {
 		);
 		if(isset($options['redirect']) && $options['redirect']){
 			$options['redirect'] = Router::url($options['redirect']);
-			$response = "window.location = '{$options['redirect']}'";
+			$response = "window.location = '{$options['redirect']}';";
 		} else {
 			$response = "window.location.reload();";
 		}
