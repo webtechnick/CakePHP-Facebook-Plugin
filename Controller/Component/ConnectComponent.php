@@ -7,7 +7,7 @@
 *
 * @author Nick Baker <nick [at] webtechnick [dot] come>
 * @link http://www.webtechnick.com
-* @since 2.5.0
+* @since 3.0.0
 * @license MIT
 */
 App::uses('FB', 'Facebook.Lib');

@@ -50,7 +50,7 @@ class FacebookInfo {
     * @return string version number
     */
   static function version(){
-    return '2.5.0';
+    return '3.0.1';
   }
   
   /**
