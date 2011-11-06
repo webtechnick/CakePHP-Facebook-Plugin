@@ -11,7 +11,7 @@
 * @license MIT
 */
 App::uses('FB', 'Facebook.Lib');
-class ConnectComponent extends Object {
+class ConnectComponent extends Component {
 	
 	/**
 	* uid is the Facebook ID of the connected Facebook user, or null if not connected
@@ -62,21 +62,21 @@ class ConnectComponent extends Object {
 		$this->Controller = $Controller;
 		$this->_set($settings);
 		$this->FB = new FB();
-		$this->session = $this->FB->getSession();
+		$this->uid = $this->FB->getUser();
 	}
 	
 	/**
 	* Sync the connected Facebook user with your application.
 	*
 	* Attempt to authenticate user using Facebook.
-	* Currently the uid is fetched from $this->session['uid'].
+	* Currently the uid is fetched from $this->uid.
 	*
 	* @param Controller object to attach to
 	* @return void
 	*/
 	function startup() {
 		// Prevent using Auth component only if there is noAuth setting provided
-		if (!$this->noAuth && !empty($this->session['uid'])) {
+		if (!$this->noAuth && !empty($this->uid)) {
 			$this->__syncFacebookUser();
 		}
 	}
@@ -116,13 +116,13 @@ class ConnectComponent extends Object {
 			$this->hasAccount = true;
 			$this->User->id = $Auth->user($this->User->primaryKey);
 			if (!$this->User->field('facebook_id')) {
-				$this->User->saveField('facebook_id', $this->session['uid']);
+				$this->User->saveField('facebook_id', $this->uid);
 			}
 			return true;
 		} 
 		else {
 			// attempt to find the user by their facebook id
-			$this->authUser = $this->User->findByFacebookId($this->session['uid']);
+			$this->authUser = $this->User->findByFacebookId($this->uid);
 			
 			//if we have a user, set hasAccount
 			if(!empty($this->authUser)){
@@ -130,7 +130,7 @@ class ConnectComponent extends Object {
 			}
 			//create the user if we don't have one
 			elseif(empty($this->authUser) && $this->createUser) {
-				$this->authUser[$this->User->alias]['facebook_id'] = $this->session['uid'];
+				$this->authUser[$this->User->alias]['facebook_id'] = $this->uid;
 				$this->authUser[$this->User->alias][$Auth->fields['password']] = $Auth->password(FacebookInfo::randPass());
 				if($this->__runCallback('beforeFacebookSave')){
 					$this->hasAccount = ($this->User->save($this->authUser, array('validate' => false)));
@@ -157,8 +157,7 @@ class ConnectComponent extends Object {
 	* @param mixed return
 	*/
 	function user($field = null){
-		if(isset($this->session)){
-			$this->uid = $this->session['uid'];
+		if(isset($this->uid)){
 			if($this->Controller->Session->read('FB.Me') == null){
 				$this->Controller->Session->write('FB.Me', $this->FB->api('/me'));
 			}
