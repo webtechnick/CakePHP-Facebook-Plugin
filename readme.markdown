@@ -107,7 +107,7 @@ The purpose of the Facebook plugin is to provide a seamless way to connect your 
 You can use all or some of the Facebook plugin as you see fit.
 At the very least you will probably want to use the Facebook Helper
 
-	var $helpers = array('Facebook.Facebook');
+	public $helpers = array('Facebook.Facebook');
 
 If all you want to use is the share feature of the Facebook plugin you're all done.
 
@@ -137,7 +137,7 @@ Despite the name, the Facebook Connect component takes immediate advantage of th
 To use this feature you will first need to update your facebook application with the connect url of your application's url.  This is done on the facebook application settings. <http://www.facebook.com/developers/apps.php>
 Now all you need to do is add the `Facebook.Connect` component to your app_controller.
 
-	var $components = array('Facebook.Connect');
+	public $components = array('Facebook.Connect');
 
 That's it.  You're now ready to accept facebook authentication.
 
@@ -159,7 +159,7 @@ Each button has multiple options, review the API to see all available options
 ## CakePHP Auth + Facebook.Connect
 Facebook.Connect will play nice with a variety of Authentication systesm.  It has seamless integration with CakePHP AuthComponent.
 
-	var $components = array('Auth', 'Facebook.Connect');
+	public $components = array('Auth', 'Facebook.Connect');
 	
 To integrate with CakePHP Auth, you'll need to alter your users table (or whatever table your Auth component uses) and add a new field -> `facebook_id`.
 
@@ -212,7 +212,7 @@ There are three callbacks available to use, each are defined in the controller a
 You can access the Facebook Api from anywhere in your app.
 You'll need to include the Api first
 
-	App::import('Lib', 'Facebook.FB');
+	App::uses('FB', 'Facebook.Lib');
 
 Then you can instanciate it or, if you're running PHP 5.3.x you can make static calls on it.
 
@@ -227,7 +227,7 @@ PHP 5.3.x
 # Internationalization
 You can set the locale of the plugin through the helper declaration or through the `config/facebook.php` configuration file (see top of document).
 
-	var $helpers = array('Facebook.Facebook' => array('locale' => 'en_US'));
+	public $helpers = array('Facebook.Facebook' => array('locale' => 'en_US'));
 	
 Facebook locales: <http://developers.facebook.com/docs/internationalization/>
 
