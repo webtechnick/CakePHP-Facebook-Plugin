@@ -217,10 +217,12 @@ You'll need to include the Api first
 Then you can instanciate it or, if you're running PHP 5.3.x you can make static calls on it.
 
 PHP version 5.2.x
+
 		$Facebook = new FB();
 		$Facebook->api('/me');
 
 PHP 5.3.x
+
 		FB::api('/me');
 	
 	
