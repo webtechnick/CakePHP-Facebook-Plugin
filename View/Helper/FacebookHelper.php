@@ -3,11 +3,12 @@
 * Facebook.Facebook helper generates fbxml and loads javascripts
 *
 * @author Nick Baker <nick [at] webtechnick [dot] com>
+* @CakePHP 2.0 support by Stefan Zhelyazkov <stz [at] upenn.edu>
 * @version since 2.5.0
 * @license MIT
 * @link http://www.webtechnick.com
 */
-App::import('Lib', 'Facebook.FacebookInfo');
+App::uses('FacebookInfo', 'Facebook.Lib');
 class FacebookHelper extends AppHelper {
 	/**
 	* Helpers to load with this helper.
@@ -31,7 +32,7 @@ class FacebookHelper extends AppHelper {
 	* Loadable construct, pass in locale settings
 	* Fail safe locale to 'en_US'
 	*/
-	function __construct($settings = array()){
+	function __construct(View $View, $settings = array()){
 		$this->_set($settings);
 		
 		if(!$this->locale){
@@ -40,7 +41,7 @@ class FacebookHelper extends AppHelper {
 		if(!$this->locale){
 			$this->locale = 'en_US';
 		}
-		parent::__construct();
+		parent::__construct($View, $settings);
 	}
 	
 	/**
@@ -63,36 +64,69 @@ class FacebookHelper extends AppHelper {
 	}
 	
 	/**
-	* Loaoder is no longer needed and is now deprecated
-	* @return null
-	*/
-	function loader(){
-		return null;
-	}
-	
-	/**
 	* HTML XMLNS tag (required)
 	* @return string of html header
 	* @access public
 	*/
 	function html(){
-		return '<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml">';
+		return '<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://ogp.me/ns/fb#">';
 	}
 	
 	/**
 	* Login Button
 	* $this->Facebook->init() is required for this
 	* @param array of options
-	* - show-faces bool Show pictures of the user's friends who have joined your application
-	* - width int The width of the plugin in pixels
-	* - max-rows int The maximum number of rows of profile pictures to show
-	* - perms list of permissions to ask for when logging in separated by commas (eg: 'email,read_stream,publish_stream'). (http://developers.facebook.com/docs/authentication/permissions)
+	* - redirect string: to your app's logout url (default null)
+	* - label string: text to use in link (default logout)
+	* - custom boolean: Used to create custom link instead of standart fbml. 
+	    if redirect option is set this one is not required.
+	* - img string: Creates fortmatted image tag. 'img' should be
+		relative to /app/webroot/img/
+	* - alt string: Image caption
+	* - id string: Tag CSS id
+	* - show-faces bool: Show pictures of the user's friends who have joined your application
+	* - width int: The width of the plugin in pixels
+	* - max-rows int: The maximum number of rows of profile pictures to show
+	* - perms list: of permissions to ask for when logging in separated by commas (eg: 'email,read_stream,publish_stream'). (http://developers.facebook.com/docs/authentication/permissions)
 	* @param string label
 	* @return string XFBML tag
 	* @access public
 	*/
 	function login($options = array(), $label = ''){
-		return $this->__fbTag('fb:login-button', $label, $options);
+		$options = array_merge(
+			array(
+				'label' => '',
+				'custom' => false,
+				'redirect' => false,
+				'img' => false,
+				'alt' => '',
+				'id' => '',
+				'show-faces' => true,	// fb button only
+				'width' => 200,			// fb button only
+				'max-rows' => 1			// fb button only
+			),
+			$options
+		);
+		if((isset($options['redirect']) && $options['redirect']) || $options['custom']){
+			$options['redirect'] = Router::url($options['redirect']);
+			$onclick = "login('".$options['redirect']."');";
+			if($options['img']){
+				$source = '/Facebook/img/'.$options['img'];
+				return $this->Html->image($source, array(
+				'alt' => $options['alt'],
+				'id' => $options['id'],
+				'url' => '#',
+				'onclick' => $onclick));
+			}
+			else {
+				return $this->Html->link($options['label'], '#', array(
+					'onclick' => $onclick, 'id' => $options['id']));
+			}
+		}
+		else {
+			unset($options['label'], $options['custom']);
+			return $this->__fbTag('fb:login-button', $label, $options);
+		}
 	}
 	
 	
@@ -100,10 +134,15 @@ class FacebookHelper extends AppHelper {
 	* Logout Button
 	* $this->Facebook->init() is required for this
 	* @param array of options
-	* - redirect string to your app's logout url (default null)
-	* - label string of text to use in link (default logout)
-	* - confirm string Alert dialog which will be visible if user clicks on the button/link
-	* - custom used to create custom link instead of standart fbml. if redirect option is set this one is not required.
+	* - redirect string: to your app's logout url (default null)
+	* - label string: text to use in link (default logout)
+	* - confirm string: Alert dialog which will be visible if user clicks on the button/link
+	* - custom boolean: Used to create custom link instead of standart fbml. 
+	    if redirect option is set this one is not required.
+	* - img string: Creates fortmatted image tag. 'img' should be
+		relative to /app/webroot/img/
+	* - alt string: Image caption
+	* - id string: Tag CSS Id
 	* @param string label
 	* @return string XFBML tag for logout button
 	* @access public
@@ -111,27 +150,40 @@ class FacebookHelper extends AppHelper {
 	function logout($options = array(), $label = ''){
 		$options = array_merge(
 			array(
-				'autologoutlink' => 'true', 
-				'label' => 'logout',
-				'custom' => false
+				'label' => '',
+				'custom' => false,
+				'redirect' => false,
+				'img' => false,
+				'alt' => '',
+				'id' => ''
 			), 
 			$options
 		);
-		if(isset($options['redirect']) || $options['custom']){
-			if(isset($options['redirect']) && $options['redirect']){
-				$options['redirect'] = Router::url($options['redirect']);
-				$response = "window.location = '{$options['redirect']}';";
-			} else {
-				$response = "window.location.reload();";
-			}
-			$onclick = "FB.logout(function(response){".$response."});";
+		if((isset($options['redirect']) && $options['redirect']) || $options['custom']){
+			$options['redirect'] = Router::url($options['redirect']);
+			$onclick = "logout('".$options['redirect']."');";
 			if(isset($options['confirm'])){
 				$onclick = 'if(confirm("'.$options['confirm'].'")){'.$onclick.'}';
 			}
-			return $this->Html->link($options['label'], '#', array('onclick' => $onclick));
+			if($options['img']){
+				$source = '/Facebook/img/'.$options['img'];
+				return $this->Html->image($source, array(
+				'alt' => $options['alt'],
+				'id' => $options['id'],
+				'url' => '#',
+				'onclick' => $onclick));
+			}
+			else {
+				return $this->Html->link($options['label'], '#', array(
+					'onclick' => $onclick, 'id' => $options['id']));
+			}
 		} else {
-			unset($options['label'], $options['escape'], $options['custom']);
-			return $this->__fbTag('fb:login-button', $label, $options);
+			$source = '/Facebook/img/facebook-logout.png';
+			return $this->Html->image($source, array(
+				'alt' => 'Facebook logout',
+				'url' => '#',
+				'id' => $options['id'],
+				'onclick' => 'logout();'));
 		}
 	}
 	
@@ -389,42 +441,90 @@ class FacebookHelper extends AppHelper {
 	
 	/**
 	* HTML XMLNS tag (required)
+	* Facebook Auth 2.0 support
 	* @param array $options
 	* @example $this->Facebook->init();
 	* @return string of scriptBlock for FB.init() or error
 	*/
+	
 	function init($options = null, $reload = true) {
 		if (empty($options)) {
 			$options = array();
 		}
 		if ($appId = FacebookInfo::getConfig('appId')) {
-			$session = json_encode($this->Session->read('FB.Session'));
-			if ($reload) {
-				$callback = "FB.Event.subscribe('auth.login',function(){window.location.reload()});";
-			} else {
-				$callback = "if(typeof(facebookReady)=='function'){facebookReady()}";
-			}
 			$init = '<div id="fb-root"></div>';
-			$init .= $this->Html->scriptBlock(
-<<<JS
-window.fbAsyncInit = function() {
-	FB.init({
-		appId : '{$appId}',
-		session : {$session}, // don't refetch the session when PHP already has it
-		status : true, // check login status
-		cookie : true, // enable cookies to allow the server to access the session
-		xfbml : true // parse XFBML
-	});
-	{$callback}
-};
-(function() {
-	var e = document.createElement('script');
-	e.src = document.location.protocol + '//connect.facebook.net/{$this->locale}/all.js';
-	e.async = true;
+			$init .= '<script src="//connect.facebook.net/en_US/all.js"></script>';
+			$init .= $this->Html->scriptBlock("
+	window.fbAsyncInit = function() {
+		FB.init({
+			appId      : '$appId', // App ID
+			channelURL : '../../Vendor/channel.php', // Channel File
+			status     : true, // check login status
+			cookie     : true, // enable cookies to allow the server to access the session
+			oauth      : true, // enable OAuth 2.0
+			xfbml      : true  // parse XFBML
+		});
+		
+		
+		// Checks whether the user is logged in
+		FB.getLoginStatus(function(response) {
+			if (response.authResponse) {
+				// logged in and connected user, someone you know
+				// alert('You are connected');
+			} else {
+				// no user session available, someone you dont know
+				// alert('You are disconnected');
+			}
+		});
+			   
+		FB.Event.subscribe('auth.authResponseChange', function(response) {
+			if (response.authResponse) {
+				// the user has just logged in
+				// alert('You just logged in facebook from somewhere');
+			} else {
+				// the user has just logged out
+				// alert('You just logged out from faceboook');
+			}
+		});
+		
+		// Other javascript code goes here!
+
+	};
+
+	// logs the user in the application and facebook
+	function login(redirection){
+		FB.login(function (response) {
+			if(response.authResponse) {
+				// user is logged in
+				// console.log('Welcome!');
+				if(redirection != null && redirection != ''){
+					top.location.href = redirection;
+				}
+			} else {
+				// user could not log in
+				console.log('User cancelled login or did not fully authorize.');
+			}
+		}, {scope: 'email'});
+	}
+
+	// logs the user out of the application and facebook
+	function logout(redirection){
+		FB.logout(function(response) {
+			// user is logged out
+			// redirection if any
+			if(redirection != null && redirection != ''){
+				top.location.href = redirection;
+			}
+		});
+	}
+
+	// Load the SDK Asynchronously
+	(function() {
+	var e = document.createElement('script'); e.async = true;
+	e.src = document.location.protocol 
+	+ '//connect.facebook.net/en_US/all.js';
 	document.getElementById('fb-root').appendChild(e);
-}());
-JS
-			, $options);
+	}());");
 			return $init;
 		} else {
 			return "<span class='error'>No Facebook configuration detected. Please add the facebook configuration file to your config folder.</span>";

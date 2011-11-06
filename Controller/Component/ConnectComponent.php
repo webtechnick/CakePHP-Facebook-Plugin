@@ -10,7 +10,7 @@
 * @since 2.5.0
 * @license MIT
 */
-App::import('Lib', 'Facebook.FB');
+App::uses('FB', 'Facebook.Lib');
 class ConnectComponent extends Object {
 	
 	/**

@@ -1,5 +1,5 @@
 <?php
-App::import('Lib', 'Facebook.FacebookInfo');
+App::uses('FacebookInfo', 'Facebook.Lib');
 class FacebookAppModel extends AppModel {
 
 }

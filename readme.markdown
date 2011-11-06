@@ -1,5 +1,6 @@
 # Facebook Plugin
 * Author:  Nick Baker (nick@webtechnick.com)
+* CakePHP 2.0 support by Stefan Zhelyazkov (stz@seas.upenn.edu)
 * version 2.5.0
 * http://www.webtechnick.com
 * license: MIT
@@ -48,6 +49,7 @@ The purpose of the Facebook plugin is to provide a seamless way to connect your 
   * New callback feature for FacebookHelper::init() (page refresh is still default).
   * Nicer FacebookHelper::share() now uses Router instead of environment and $this->here
   * Optimization, Moving __syncFacebookUser to after Controller->beforeFilter() so $noAuth can be changed in the beforeFilter if need be.
+* 2.5.1: Added CakePHP 2.0 support
 
 # About Plugin
 * Blog: <http://www.webtechnick.com/blogs/view/229/CakePHP_Facebook_Plugin_Auth_Facebook_and_more>
@@ -74,15 +76,15 @@ The purpose of the Facebook plugin is to provide a seamless way to connect your 
 
 
 # Install and Setup
-First clone the repository into your `app/plugins/facebook` directory
+First clone the repository into your `app/Plugin/Facebook` directory
 
-	git clone git://github.com/webtechnick/CakePHP-Facebook-Plugin.git app/plugins/facebook
+	git clone git://github.com/webtechnick/CakePHP-Facebook-Plugin.git app/Plugin/Facebook
 
 Once installed, if you wish to use any other features *other* than the share button you'll need to get an api_key and secret for your application.
 1. Create an app from facebook at this url: <http://www.facebook.com/developers/createapp.php>
-2. Once you generate an api_key and secret you'll need to create a file `app/config/facebook.php` You can find an example of what you'll need and how it is laid out in `/facebook/config/facebook.php.example`
+2. Once you generate an api_key and secret you'll need to create a file `app/Config/facebook.php` You can find an example of what you'll need and how it is laid out in `/Facebook/Config/facebook.php.example`
 
-	//app/config/facebook.php
+	//app/Config/facebook.php
 	$config = array(
 		'Facebook' => array(
 			'appId'  => 'YOUR_APP_ID',

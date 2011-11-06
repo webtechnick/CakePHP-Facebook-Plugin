@@ -7,7 +7,7 @@
   * @link http://www.webtechnick.com
   * @license MIT
   */
-App::import('Vendor', 'Facebook.facebook/php/facebook');
+App::uses('Facebook.Facebook/src/facebook', 'Vendor');
 Configure::load('facebook');
 class FacebookApi {
 
