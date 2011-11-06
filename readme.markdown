@@ -79,16 +79,16 @@ The purpose of the Facebook plugin is to provide a seamless way to connect your 
 # Install and Setup
 * First clone the repository into your `app/Plugin/Facebook` directory
 
-	git clone git://github.com/webtechnick/CakePHP-Facebook-Plugin.git app/Plugin/Facebook
+		git clone git://github.com/webtechnick/CakePHP-Facebook-Plugin.git app/Plugin/Facebook
 
-### Once installed, if you wish to use any other features *other* than the share button you'll need to get an api_key and secret for your application.
-* Create an app from facebook at this url: <http://www.facebook.com/developers/createapp.php>
+
 * Load the plugin in your `app/Config/bootstrap.php` file:
 
 		//app/Config/bootstrap.php
 		CakePlugin::load('Facebook');
 
-
+### Once installed, if you wish to use any other features *other* than the share button you'll need to get an api_key and secret for your application.
+* Create an app from facebook at this url: <http://www.facebook.com/developers/createapp.php>
 * Once you generate an api_key and secret you'll need to create a file `app/Config/facebook.php` You can find an example of what you'll need and how it is laid out in `/Facebook/Config/facebook.php.example`
 
 		//app/Config/facebook.php
