@@ -85,22 +85,22 @@ The purpose of the Facebook plugin is to provide a seamless way to connect your 
 * Create an app from facebook at this url: <http://www.facebook.com/developers/createapp.php>
 * Load the plugin in your `app/Config/bootstrap.php` file:
 
-	//app/Config/bootstrap.php
-	CakePlugin::load('Facebook');
+		//app/Config/bootstrap.php
+		CakePlugin::load('Facebook');
 
 
 * Once you generate an api_key and secret you'll need to create a file `app/Config/facebook.php` You can find an example of what you'll need and how it is laid out in `/Facebook/Config/facebook.php.example`
 
-	//app/Config/facebook.php
-	$config = array(
-		'Facebook' => array(
-			'appId'  => 'YOUR_APP_ID',
-			'apiKey' => 'YOUR_API_KEY',
-			'secret' => 'YOUR_SECRET',
-			'cookie' => true,
-			'locale' => 'en_US',
-		)
-	);
+		//app/Config/facebook.php
+		$config = array(
+			'Facebook' => array(
+				'appId'  => 'YOUR_APP_ID',
+				'apiKey' => 'YOUR_API_KEY',
+				'secret' => 'YOUR_SECRET',
+				'cookie' => true,
+				'locale' => 'en_US',
+			)
+		);
 
 
 # Usage
