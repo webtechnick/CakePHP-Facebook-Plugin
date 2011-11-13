@@ -11,6 +11,7 @@
 * @license MIT
 */
 App::uses('FB', 'Facebook.Lib');
+App::uses('FacebookInfo', 'Facebook.Lib');
 class ConnectComponent extends Component {
 	
 	/**
@@ -36,19 +37,33 @@ class ConnectComponent extends Component {
 	/**
 	* No Auth, if set to true, syncFacebookUser will NOT be called
 	*/
-	var $noAuth = false;
+	public $noAuth = false;
 	
 	/**
 	* Error log
 	*/
-	var $errors = array();
+	public $errors = array();
 	
 	/**
 	* createUser is true you want the component to attempt to create a CakePHP Auth user
 	* account by introspection on the Auth component.  If false, you can use $this->hasAccount
 	* as a reference to decide what to do with that user. (default true)
 	*/
-	var $createUser = true;
+	public $createUser = true;
+	
+	/**
+	* name of the authentication model, false by default,
+	* set to model alias to init the model.
+	*/
+	public $model = false;
+	
+	/**
+	* Fields for the model if you want to save the Auth component.
+	*/
+	public $modelFields = array(
+		'password' => 'password',
+		'username' => 'username'
+	);
 	
 	/**
 	* Initialize, load the api, decide if we're logged in
@@ -112,7 +127,7 @@ class ConnectComponent extends Component {
 		
 		// check if the user already has an account
 		// User is logged in but doesn't have a 
-		if($Auth->user()){
+		if($Auth->user('id')){
 			$this->hasAccount = true;
 			$this->User->id = $Auth->user($this->User->primaryKey);
 			if (!$this->User->field('facebook_id')) {
@@ -123,7 +138,6 @@ class ConnectComponent extends Component {
 		else {
 			// attempt to find the user by their facebook id
 			$this->authUser = $this->User->findByFacebookId($this->uid);
-			
 			//if we have a user, set hasAccount
 			if(!empty($this->authUser)){
 				$this->hasAccount = true;
@@ -131,7 +145,7 @@ class ConnectComponent extends Component {
 			//create the user if we don't have one
 			elseif(empty($this->authUser) && $this->createUser) {
 				$this->authUser[$this->User->alias]['facebook_id'] = $this->uid;
-				$this->authUser[$this->User->alias][$Auth->fields['password']] = $Auth->password(FacebookInfo::randPass());
+				$this->authUser[$this->User->alias][$this->modelFields['password']] = $Auth->password(FacebookInfo::randPass());
 				if($this->__runCallback('beforeFacebookSave')){
 					$this->hasAccount = ($this->User->save($this->authUser, array('validate' => false)));
 				}
@@ -142,8 +156,12 @@ class ConnectComponent extends Component {
 			//Login user if we have one
 			if($this->authUser){
 				$this->__runCallback('beforeFacebookLogin', $this->authUser);
-				$Auth->fields = array('username' => 'facebook_id', 'password' => $Auth->fields['password']);    		
-				if($Auth->login($this->authUser)){
+				$Auth->authenticate = array(
+					'Form' => array(
+						'fields' => array('username' => 'facebook_id', 'password' => $this->modelFields['password'])
+					)
+				);
+				if($Auth->login($this->authUser[$this->model])){
 					$this->__runCallback('afterFacebookLogin');
 				}
 			}
@@ -193,12 +211,15 @@ class ConnectComponent extends Component {
 	}
 	
 	/**
-	* Initialize the actual User model object defined by Auth
+	* Initialize the actual User model object defined by the plugin
 	* @return true if successful
 	* @access private
 	*/
 	function __initUserModel(){
-		$this->User = ClassRegistry::init($this->Controller->Auth->userModel);
+		if($this->model){
+			App::uses($this->model,'Model');
+			$this->User = ClassRegistry::init($this->model);
+		}
 		if (isset($this->User)) {
 			$this->User->recursive = -1;
 			return true;

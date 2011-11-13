@@ -51,6 +51,24 @@ The purpose of the Facebook plugin is to provide a seamless way to connect your 
   * Optimization, Moving __syncFacebookUser to after Controller->beforeFilter() so $noAuth can be changed in the beforeFilter if need be.
 * 3.0.0: Upgraded to Facebook PHP SDK v 3.1.1
 * 3.0.1: Added CakePHP 2.0 support
+	* the AuthComponent in 2.0 has been redesigned significantly, making the guesswork done by the FacebookPlugin much harder to acheive
+	* As such, you now have to set the model in which you want the Facebook plugin to interact with if you want User/Auth integration via database
+	* You must set this when defining the Facebook.Connect component
+	
+	//Example AppController setup
+	public $components = array('Session',
+		'Auth' => array(
+			'authenticate' => array(
+				'Form' => array(
+					'fields' => array('username' => 'email')
+				)
+			),
+			'authorize' => 'Controller'
+		),
+		'Facebook.Connect' => array('model' => 'User')
+	);
+	
+	* If you do not set a 'model' key, integration with your Auth Model will not happen automatically.
 
 # About Plugin
 * Blog: <http://www.webtechnick.com/blogs/view/229/CakePHP_Facebook_Plugin_Auth_Facebook_and_more>
