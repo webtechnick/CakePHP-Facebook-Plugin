@@ -55,18 +55,18 @@ The purpose of the Facebook plugin is to provide a seamless way to connect your 
 	* As such, you now have to set the model in which you want the Facebook plugin to interact with if you want User/Auth integration via database
 	* You must set this when defining the Facebook.Connect component
 	
-	//Example AppController setup
-	public $components = array('Session',
-		'Auth' => array(
-			'authenticate' => array(
-				'Form' => array(
-					'fields' => array('username' => 'email')
-				)
+		//Example AppController setup
+		public $components = array('Session',
+			'Auth' => array(
+				'authenticate' => array(
+					'Form' => array(
+						'fields' => array('username' => 'email')
+					)
+				),
+				'authorize' => 'Controller'
 			),
-			'authorize' => 'Controller'
-		),
-		'Facebook.Connect' => array('model' => 'User')
-	);
+			'Facebook.Connect' => array('model' => 'User')
+		);
 	
 	* If you do not set a 'model' key, integration with your Auth Model will not happen automatically.
 
