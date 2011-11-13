@@ -54,21 +54,20 @@ The purpose of the Facebook plugin is to provide a seamless way to connect your 
 	* the AuthComponent in 2.0 has been redesigned significantly, making the guesswork done by the FacebookPlugin much harder to acheive
 	* As such, you now have to set the model in which you want the Facebook plugin to interact with if you want User/Auth integration via database
 	* You must set this when defining the Facebook.Connect component
-	
-		//Example AppController setup
-		public $components = array('Session',
-			'Auth' => array(
-				'authenticate' => array(
-					'Form' => array(
-						'fields' => array('username' => 'email')
-					)
-				),
-				'authorize' => 'Controller'
-			),
-			'Facebook.Connect' => array('model' => 'User')
-		);
-	
 	* If you do not set a 'model' key, integration with your Auth Model will not happen automatically.
+
+			//Example AppController setup
+			public $components = array('Session',
+				'Auth' => array(
+					'authenticate' => array(
+						'Form' => array(
+							'fields' => array('username' => 'email')
+						)
+					),
+					'authorize' => 'Controller'
+				),
+				'Facebook.Connect' => array('model' => 'User')
+			);
 
 # About Plugin
 * Blog: <http://www.webtechnick.com/blogs/view/229/CakePHP_Facebook_Plugin_Auth_Facebook_and_more>
