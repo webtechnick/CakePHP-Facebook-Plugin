@@ -7,7 +7,7 @@
   * @link http://www.webtechnick.com
   * @license MIT
   */
-App::import('Lib', 'Facebook.FacebookApi');
+App::uses('FacebookApi', 'Facebook.Lib');
 class ApiComponent extends Object {
   
   /**

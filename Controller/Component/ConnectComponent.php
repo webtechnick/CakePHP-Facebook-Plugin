@@ -7,48 +7,63 @@
 *
 * @author Nick Baker <nick [at] webtechnick [dot] come>
 * @link http://www.webtechnick.com
-* @since 2.5.0
+* @since 3.0.0
 * @license MIT
 */
-App::import('Lib', 'Facebook.FB');
-class ConnectComponent extends Object {
+App::uses('FB', 'Facebook.Lib');
+App::uses('FacebookInfo', 'Facebook.Lib');
+class ConnectComponent extends Component {
 	
 	/**
 	* uid is the Facebook ID of the connected Facebook user, or null if not connected
 	*/
-	var $uid = null;
+	public $uid = null;
 	
 	/**
 	* me is the Facebook user object for the connected Facebook user
 	*/
-	var $me = null;
+	public $me = null;
 	
 	/**
 	* hasAccount is true if the connected Facebook user has an account in your application
 	*/
-	var $hasAccount = false;
+	public $hasAccount = false;
 	
 	/**
 	* The authenticated User using Auth
 	*/
-	var $authUser = null;
+	public $authUser = null;
 	
 	/**
 	* No Auth, if set to true, syncFacebookUser will NOT be called
 	*/
-	var $noAuth = false;
+	public $noAuth = false;
 	
 	/**
 	* Error log
 	*/
-	var $errors = array();
+	private $__errors = array();
 	
 	/**
 	* createUser is true you want the component to attempt to create a CakePHP Auth user
 	* account by introspection on the Auth component.  If false, you can use $this->hasAccount
 	* as a reference to decide what to do with that user. (default true)
 	*/
-	var $createUser = true;
+	public $createUser = true;
+	
+	/**
+	* name of the authentication model, false by default,
+	* set to model alias to init the model.
+	*/
+	public $model = false;
+	
+	/**
+	* Fields for the model if you want to save the Auth component.
+	*/
+	public $modelFields = array(
+		'password' => 'password',
+		'username' => 'username'
+	);
 	
 	/**
 	* Initialize, load the api, decide if we're logged in
@@ -58,25 +73,26 @@ class ConnectComponent extends Object {
 	* @return void
 	* @access public
 	*/
-	function initialize(&$Controller, $settings = array()){
+	public function initialize(&$Controller, $settings = array()){
 		$this->Controller = $Controller;
 		$this->_set($settings);
 		$this->FB = new FB();
-		$this->session = $this->FB->getSession();
+		$this->uid = $this->FB->getUser();
 	}
 	
 	/**
 	* Sync the connected Facebook user with your application.
 	*
 	* Attempt to authenticate user using Facebook.
-	* Currently the uid is fetched from $this->session['uid'].
+	* Currently the uid is fetched from $this->uid.
 	*
 	* @param Controller object to attach to
 	* @return void
+	* @access public
 	*/
-	function startup() {
+	public function startup() {
 		// Prevent using Auth component only if there is noAuth setting provided
-		if (!$this->noAuth && !empty($this->session['uid'])) {
+		if (!$this->noAuth && !empty($this->uid)) {
 			$this->__syncFacebookUser();
 		}
 	}
@@ -94,8 +110,9 @@ class ConnectComponent extends Object {
 	*    2. try to log the user in, afterwards.
 	*
 	* @return boolean True if successful, false otherwise.
+	* @access private
 	*/
-	function __syncFacebookUser(){
+	private function __syncFacebookUser(){
 		if(!isset($this->Controller->Auth)){
 			return false;
 		}
@@ -112,26 +129,25 @@ class ConnectComponent extends Object {
 		
 		// check if the user already has an account
 		// User is logged in but doesn't have a 
-		if($Auth->user()){
+		if($Auth->user('id')){
 			$this->hasAccount = true;
 			$this->User->id = $Auth->user($this->User->primaryKey);
 			if (!$this->User->field('facebook_id')) {
-				$this->User->saveField('facebook_id', $this->session['uid']);
+				$this->User->saveField('facebook_id', $this->uid);
 			}
 			return true;
 		} 
 		else {
 			// attempt to find the user by their facebook id
-			$this->authUser = $this->User->findByFacebookId($this->session['uid']);
-			
+			$this->authUser = $this->User->findByFacebookId($this->uid);
 			//if we have a user, set hasAccount
 			if(!empty($this->authUser)){
 				$this->hasAccount = true;
 			}
 			//create the user if we don't have one
 			elseif(empty($this->authUser) && $this->createUser) {
-				$this->authUser[$this->User->alias]['facebook_id'] = $this->session['uid'];
-				$this->authUser[$this->User->alias][$Auth->fields['password']] = $Auth->password(FacebookInfo::randPass());
+				$this->authUser[$this->User->alias]['facebook_id'] = $this->uid;
+				$this->authUser[$this->User->alias][$this->modelFields['password']] = $Auth->password(FacebookInfo::randPass());
 				if($this->__runCallback('beforeFacebookSave')){
 					$this->hasAccount = ($this->User->save($this->authUser, array('validate' => false)));
 				}
@@ -142,8 +158,12 @@ class ConnectComponent extends Object {
 			//Login user if we have one
 			if($this->authUser){
 				$this->__runCallback('beforeFacebookLogin', $this->authUser);
-				$Auth->fields = array('username' => 'facebook_id', 'password' => $Auth->fields['password']);    		
-				if($Auth->login($this->authUser)){
+				$Auth->authenticate = array(
+					'Form' => array(
+						'fields' => array('username' => 'facebook_id', 'password' => $this->modelFields['password'])
+					)
+				);
+				if($Auth->login($this->authUser[$this->model])){
 					$this->__runCallback('afterFacebookLogin');
 				}
 			}
@@ -155,10 +175,10 @@ class ConnectComponent extends Object {
 	* Read the logged in user
 	* @param field key to return (xpath without leading slash)
 	* @param mixed return
+	* @access public
 	*/
-	function user($field = null){
-		if(isset($this->session)){
-			$this->uid = $this->session['uid'];
+	public function user($field = null){
+		if(isset($this->uid)){
 			if($this->Controller->Session->read('FB.Me') == null){
 				$this->Controller->Session->write('FB.Me', $this->FB->api('/me'));
 			}
@@ -185,8 +205,9 @@ class ConnectComponent extends Object {
 	* @param string callback
 	* @param mixed passed in variable (optional)
 	* @return mixed result of the callback function
+	* @access private
 	*/ 
-	function __runCallback($callback, $passedIn = null){
+	private function __runCallback($callback, $passedIn = null){
 		if(is_callable(array($this->Controller, $callback))){
 			return call_user_func_array(array($this->Controller, $callback), array($passedIn));
 		}
@@ -194,12 +215,15 @@ class ConnectComponent extends Object {
 	}
 	
 	/**
-	* Initialize the actual User model object defined by Auth
+	* Initialize the actual User model object defined by the plugin
 	* @return true if successful
 	* @access private
 	*/
-	function __initUserModel(){
-		$this->User = ClassRegistry::init($this->Controller->Auth->userModel);
+	private function __initUserModel(){
+		if($this->model){
+			App::uses($this->model,'Model');
+			$this->User = ClassRegistry::init($this->model);
+		}
 		if (isset($this->User)) {
 			$this->User->recursive = -1;
 			return true;
@@ -213,7 +237,7 @@ class ConnectComponent extends Object {
 	* @return void
 	* @access private
 	*/
-	function __error($msg){
-		$this->errors[] = __($msg, true);
+	private function __error($msg){
+		$this->__errors[] = __($msg, true);
 	}
 }

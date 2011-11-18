@@ -1,7 +1,7 @@
 <?php
-App::import('Helper', 'Facebook.Facebook');
-App::import('Helper', 'Html');
-App::import('Helper', 'Session');
+App::uses('Facebook.FacebookHelper', 'Helper');
+App::uses('HtmlHelper', 'Helper');
+App::uses('SessionHelper', 'Helper');
 Mock::generate('SessionHelper');
 class FacebookHelperTest extends CakeTestCase {
   var $Facebook = null;

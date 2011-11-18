@@ -1,6 +1,7 @@
 # Facebook Plugin
 * Author:  Nick Baker (nick@webtechnick.com)
-* version 2.5.0
+* CakePHP 2.0 support by Stefan Zhelyazkov (stz@seas.upenn.edu)
+* version 3.0.1
 * http://www.webtechnick.com
 * license: MIT
 
@@ -48,6 +49,25 @@ The purpose of the Facebook plugin is to provide a seamless way to connect your 
   * New callback feature for FacebookHelper::init() (page refresh is still default).
   * Nicer FacebookHelper::share() now uses Router instead of environment and $this->here
   * Optimization, Moving __syncFacebookUser to after Controller->beforeFilter() so $noAuth can be changed in the beforeFilter if need be.
+* 3.0.0: Upgraded to Facebook PHP SDK v 3.1.1
+* 3.0.1: Added CakePHP 2.0 support
+	* the AuthComponent in 2.0 has been redesigned significantly, making the guesswork done by the FacebookPlugin much harder to acheive
+	* As such, you now have to set the model in which you want the Facebook plugin to interact with if you want User/Auth integration via database
+	* You must set this when defining the Facebook.Connect component
+	* If you do not set a 'model' key, integration with your Auth Model will not happen automatically.
+
+			//Example AppController setup
+			public $components = array('Session',
+				'Auth' => array(
+					'authenticate' => array(
+						'Form' => array(
+							'fields' => array('username' => 'email')
+						)
+					),
+					'authorize' => 'Controller'
+				),
+				'Facebook.Connect' => array('model' => 'User')
+			);
 
 # About Plugin
 * Blog: <http://www.webtechnick.com/blogs/view/229/CakePHP_Facebook_Plugin_Auth_Facebook_and_more>
@@ -74,30 +94,37 @@ The purpose of the Facebook plugin is to provide a seamless way to connect your 
 
 
 # Install and Setup
-First clone the repository into your `app/plugins/facebook` directory
+* First clone the repository into your `app/Plugin/Facebook` directory
 
-	git clone git://github.com/webtechnick/CakePHP-Facebook-Plugin.git app/plugins/facebook
+		git clone git://github.com/webtechnick/CakePHP-Facebook-Plugin.git app/Plugin/Facebook
 
-Once installed, if you wish to use any other features *other* than the share button you'll need to get an api_key and secret for your application.
-1. Create an app from facebook at this url: <http://www.facebook.com/developers/createapp.php>
-2. Once you generate an api_key and secret you'll need to create a file `app/config/facebook.php` You can find an example of what you'll need and how it is laid out in `/facebook/config/facebook.php.example`
 
-	//app/config/facebook.php
-	$config = array(
-		'Facebook' => array(
-			'appId'  => 'YOUR_APP_ID',
-			'apiKey' => 'YOUR_API_KEY',
-			'secret' => 'YOUR_SECRET',
-			'cookie' => true,
-			'locale' => 'en_US',
-		)
-	);
+* Load the plugin in your `app/Config/bootstrap.php` file:
+
+		//app/Config/bootstrap.php
+		CakePlugin::load('Facebook');
+
+### Once installed, if you wish to use any other features *other* than the share button you'll need to get an api_key and secret for your application.
+* Create an app from facebook at this url: <http://www.facebook.com/developers/createapp.php>
+* Once you generate an api_key and secret you'll need to create a file `app/Config/facebook.php` You can find an example of what you'll need and how it is laid out in `/Facebook/Config/facebook.php.example`
+
+		//app/Config/facebook.php
+		$config = array(
+			'Facebook' => array(
+				'appId'  => 'YOUR_APP_ID',
+				'apiKey' => 'YOUR_API_KEY',
+				'secret' => 'YOUR_SECRET',
+				'cookie' => true,
+				'locale' => 'en_US',
+			)
+		);
+
 
 # Usage
 You can use all or some of the Facebook plugin as you see fit.
 At the very least you will probably want to use the Facebook Helper
 
-	var $helpers = array('Facebook.Facebook');
+	public $helpers = array('Facebook.Facebook');
 
 If all you want to use is the share feature of the Facebook plugin you're all done.
 
@@ -127,7 +154,7 @@ Despite the name, the Facebook Connect component takes immediate advantage of th
 To use this feature you will first need to update your facebook application with the connect url of your application's url.  This is done on the facebook application settings. <http://www.facebook.com/developers/apps.php>
 Now all you need to do is add the `Facebook.Connect` component to your app_controller.
 
-	var $components = array('Facebook.Connect');
+	public $components = array('Facebook.Connect');
 
 That's it.  You're now ready to accept facebook authentication.
 
@@ -149,7 +176,7 @@ Each button has multiple options, review the API to see all available options
 ## CakePHP Auth + Facebook.Connect
 Facebook.Connect will play nice with a variety of Authentication systesm.  It has seamless integration with CakePHP AuthComponent.
 
-	var $components = array('Auth', 'Facebook.Connect');
+	public $components = array('Auth', 'Facebook.Connect');
 	
 To integrate with CakePHP Auth, you'll need to alter your users table (or whatever table your Auth component uses) and add a new field -> `facebook_id`.
 
@@ -202,22 +229,24 @@ There are three callbacks available to use, each are defined in the controller a
 You can access the Facebook Api from anywhere in your app.
 You'll need to include the Api first
 
-	App::import('Lib', 'Facebook.FB');
+	App::uses('FB', 'Facebook.Lib');
 
 Then you can instanciate it or, if you're running PHP 5.3.x you can make static calls on it.
 
 PHP version 5.2.x
-	$Facebook = new FB();
-	$Facebook->api('/me');
+
+		$Facebook = new FB();
+		$Facebook->api('/me');
 
 PHP 5.3.x
-	FB::api('/me');
+
+		FB::api('/me');
 	
 	
 # Internationalization
 You can set the locale of the plugin through the helper declaration or through the `config/facebook.php` configuration file (see top of document).
 
-	var $helpers = array('Facebook.Facebook' => array('locale' => 'en_US'));
+	public $helpers = array('Facebook.Facebook' => array('locale' => 'en_US'));
 	
 Facebook locales: <http://developers.facebook.com/docs/internationalization/>
 

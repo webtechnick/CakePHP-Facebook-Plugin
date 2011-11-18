@@ -1,9 +1,9 @@
 <?php
-App::import('Component', 'Facebook.Connect');
-App::import('Core', 'Controller');
-App::import('Component', 'Auth');
-App::import('Component', 'Session');
-App::import('Lib', 'Facebook.FB');
+App::uses('Facebook.ConnectComponent', 'Controller/Component');
+App::uses('Controller', 'Utility');
+App::uses('AuthComponent', 'Controller/Component');
+App::uses('SessionComponent', 'Controller/Component');
+App::uses('Facebook.FB', 'Lib');
 
 class TestUser extends CakeTestModel {
   var $name = 'TestUser';
