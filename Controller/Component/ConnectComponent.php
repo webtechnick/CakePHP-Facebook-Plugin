@@ -17,22 +17,22 @@ class ConnectComponent extends Component {
 	/**
 	* uid is the Facebook ID of the connected Facebook user, or null if not connected
 	*/
-	var $uid = null;
+	public $uid = null;
 	
 	/**
 	* me is the Facebook user object for the connected Facebook user
 	*/
-	var $me = null;
+	public $me = null;
 	
 	/**
 	* hasAccount is true if the connected Facebook user has an account in your application
 	*/
-	var $hasAccount = false;
+	public $hasAccount = false;
 	
 	/**
 	* The authenticated User using Auth
 	*/
-	var $authUser = null;
+	public $authUser = null;
 	
 	/**
 	* No Auth, if set to true, syncFacebookUser will NOT be called
@@ -73,7 +73,7 @@ class ConnectComponent extends Component {
 	* @return void
 	* @access public
 	*/
-	function initialize(&$Controller, $settings = array()){
+	public function initialize(&$Controller, $settings = array()){
 		$this->Controller = $Controller;
 		$this->_set($settings);
 		$this->FB = new FB();
@@ -89,7 +89,7 @@ class ConnectComponent extends Component {
 	* @param Controller object to attach to
 	* @return void
 	*/
-	function startup() {
+	public function startup() {
 		// Prevent using Auth component only if there is noAuth setting provided
 		if (!$this->noAuth && !empty($this->uid)) {
 			$this->__syncFacebookUser();
@@ -110,11 +110,11 @@ class ConnectComponent extends Component {
 	*
 	* @return boolean True if successful, false otherwise.
 	*/
-	function __syncFacebookUser(){
+	private function __syncFacebookUser(){
 		if(!isset($this->Controller->Auth)){
 			return false;
 		}
-		// set Auth to a convenience variable
+		// set Auth to a convenience publiciable
 		$Auth = $this->Controller->Auth;
 		if (!$this->__initUserModel()) {
 			return false;
@@ -174,7 +174,7 @@ class ConnectComponent extends Component {
 	* @param field key to return (xpath without leading slash)
 	* @param mixed return
 	*/
-	function user($field = null){
+	public function user($field = null){
 		if(isset($this->uid)){
 			if($this->Controller->Session->read('FB.Me') == null){
 				$this->Controller->Session->write('FB.Me', $this->FB->api('/me'));
@@ -200,10 +200,10 @@ class ConnectComponent extends Component {
 	/**
 	* Run the callback if it exists
 	* @param string callback
-	* @param mixed passed in variable (optional)
+	* @param mixed passed in publiciable (optional)
 	* @return mixed result of the callback function
 	*/ 
-	function __runCallback($callback, $passedIn = null){
+	private function __runCallback($callback, $passedIn = null){
 		if(is_callable(array($this->Controller, $callback))){
 			return call_user_func_array(array($this->Controller, $callback), array($passedIn));
 		}
@@ -215,7 +215,7 @@ class ConnectComponent extends Component {
 	* @return true if successful
 	* @access private
 	*/
-	function __initUserModel(){
+	private function __initUserModel(){
 		if($this->model){
 			App::uses($this->model,'Model');
 			$this->User = ClassRegistry::init($this->model);
@@ -233,7 +233,7 @@ class ConnectComponent extends Component {
 	* @return void
 	* @access private
 	*/
-	function __error($msg){
+	private function __error($msg){
 		$this->errors[] = __($msg, true);
 	}
 }

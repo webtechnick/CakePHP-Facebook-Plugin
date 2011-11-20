@@ -13,26 +13,26 @@ class FacebookHelper extends AppHelper {
 	/**
 	* Helpers to load with this helper.
 	*/
-	var $helpers = array('Html', 'Session');
+	public $helpers = array('Html', 'Session');
 	
 	/**
 	* Default Facebook.Share javascript URL
 	* @access private
 	*/
-	var $__fbShareScript = 'http://static.ak.fbcdn.net/connect.php/js/FB.Share';
+	public $__fbShareScript = 'http://static.ak.fbcdn.net/connect.php/js/FB.Share';
 	
 	/**
 	* locale, settable in the constructor
 	* @link http://developers.facebook.com/docs/internationalization/
 	* @access public
 	*/
-	var $locale = null;
+	public $locale = null;
 	
 	/**
 	* Loadable construct, pass in locale settings
 	* Fail safe locale to 'en_US'
 	*/
-	function __construct(View $View, $settings = array()){
+	public function __construct(View $View, $settings = array()){
 		$this->_set($settings);
 		
 		if(!$this->locale){
@@ -54,7 +54,7 @@ class FacebookHelper extends AppHelper {
 	* - 'license' => License Info
 	* @return string plugin version
 	*/
-	function info($name = 'version'){
+	public function info($name = 'version'){
 		if(FacebookInfo::_isAvailable($name)){ 
 			return FacebookInfo::$name();
 		}
@@ -68,7 +68,7 @@ class FacebookHelper extends AppHelper {
 	* @return string of html header
 	* @access public
 	*/
-	function html(){
+	public function html(){
 		return '<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://ogp.me/ns/fb#">';
 	}
 	
@@ -92,7 +92,7 @@ class FacebookHelper extends AppHelper {
 	* @return string XFBML tag
 	* @access public
 	*/
-	function login($options = array(), $label = ''){
+	public function login($options = array(), $label = ''){
 		$options = array_merge(
 			array(
 				'label' => '',
@@ -147,7 +147,7 @@ class FacebookHelper extends AppHelper {
 	* @return string XFBML tag for logout button
 	* @access public
 	*/
-	function logout($options = array(), $label = ''){
+	public function logout($options = array(), $label = ''){
 		$options = array_merge(
 			array(
 				'label' => '',
@@ -197,7 +197,7 @@ class FacebookHelper extends AppHelper {
 	* @return string Link for disconnect button
 	* @access public
 	*/
-	function disconnect($options = array()){
+	public function disconnect($options = array()){
 		$options = array_merge(
 			array(
 				'label' => 'logout'
@@ -228,7 +228,7 @@ class FacebookHelper extends AppHelper {
 	* @return string XFBML tag along with shareJs script
 	* @access public
 	*/
-	function share($url = null, $options = array()){
+	public function share($url = null, $options = array()){
 		if(empty($url)){
 			$url = Router::url(null, true);
 		}
@@ -272,7 +272,7 @@ class FacebookHelper extends AppHelper {
 	* @return string fb tag for profile picture or empty string if uid is not present
 	* @access public
 	*/
-	function picture($uid = null, $options = array()){
+	public function picture($uid = null, $options = array()){
 		$options = array_merge(
 			array(
 				'uid' => $uid,
@@ -299,7 +299,7 @@ class FacebookHelper extends AppHelper {
 	* - connections : number of connections to show (default 10)
 	* - colorscheme : dark | light (default light)
 	*/
-	function likebox($url = null, $options = array()){
+	public function likebox($url = null, $options = array()){
 		$options = array_merge(
 			array(
 				'href' => $url,
@@ -324,7 +324,7 @@ class FacebookHelper extends AppHelper {
 	* @return string xfbhtml tag
 	* @access public
 	*/
-	function fanbox($options = array()){
+	public function fanbox($options = array()){
 		$options = array_merge(
 			array(
 				'profile_id' => FacebookInfo::getConfig('appId'),
@@ -348,7 +348,7 @@ class FacebookHelper extends AppHelper {
 	* @return string xfbhtml tag
 	* @access public
 	*/
-	function livestream($options = array()){
+	public function livestream($options = array()){
 		$options = array_merge(
 			array(
 				'event_app_id' => FacebookInfo::getConfig('appId'),
@@ -370,7 +370,7 @@ class FacebookHelper extends AppHelper {
 	* @return string xfbhtml tag
 	* @access public
 	*/
-	function comments($options = array()){
+	public function comments($options = array()){
 		return $this->__fbTag('fb:comments', '', $options);
 	}
 	
@@ -387,7 +387,7 @@ class FacebookHelper extends AppHelper {
 	* @return string xfbhtml tag
 	* @access public
 	*/
-	function recommendations($options = array()){
+	public function recommendations($options = array()){
 		return $this->__fbTag('fb:recommendations', '', $options);
 	}
 	
@@ -400,7 +400,7 @@ class FacebookHelper extends AppHelper {
 	* @return string xfbhtml tag
 	* @access public
 	*/
-	function friendpile($options = array()){
+	public function friendpile($options = array()){
 		return $this->__fbTag('fb:friendpile', '', $options);
 	}
 	
@@ -418,7 +418,7 @@ class FacebookHelper extends AppHelper {
 	* @return string xfbhtml tag
 	* @access public
 	*/
-	function activity($options = array()){
+	public function activity($options = array()){
 		return $this->__fbTag('fb:activity', '', $options);
 	}
 	
@@ -435,7 +435,7 @@ class FacebookHelper extends AppHelper {
 	* @return string xfbhtml tag
 	* @access public
 	*/
-	function like($options = array()){
+	public function like($options = array()){
 		return $this->__fbTag('fb:like', '', $options);
 	}
 	
@@ -447,7 +447,7 @@ class FacebookHelper extends AppHelper {
 	* @return string of scriptBlock for FB.init() or error
 	*/
 	
-	function init($options = null, $reload = true) {
+	public function init($options = null, $reload = true) {
 		if (empty($options)) {
 			$options = array();
 		}
@@ -520,7 +520,7 @@ class FacebookHelper extends AppHelper {
 
 	// Load the SDK Asynchronously
 	(function() {
-	var e = document.createElement('script'); e.async = true;
+	public e = document.createElement('script'); e.async = true;
 	e.src = document.location.protocol 
 	+ '//connect.facebook.net/en_US/all.js';
 	document.getElementById('fb-root').appendChild(e);

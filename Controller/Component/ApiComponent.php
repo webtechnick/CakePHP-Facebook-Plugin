@@ -15,12 +15,12 @@ class ApiComponent extends Object {
     * @link http://wiki.developers.facebook.com/index.php/Main_Page
     * @access public
     */
-  var $FB = null;
+  public $FB = null;
   
   /**
     * Load the API into a class property and allow access to it.
     */
-  function initialize($controller){
+  public function initialize($controller){
     $this->FB = new FacebookApi();
   }
   
