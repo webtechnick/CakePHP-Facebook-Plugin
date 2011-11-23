@@ -9,6 +9,7 @@
 * @link http://www.webtechnick.com
 */
 App::uses('FacebookInfo', 'Facebook.Lib');
+App::uses('AppHelper','View/Helper');
 class FacebookHelper extends AppHelper {
 	/**
 	* Helpers to load with this helper.
@@ -124,7 +125,8 @@ class FacebookHelper extends AppHelper {
 			}
 		}
 		else {
-			unset($options['label'], $options['custom']);
+			if(!$options['id']){ unset($options['id']); }
+			unset($options['label'], $options['custom'], $options['redirect'], $options['img'], $options['alt']);
 			return $this->__fbTag('fb:login-button', $label, $options);
 		}
 	}
