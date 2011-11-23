@@ -520,7 +520,7 @@ class FacebookHelper extends AppHelper {
 
 	// Load the SDK Asynchronously
 	(function() {
-	public e = document.createElement('script'); e.async = true;
+	var e = document.createElement('script'); e.async = true;
 	e.src = document.location.protocol 
 	+ '//connect.facebook.net/en_US/all.js';
 	document.getElementById('fb-root').appendChild(e);
