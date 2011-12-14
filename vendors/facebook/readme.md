@@ -1,5 +1,5 @@
-Facebook PHP SDK
-================
+Facebook PHP SDK (v.3.1.1)
+==========================
 
 The [Facebook Platform](http://developers.facebook.com/) is
 a set of APIs that make your application more social. Read more about
@@ -18,30 +18,34 @@ Usage
 The [examples][examples] are a good place to start. The minimal you'll need to
 have is:
 
-    <?php
-
-    require './facebook.php';
+    require 'php-sdk/src/facebook.php';
 
     $facebook = new Facebook(array(
-      'appId'  => 'YOUR APP ID',
-      'secret' => 'YOUR API SECRET',
-      'cookie' => true, // enable optional cookie support
+      'appId'  => 'YOUR_APP_ID',
+      'secret' => 'YOUR_APP_SECRET',
     ));
+
+    // Get User ID
+    $user = $facebook->getUser();
 
 To make [API][API] calls:
 
-    try {
-      $me = $facebook->api('/me');
-    } catch (FacebookApiException $e) {
-      error_log($e);
+    if ($user) {
+      try {
+        // Proceed knowing you have a logged in user who's authenticated.
+        $user_profile = $facebook->api('/me');
+      } catch (FacebookApiException $e) {
+        error_log($e);
+        $user = null;
+      }
     }
 
-Logged in vs Logged out:
+Login or logout url will be needed depending on current user state.
 
-    if ($facebook->getSession()) {
-      echo '<a href="' . $facebook->getLogoutUrl() . '">Logout</a>';
+    if ($user) {
+      $logoutUrl = $facebook->getLogoutUrl();
     } else {
-      echo '<a href="' . $facebook->getLoginUrl() . '">Login</a>';
+      $loginUrl = $facebook->getLoginUrl();
     }
 
 [examples]: http://github.com/facebook/php-sdk/blob/master/examples/example.php
@@ -51,10 +55,9 @@ Logged in vs Logged out:
 Feedback
 --------
 
-We are relying on the [GitHub issues tracker][issues] linked from above for
-feedback. File bugs or other issues [here][issues].
+File bugs or other issues [here].
 
-[issues]: http://github.com/facebook/php-sdk/issues
+[here]: http://bugs.developers.facebook.net/
 
 
 
@@ -67,3 +70,8 @@ We are including this in the open source repository to assure you of our
 commitment to quality, but also with the hopes that you will contribute back to
 help keep it stable. The easiest way to do so is to file bugs and include a
 test case.
+
+The tests can be executed by using this command from the base directory:
+
+    phpunit --stderr --bootstrap tests/bootstrap.php tests/tests.php
+

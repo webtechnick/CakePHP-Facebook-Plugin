@@ -3,7 +3,7 @@
 * Facebook.Facebook helper generates fbxml and loads javascripts
 *
 * @author Nick Baker <nick [at] webtechnick [dot] com>
-* @version since 2.5.0
+* @version since 2.6.1
 * @license MIT
 * @link http://www.webtechnick.com
 */
@@ -80,18 +80,50 @@ class FacebookHelper extends AppHelper {
 	}
 	
 	/**
+	* Register Button
+	* $this->Facebook->init() is required for this
+	* @param array of options
+	* - fields: comma separated fields to use ('name','birthday','gender','location','email' default)
+	* - redirect-uri: Url to redirect the user to.  current page by default
+	* - width: width in pixels to show the registration form
+	*/
+	function registration($options = array(), $label = ''){
+		$options = array_merge(
+			array(
+				'fields' => 'name,birthday,gender,location,email', 
+				'redirect-uri' => Router::url($this->here, true),
+				'width' => 350
+			), 
+			$options
+		);
+		return $this->__fbTag('fb:registration',$label,$options);
+	}
+	
+	/**
 	* Login Button
 	* $this->Facebook->init() is required for this
 	* @param array of options
 	* - show-faces bool Show pictures of the user's friends who have joined your application
 	* - width int The width of the plugin in pixels
 	* - max-rows int The maximum number of rows of profile pictures to show
-	* - perms list of permissions to ask for when logging in separated by commas (eg: 'email,read_stream,publish_stream'). (http://developers.facebook.com/docs/authentication/permissions)
+	* - scope string list of permissions to ask for when logging in separated by commas (eg: 'email,read_stream,publish_stream'). (http://developers.facebook.com/docs/authentication/permissions)
 	* @param string label
 	* @return string XFBML tag
 	* @access public
 	*/
 	function login($options = array(), $label = ''){
+		$options = array_merge(
+			array(
+				'show-faces' => 'false',
+				'width' => '200',
+				'max-rows' => '1',
+			),
+			$options
+		);
+		if(isset($options['perms'])){
+			$options['scope'] = $options['perms'];
+			unset($options['perms']);
+		}
 		return $this->__fbTag('fb:login-button', $label, $options);
 	}
 	
@@ -154,7 +186,7 @@ class FacebookHelper extends AppHelper {
 		);
 		if(isset($options['redirect']) && $options['redirect']){
 			$options['redirect'] = Router::url($options['redirect']);
-			$response = "window.location = '{$options['redirect']}'";
+			$response = "window.location = '{$options['redirect']}';";
 		} else {
 			$response = "window.location.reload();";
 		}
@@ -234,6 +266,29 @@ class FacebookHelper extends AppHelper {
 		else {
 			return "";
 		}
+	}
+	
+	/**
+	* New send social plugin
+	* $facebook->init() is required for this
+	* @param string url: url to send with facebook (default current page) 
+	* @param array options to pass into share
+	* - colorscheme: 'light' or 'dark' (default'light')
+	* - font: Font of the send button (default 'arial')
+	* @return string XFBML tag along with shareJs script
+	* @access public
+	*/
+	function sendbutton($url = null, $options = array()){
+		if(empty($url)){
+			$url = Router::url(null, true);
+		}
+		$defaults = array(
+			'colorscheme' => 'light',
+			'href' => $url,
+			'font' => 'arial',
+		);
+		$options = array_merge($defaults, $options);
+		return $this->__fbTag('fb:send','',$options);
 	}
 	
 	/**
@@ -410,10 +465,10 @@ class FacebookHelper extends AppHelper {
 window.fbAsyncInit = function() {
 	FB.init({
 		appId : '{$appId}',
-		session : {$session}, // don't refetch the session when PHP already has it
 		status : true, // check login status
 		cookie : true, // enable cookies to allow the server to access the session
-		xfbml : true // parse XFBML
+		xfbml : true, // parse XFBML
+		oauth : true // use Oauth
 	});
 	{$callback}
 };
