@@ -1,6 +1,6 @@
 # Facebook Plugin
 * Author:  Nick Baker (nick@webtechnick.com)
-* version 3.1.0
+* version 3.1.1
 * http://www.webtechnick.com
 * license: MIT
 
