@@ -53,6 +53,7 @@ The purpose of the Facebook plugin is to provide a seamless way to connect your 
   * FacebookHelper::registration() creates a registration form prepopulated with their facebook information.
   * ConnectComponent::registrationData() a useful shortcut to parsing a successful registration post to facebook.
   * FacebookHelper::sendbutton() creates a nice send button.
+* 3.1.1: Updated Facebook PHP SDK to latest version.
 
 # About Plugin
 * Blog: <http://www.webtechnick.com/blogs/view/229/CakePHP_Facebook_Plugin_Auth_Facebook_and_more>
