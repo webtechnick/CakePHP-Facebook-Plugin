@@ -31,7 +31,7 @@ class FacebookHelper extends AppHelper {
 	* Loadable construct, pass in locale settings
 	* Fail safe locale to 'en_US'
 	*/
-	function __construct($settings = array()){
+	function __construct(View $View, $settings = array()){
 		$this->_set($settings);
 		
 		if(!$this->locale){
@@ -40,7 +40,7 @@ class FacebookHelper extends AppHelper {
 		if(!$this->locale){
 			$this->locale = 'en_US';
 		}
-		parent::__construct();
+		parent::__construct($View, $settings);
 	}
 	
 	/**
