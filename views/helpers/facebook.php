@@ -135,7 +135,7 @@ class FacebookHelper extends AppHelper {
 	* - redirect string to your app's logout url (default null)
 	* - label string of text to use in link (default logout)
 	* - confirm string Alert dialog which will be visible if user clicks on the button/link
-	* - custom used to create custom link instead of standart fbml. if redirect option is set this one is not required.
+	* - custom used to create custom link instead of standard fbml. if redirect option is set this one is not required.
 	* @param string label
 	* @return string XFBML tag for logout button
 	* @access public
@@ -159,6 +159,9 @@ class FacebookHelper extends AppHelper {
 			$onclick = "FB.logout(function(response){".$response."});";
 			if(isset($options['confirm'])){
 				$onclick = 'if(confirm("'.$options['confirm'].'")){'.$onclick.'}';
+			}
+			if(!empty($label)){
+				$options['label'] = $label;
 			}
 			return $this->Html->link($options['label'], '#', array('onclick' => $onclick));
 		} else {
