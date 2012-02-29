@@ -60,6 +60,9 @@ class ConnectComponent extends Object {
 	*/
 	function initialize(&$Controller, $settings = array()){
 		$this->Controller = $Controller;
+        if (!$this->Controller->Session->started()) {
+            $this->Controller->Session->start();
+        }
 		$this->_set($settings);
 		$this->FB = new FB();
 		$this->uid = $this->FB->getUser();
