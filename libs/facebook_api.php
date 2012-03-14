@@ -7,7 +7,7 @@
   * @link http://www.webtechnick.com
   * @license MIT
   */
-App::import('Vendor', 'Facebook.facebook/php/facebook');
+App::import('Vendor', 'Facebook.facebook/src/facebook');
 Configure::load('facebook');
 class FacebookApi {
 
@@ -15,7 +15,7 @@ class FacebookApi {
     * Facebook Api
     */
   public static $Facebook = null;
-  
+
   /**
     * Forward any call to the Facebook API
     * @param string method name
@@ -24,9 +24,9 @@ class FacebookApi {
     */
   public function __call($method, $params){
     self::buildFacebook();
-    return self::$Facebook->$method($params);
+    return call_user_func_array(array(self::$Facebook, $method), $params);
   }
-  
+
   /**
     * Retrieve the property of the facebookApi
     * @param string name of property
@@ -36,10 +36,10 @@ class FacebookApi {
     self::buildFacebook();
     return self::$Facebook->$name;
   }
-  
+
   /**
     * PHP 5.3.0 only
-    * Usage: 
+    * Usage:
     * - FacebookApi::method(params);
     * Example:
     * - FacebookApi::get_loggedin_user();
@@ -47,15 +47,18 @@ class FacebookApi {
     */
   public static function __callstatic($method, $params){
     self::buildFacebook();
-    return self::$Facebook->$method($params);
+    return call_user_func_array(array(self::$Facebook, $method), $params);
   }
-  
+
   /**
     * Builds the facebook API if we need it
     */
   public static function buildFacebook(){
     if(!self::$Facebook){
-      self::$Facebook = new Facebook(Configure::read('Facebook.api_key'), Configure::read('Facebook.secret'));
+      self::$Facebook = new Facebook(array(
+        'appId' => Configure::read('Facebook.appId'),
+        'secret' => Configure::read('Facebook.secret'),
+      ));
     }
   }
 }
