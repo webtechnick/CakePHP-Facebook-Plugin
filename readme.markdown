@@ -164,7 +164,7 @@ Creates a login button:
 
 Create a login button that asks for extended permissions (<http://developers.facebook.com/docs/authentication/permissions>)
 	
-	<?php echo $facebook->login(array('perms' => 'email,publish_stream')); ?>
+	<?php echo $this->Facebook->login(array('perms' => 'email,publish_stream')); ?>
 
 Create a logout button:
 
