@@ -7,7 +7,7 @@
   * @link http://www.webtechnick.com
   * @license MIT
   */
-App::import('Vendor', 'Facebook.facebook/src/facebook');
+App::import('Vendor', 'Facebook/src/facebook');
 App::import('Lib', 'Facebook.FacebookInfo');
 class FB {
 

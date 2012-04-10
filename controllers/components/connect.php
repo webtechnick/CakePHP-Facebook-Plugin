@@ -11,7 +11,7 @@
 * @license MIT
 */
 App::import('Lib', 'Facebook.FB');
-class ConnectComponent extends Object {
+class ConnectComponent extends Component {
 	
 	/**
 	* uid is the Facebook ID of the connected Facebook user, or null if not connected
