@@ -451,7 +451,7 @@ class FacebookHelper extends AppHelper {
 	* @example $this->Facebook->init();
 	* @return string of scriptBlock for FB.init() or error
 	*/
-	function init($options = null, $reload = true) {
+	function init($options = null, $reload = true, $FBCanvasSetSize = false) {
 		if (empty($options)) {
 			$options = array();
 		}
@@ -462,6 +462,11 @@ class FacebookHelper extends AppHelper {
 			} else {
 				$callback = "if(typeof(facebookReady)=='function'){facebookReady()}";
 			}
+
+            if ($FBCanvasSetSize) {
+                $callback .= "FB.Canvas.setSize();";
+            }
+
 			$init = '<div id="fb-root"></div>';
 			$init .= $this->Html->scriptBlock(
 <<<JS
