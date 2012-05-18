@@ -203,6 +203,7 @@ Use the data in $user to finish the registration process on your own (save a new
 Facebook.Connect will play nice with a variety of Authentication systems.  It has nearly seamless integration with CakePHP AuthComponent.
 
 *note* Since the CakePHP 2.0 AuthComponent revamp, ConnectComponent doesn't have the introspection available anymore. It is necessary to tell Connect what model you store your users data in for the automagic to work like so:
+
 	//Example AppController.php components settup with FacebookConnect
 	public $components = array('Session',
 				'Auth' => array(
