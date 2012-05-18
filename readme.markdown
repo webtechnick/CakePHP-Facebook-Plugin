@@ -2,6 +2,7 @@
 * Author:  Nick Baker (nick@webtechnick.com)
 * http://www.webtechnick.com
 * license: MIT
+* version: 3.1.1
 
 The purpose of the Facebook plugin is to provide a seamless way to connect your cakePHP app to everyone's favorite social networking site -- Facebook. The goal for this plugin is to not only provide extremely useful dynamic features but to also provide a complete interface to the Facebook API.
 
@@ -70,6 +71,7 @@ The purpose of the Facebook plugin is to provide a seamless way to connect your 
   * FacebookHelper::registration() creates a registration form prepopulated with their facebook information.
   * ConnectComponent::registrationData() a useful shortcut to parsing a successful registration post to facebook.
   * FacebookHelper::sendbutton() creates a nice send button.
+* 3.1.1: Updated Facebook PHP SDK to latest release.
 
 # About Plugin
 * Blog: <http://www.webtechnick.com/blogs/view/229/CakePHP_Facebook_Plugin_Auth_Facebook_and_more>
