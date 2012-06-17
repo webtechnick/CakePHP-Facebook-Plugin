@@ -172,7 +172,8 @@ class ConnectComponent extends Component {
 						'fields' => array('username' => 'facebook_id', 'password' => $this->modelFields['password'])
 					)
 				);
-				if($Auth->login($this->authUser[$this->model])){
+				list($plugin, $class) = pluginSplit($this->model, true);
+				if($Auth->login($this->authUser[$class])){
 					$this->__runCallback('afterFacebookLogin');
 				}
 			}
