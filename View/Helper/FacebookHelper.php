@@ -496,6 +496,9 @@ class FacebookHelper extends AppHelper {
 			$options = array();
 		}
 		if ($appId = FacebookInfo::getConfig('appId')) {
+			if ($options['perms'] == null)
+				$options['perms'] = 'email';
+			
 			$init = '<div id="fb-root"></div>';
 			$init .= '<script src="//connect.facebook.net/en_US/all.js"></script>';
 			$init .= $this->Html->scriptBlock("
@@ -548,7 +551,7 @@ class FacebookHelper extends AppHelper {
 				// user could not log in
 				console.log('User cancelled login or did not fully authorize.');
 			}
-		}, {scope: 'email'});
+		}, {scope: '" . $options['perms'] . "'});
 	}
 
 	// logs the user out of the application and facebook
