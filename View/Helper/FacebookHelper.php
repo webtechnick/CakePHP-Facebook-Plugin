@@ -492,13 +492,10 @@ class FacebookHelper extends AppHelper {
 	*/
 	
 	public function init($options = null, $reload = true) {
-		if (empty($options)) {
-			$options = array();
-		}
+		$options = array_merge(array(
+			'perms' => 'email'
+		), $options);
 		if ($appId = FacebookInfo::getConfig('appId')) {
-			if ($options['perms'] == null)
-				$options['perms'] = 'email';
-			
 			$init = '<div id="fb-root"></div>';
 			$init .= '<script src="//connect.facebook.net/en_US/all.js"></script>';
 			$init .= $this->Html->scriptBlock("
