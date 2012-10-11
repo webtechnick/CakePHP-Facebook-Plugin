@@ -207,6 +207,74 @@ class ConnectComponent extends Component {
 		
 		return $this->me;
 	}
+
+	/**
+	 * Get the current logged in user's developer role for the application (administrators, developers, testers, insight users)
+	 */ 
+	public function role() 
+	{
+		$role = "";
+		$user_id = $this->uid;
+
+		$all_roles = $this->roles();
+
+		if( isset($all_roles) && $all_roles )
+		{
+			$all_roles = $all_roles->data;
+
+			for( $i=0; $i < count($all_roles); $i++ )
+			{
+				$roleObj = $all_roles[$i];
+				if( $roleObj->user == $user_id )
+				{
+					$role = $roleObj->role;
+					break;
+				}
+			}
+		}
+
+		
+
+		return $role;
+
+	}
+
+	/**
+	 * Get the developer roles for the application.  Returns an object 
+	 * Example return:
+	 *	 object(stdClass)[50]
+	 *		  public 'data' => 
+	 *		    array
+	 *		      0 => 
+	 *		        object(stdClass)[51]
+	 *		          public 'app_id' => string '1234567890123' (length=15)
+	 *		          public 'user' => string '10000123456789' (length=15)
+	 *		          public 'role' => string 'developers' (length=10)
+	 *		      1 => 
+	 *		        object(stdClass)[52]
+	 *		          public 'app_id' => string '1234567890123' (length=15)
+	 *		          public 'user' => string '10000987654321' (length=15)
+	 *		          public 'role' => string 'administrators' (length=14)
+	 */
+	public function roles() 
+	{
+		$app_id = Configure::read('Facebook.appId');
+        $app_secret = Configure::read('Facebook.secret');
+
+		// Query app access token
+		$app_access_token = file_get_contents(
+		  'https://graph.facebook.com/oauth/access_token?' .
+		  'client_id='.$app_id.'&client_secret='.$app_secret.'&' .
+		  'grant_type=client_credentials');
+
+		// Query app developer roles
+		$roles = json_decode(file_get_contents(
+		  'https://graph.facebook.com/'.$app_id.'/roles?' .
+		  $app_access_token
+		));
+
+		return $roles;
+	}
 	
 	/**
 	* Run the callback if it exists
