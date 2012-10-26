@@ -497,7 +497,7 @@ class FacebookHelper extends AppHelper {
 		), (array)$options);
 		if ($appId = FacebookInfo::getConfig('appId')) {
 			$init = '<div id="fb-root"></div>';
-			$init .= '<script src="//connect.facebook.net/en_US/all.js"></script>';
+			$init .= '<script src="//connect.facebook.net/'.$this->locale.'/all.js"></script>';
 			$init .= $this->Html->scriptBlock("
 	window.fbAsyncInit = function() {
 		FB.init({
@@ -566,7 +566,7 @@ class FacebookHelper extends AppHelper {
 	(function() {
 	var e = document.createElement('script'); e.async = true;
 	e.src = document.location.protocol 
-	+ '//connect.facebook.net/en_US/all.js';
+	+ '//connect.facebook.net/".$this->locale."/all.js';
 	document.getElementById('fb-root').appendChild(e);
 	}());");
 			return $init;
