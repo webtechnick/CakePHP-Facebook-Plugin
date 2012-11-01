@@ -68,13 +68,13 @@ class ConnectComponent extends Component {
 	/**
 	* Initialize, load the api, decide if we're logged in
 	* Sync the connected Facebook user with your application
-	* @param Controller object to attach to
+	* @param controller object to attach to
 	* @param settings for Connect
 	* @return void
 	* @access public
 	*/
-	public function initialize(&$Controller, $settings = array()){
-		$this->Controller = $Controller;
+	public function initialize(Controller $controller, $settings = array()){
+		$this->Controller = $controller;
 		$this->_set($settings);
 		$this->FB = new FB();
 		$this->uid = $this->FB->getUser();
@@ -86,10 +86,10 @@ class ConnectComponent extends Component {
 	* Attempt to authenticate user using Facebook.
 	* Currently the uid is fetched from $this->uid
 	*
-	* @param Controller object to attach to
+	* @param controller object to attach to
 	* @return void
 	*/
-	public function startup() {
+	public function startup(Controller $controller) {
 		// Prevent using Auth component only if there is noAuth setting provided
 		if (!$this->noAuth && !empty($this->uid)) {
 			$this->__syncFacebookUser();
