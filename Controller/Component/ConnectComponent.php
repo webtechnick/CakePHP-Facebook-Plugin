@@ -56,6 +56,11 @@ class ConnectComponent extends Component {
 	* set to model alias to init the model.
 	*/
 	public $model = false;
+
+	/**
+	* name of the plugin containing the authentication model, if any; false by default.
+	*/
+	public $plugin = false;
 	
 	/**
 	* Fields for the model if you want to save the Auth component.
@@ -228,8 +233,12 @@ class ConnectComponent extends Component {
 	*/
 	private function __initUserModel(){
 		if($this->model){
-			App::uses($this->model,'Model');
-			$this->User = ClassRegistry::init($this->model);
+			$plugin = '';
+			if ($this->plugin) {
+				$plugin = $this->plugin.'.';
+			}
+			App::uses($this->model, $plugin.'Model');
+			$this->User = ClassRegistry::init($plugin.$this->model);
 		}
 		if (isset($this->User)) {
 			$this->User->recursive = -1;
