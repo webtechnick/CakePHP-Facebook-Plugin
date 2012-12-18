@@ -497,11 +497,11 @@ class FacebookHelper extends AppHelper {
 		), (array)$options);
 		if ($appId = FacebookInfo::getConfig('appId')) {
 			$init = '<div id="fb-root"></div>';
-			$init .= '<script src="//connect.facebook.net/en_US/all.js"></script>';
+			$init .= '<script src="//connect.facebook.net/' . $this->locale . '/all.js"></script>';
 			$init .= $this->Html->scriptBlock("
 	window.fbAsyncInit = function() {
 		FB.init({
-			appId      : '$appId', // App ID
+			appId      : '{$appId}', // App ID
 			channelURL : '../../Vendor/channel.php', // Channel File
 			status     : true, // check login status
 			cookie     : true, // enable cookies to allow the server to access the session
@@ -548,7 +548,7 @@ class FacebookHelper extends AppHelper {
 				// user could not log in
 				console.log('User cancelled login or did not fully authorize.');
 			}
-		}, {scope: '" . $options['perms'] . "'});
+		}, {scope: '{$options['perms']}'});
 	}
 
 	// logs the user out of the application and facebook
@@ -566,7 +566,7 @@ class FacebookHelper extends AppHelper {
 	(function() {
 	var e = document.createElement('script'); e.async = true;
 	e.src = document.location.protocol 
-	+ '//connect.facebook.net/en_US/all.js';
+	+ '//connect.facebook.net/{$this->locale}/all.js';
 	document.getElementById('fb-root').appendChild(e);
 	}());");
 			return $init;
