@@ -56,6 +56,11 @@ class ConnectComponent extends Component {
 	* set to model alias to init the model.
 	*/
 	public $model = false;
+
+	/**
+	* name of the plugin containing the authentication model, if any; false by default.
+	*/
+	public $plugin = false;
 	
 	/**
 	* Fields for the model if you want to save the Auth component.
@@ -68,13 +73,13 @@ class ConnectComponent extends Component {
 	/**
 	* Initialize, load the api, decide if we're logged in
 	* Sync the connected Facebook user with your application
-	* @param Controller object to attach to
+	* @param controller object to attach to
 	* @param settings for Connect
 	* @return void
 	* @access public
 	*/
-	public function initialize(&$Controller, $settings = array()){
-		$this->Controller = $Controller;
+	public function initialize(Controller $controller, $settings = array()){
+		$this->Controller = $controller;
 		$this->_set($settings);
 		$this->FB = new FB();
 		$this->uid = $this->FB->getUser();
@@ -86,10 +91,10 @@ class ConnectComponent extends Component {
 	* Attempt to authenticate user using Facebook.
 	* Currently the uid is fetched from $this->uid
 	*
-	* @param Controller object to attach to
+	* @param controller object to attach to
 	* @return void
 	*/
-	public function startup() {
+	public function startup(Controller $controller) {
 		// Prevent using Auth component only if there is noAuth setting provided
 		if (!$this->noAuth && !empty($this->uid)) {
 			$this->__syncFacebookUser();
@@ -228,8 +233,12 @@ class ConnectComponent extends Component {
 	*/
 	private function __initUserModel(){
 		if($this->model){
-			App::uses($this->model,'Model');
-			$this->User = ClassRegistry::init($this->model);
+			$plugin = '';
+			if ($this->plugin) {
+				$plugin = $this->plugin.'.';
+			}
+			App::uses($this->model, $plugin.'Model');
+			$this->User = ClassRegistry::init($plugin.$this->model);
 		}
 		if (isset($this->User)) {
 			$this->User->recursive = -1;

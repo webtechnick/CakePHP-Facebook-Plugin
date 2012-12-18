@@ -96,8 +96,8 @@ class FacebookHelper extends AppHelper {
 	* Login Button
 	* $this->Facebook->init() is required for this
 	* @param array of options
-	* - redirect string: to your app's logout url (default null)
-	* - label string: text to use in link (default logout)
+	* - redirect string: to your app's login url (default null)
+	* - label string: text to use in link (default null)
 	* - custom boolean: Used to create custom link instead of standart fbml. 
 	    if redirect option is set this one is not required.
 	* - img string: Creates fortmatted image tag. 'img' should be
@@ -497,7 +497,7 @@ class FacebookHelper extends AppHelper {
 		), (array)$options);
 		if ($appId = FacebookInfo::getConfig('appId')) {
 			$init = '<div id="fb-root"></div>';
-			$init .= '<script src="//connect.facebook.net/' . $this->locale . '/all.js"></script>';
+			$init .= '<script src="//connect.facebook.net/'.$this->locale.'/all.js"></script>';
 			$init .= $this->Html->scriptBlock("
 	window.fbAsyncInit = function() {
 		FB.init({
@@ -566,7 +566,7 @@ class FacebookHelper extends AppHelper {
 	(function() {
 	var e = document.createElement('script'); e.async = true;
 	e.src = document.location.protocol 
-	+ '//connect.facebook.net/{$this->locale}/all.js';
+	+ '//connect.facebook.net/".$this->locale."/all.js';
 	document.getElementById('fb-root').appendChild(e);
 	}());");
 			return $init;
