@@ -220,7 +220,7 @@ class ConnectComponent extends Component {
 	* @return mixed result of the callback function
 	*/ 
 	private function __runCallback($callback, $passedIn = null){
-		if(is_callable(array($this->Controller, $callback))){
+		if(method_exists($this->Controller, $callback)){
 			return call_user_func_array(array($this->Controller, $callback), array($passedIn));
 		}
 		return true;
