@@ -30,21 +30,33 @@ class FacebookHelper extends AppHelper {
  * @link http://developers.facebook.com/docs/internationalization/
  * @access public
  */
-	public $locale = null;
+	public $locale = 'en_US';
+	
+/**
+ * Variable is set from settings parsed from controller
+ *
+ * HTML5 W3C Validator Hack
+ *
+ * - true generated FB tags are returned as scriptBlock document.write('<fb::tag>tagcontent</fb::tag>');
+ * - false generated FB tags are returned as HTML
+ *
+ * Example: `public $helpers = array('Facebook.Facebook' => array('w3c' => true));`
+ *
+ * @var boolean false
+ * @access public
+ */
+	public $w3c = false;
 
 /**
  * Loadable construct, pass in locale settings
  * Fail safe locale to 'en_US'
  */
-	public function __construct(View $View, $settings = array()){
+	public function __construct(View $View, $settings = array()) {
+		if ($locale = FacebookInfo::getConfig('locale')) {
+			$settings += array('locale' => $locale);
+			unset($locale);
+		}
 		$this->_set($settings);
-
-		if(!$this->locale){
-			$this->locale = FacebookInfo::getConfig('locale');
-		}
-		if(!$this->locale){
-			$this->locale = 'en_US';
-		}
 		parent::__construct($View, $settings);
 	}
 
@@ -58,13 +70,11 @@ class FacebookHelper extends AppHelper {
  * - 'license' => License Info
  * @return string plugin version
  */
-	public function info($name = 'version'){
-		if(FacebookInfo::_isAvailable($name)){
+	public function info($name = 'version') {
+		if (FacebookInfo::_isAvailable($name)) {
 			return FacebookInfo::$name();
 		}
-		else {
-			return "$name is not an available option";
-		}
+		return __('%s is not an available option', $name);
 	}
 
 /**
@@ -84,7 +94,13 @@ class FacebookHelper extends AppHelper {
  * - redirect-uri: Url to redirect the user to.  current page by default
  * - width: width in pixels to show the registration form
  */
-	function registration($options = array(), $label = ''){
+	public function registration($options = array(), $label = null) {
+		$options += array(
+			'fields' => 'name,birthday,gender,location,email',
+			'redirect-uri' => Router::url($this->here, true),
+			'width' => 350
+		);
+		/*
 		$options = array_merge(
 			array(
 				'fields' => 'name,birthday,gender,location,email',
@@ -93,7 +109,8 @@ class FacebookHelper extends AppHelper {
 			),
 			$options
 		);
-		return $this->__fbTag('fb:registration',$label,$options);
+		*/
+		return $this->__fbTag('fb:registration', $label, $options);
 	}
 
 /**
@@ -116,7 +133,7 @@ class FacebookHelper extends AppHelper {
  * @return string XFBML tag
  * @access public
  */
-	public function login($options = array(), $label = ''){
+	public function login($options = array(), $label = null) {
 		$options = array_merge(
 			array(
 				'label' => '',
@@ -479,6 +496,7 @@ class FacebookHelper extends AppHelper {
  * - font : font type (arial, lucida grande, segoe ui, tahoma, trebuchet ms, verdana)
  * - layout : the layout type if the button (button_count, standard, default: standard)
  * - action : the title of the action (like or recommend, default: like)
+ * - send : send button (true) default false
  * - colorscheme : the look of the button (dark or light, default: light)
  * @return string xfbhtml tag
  * @access public
@@ -585,14 +603,22 @@ class FacebookHelper extends AppHelper {
  * @param array of options as name=>value pairs to add to facebook tag attribute
  * @access private
  */
-	private function __fbTag($tag, $label, $options){
+	private function __fbTag($tag, $label, $options) {
 		//TODO make this a little nicer, pron to errors if a value has a ' in it.
 		$retval = "<$tag";
-		foreach($options as $name => $value){
-			if($value === false) $value = 0;
+		foreach($options as $name => $value) {
+			if ($value === false) $value = 0;
 			$retval .= " " . $name . "='" . $value . "'";
 		}
 		$retval .= ">$label</$tag>";
+		
+		//return $retval;
+		//test @author Petr Jerabek
+		$retval = $this->Html->tag($tag, $label, $options);
+		unset($tag, $label, $options);
+		if ($this->w3c === true) {
+			return $this->Html->scriptBlock(sprintf('document.write(\'%s\');', $retval));
+		}
 		return $retval;
 	}
 
