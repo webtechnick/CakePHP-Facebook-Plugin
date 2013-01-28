@@ -1,5 +1,5 @@
 # Facebook Plugin
-* Author:  Nick Baker (nick@webtechnick.com)
+* Author:	Nick Baker (nick@webtechnick.com)
 * http://www.webtechnick.com
 * license: MIT
 * version: 3.1.2
@@ -18,7 +18,7 @@ The purpose of the Facebook plugin is to provide a seamless way to connect your 
 * 1.5.2 Added Facebook.Connect user method to retrieve user data much like Auth.
 * 1.5.3 Added Facebook status() function to helper.
 * 1.5.4: Fixed a bug in Facebook.Connect that would white screen if session was in an unstable state coming in.
-* 1.5.5: Bug fix for helper use only with init.  Was dependant on Connect Component, but not anymore
+* 1.5.5: Bug fix for helper use only with init.	Was dependant on Connect Component, but not anymore
 * 1.6: Facebook.Connect will now update a user table if it exists but a facebook_id is not found.
 * 1.6.1: Facebook::share will now property set the beginning url if no url is passed in
 * 1.7.0: Updated to the latest version of the official Facebook PHP SDK and made everything more future-proof (Theaxiom / https://www.kinspir.com)
@@ -32,9 +32,9 @@ The purpose of the Facebook plugin is to provide a seamless way to connect your 
 		* FacebookHelper::activity() created activity feed with various options
 		* FacebookHelper::friendpile() created friendpile widget with various options
 		* FacebookHelper::recommendations() create recommendations widget with various options
-* 2.0.1: New Setting ConnectComponent::createUser boolean.  If set to true (default) upon a successful facebook login, and the facebook_id is not found in the User table, the component will attempt to create a new user from introspection on the Auth component.  Turn this feature off by passing in 'createUser' => false when setting up the Connect component.
-* 2.0.2: New helper method getConfig() available within the FacebookInfo library.  Use this to pull in facebook configurations instead of trying to rely on loaded configuration files from other sources.
-* 2.0.3: Updated Facebook::share to allow fbxml option instead of defaulting to not use fbxml.  fbxml => true is required if the page loads facebook->init();
+* 2.0.1: New Setting ConnectComponent::createUser boolean.	If set to true (default) upon a successful facebook login, and the facebook_id is not found in the User table, the component will attempt to create a new user from introspection on the Auth component.	Turn this feature off by passing in 'createUser' => false when setting up the Connect component.
+* 2.0.2: New helper method getConfig() available within the FacebookInfo library.	Use this to pull in facebook configurations instead of trying to rely on loaded configuration files from other sources.
+* 2.0.3: Updated Facebook::share to allow fbxml option instead of defaulting to not use fbxml.	fbxml => true is required if the page loads facebook->init();
 * 2.1.0: Improved preformance and new Facebook::disconnect function.
 * 2.1.1: various minor bug fixes.
 * 2.2.0: Updated Facebook PHP SDK
@@ -45,9 +45,9 @@ The purpose of the Facebook plugin is to provide a seamless way to connect your 
 * 2.4.2: minor bug fixes.
 * 2.4.3: Fixed duplicate user entry when User primaryKey is not 'id'.
 * 2.5.0: Optimizations and minor fixes (special thanks to <https://github.com/bar>)
-  * New callback feature for FacebookHelper::init() (page refresh is still default).
-  * Nicer FacebookHelper::share() now uses Router instead of environment and $this->here
-  * Optimization, Moving __syncFacebookUser to after Controller->beforeFilter() so $noAuth can be changed in the beforeFilter if need be.
+	* New callback feature for FacebookHelper::init() (page refresh is still default).
+	* Nicer FacebookHelper::share() now uses Router instead of environment and $this->here
+	* Optimization, Moving __syncFacebookUser to after Controller->beforeFilter() so $noAuth can be changed in the beforeFilter if need be.
 * 3.0.0: Upgraded to Facebook PHP SDK v 3.1.1
 * 3.0.1: Added CakePHP 2.0 support
 	* the AuthComponent in 2.0 has been redesigned significantly, making the guesswork done by the FacebookPlugin much harder to acheive
@@ -68,25 +68,25 @@ The purpose of the Facebook plugin is to provide a seamless way to connect your 
 				'Facebook.Connect' => array('model' => 'User')
 			);
 * 3.1.0: Added new facebook social features (registration and send)
-  * FacebookHelper::registration() creates a registration form prepopulated with their facebook information.
-  * ConnectComponent::registrationData() a useful shortcut to parsing a successful registration post to facebook.
-  * FacebookHelper::sendbutton() creates a nice send button.
+	* FacebookHelper::registration() creates a registration form prepopulated with their facebook information.
+	* ConnectComponent::registrationData() a useful shortcut to parsing a successful registration post to facebook.
+	* FacebookHelper::sendbutton() creates a nice send button.
 * 3.1.1: Updated Facebook PHP SDK to latest release.
 * 3.1.2: Updated Facebook PHP SDK to latest release v3.2.1.
 
 # About Plugin
 * Blog: <http://www.webtechnick.com/blogs/view/229/CakePHP_Facebook_Plugin_Auth_Facebook_and_more>
 * Documentation: <http://projects.webtechnick.com/docs/facebook>
-* Live Demo: <http://facebook.webtechnick.com> 
-* Screencast: <http://tv.cakephp.org/video/webtechnick/2011/01/12/nick_baker_--_facebook_integration_with_cakephp> 
+* Live Demo: <http://facebook.webtechnick.com>
+* Screencast: <http://tv.cakephp.org/video/webtechnick/2011/01/12/nick_baker_--_facebook_integration_with_cakephp>
 
 
 # Feature List
-* Full featured authentication via facebook. Facebook Authentication will work with or without a user login system in place.  Works seemlessly with your already built user authentication via AuthComponent - OR - it can work as your primary authentication system.
+* Full featured authentication via facebook. Facebook Authentication will work with or without a user login system in place.	Works seemlessly with your already built user authentication via AuthComponent - OR - it can work as your primary authentication system.
 * Create dynamic customizable facebook content with extreme ease.
-	* Share  (let your users share what they find on your site)
-	* Like  (let your users like what they find on your site)
-	* Send  (let your users send what they find on your site)
+	* Share	(let your users share what they find on your site)
+	* Like	(let your users like what they find on your site)
+	* Send	(let your users send what they find on your site)
 	* Login/Logout (facebook users can login and logout with a single click .. no registration required)
 	* Registration (facebook users can register on your application with pre-populated data from their profile)
 	* Activity (allow users to show your applications and friends activity)
@@ -97,7 +97,7 @@ The purpose of the Facebook plugin is to provide a seamless way to connect your 
 	* Live Streams (create dynamic live stream events through facebook and give access through your site)
 	* Comments (connect with your uses by allowing them to comment on any part of your site with facebook comments)
 	* Status (display a user's status)
-* Access to Full Facebook API anywhere in your app.  Built custom content directly from the Facebook API with the built in access to the full Facebook API
+* Access to Full Facebook API anywhere in your app.	Built custom content directly from the Facebook API with the built in access to the full Facebook API
 
 
 # Install and Setup
@@ -118,7 +118,7 @@ The purpose of the Facebook plugin is to provide a seamless way to connect your 
 		//app/Config/facebook.php
 		$config = array(
 			'Facebook' => array(
-				'appId'  => 'YOUR_APP_ID',
+				'appId'	=> 'YOUR_APP_ID',
 				'apiKey' => 'YOUR_API_KEY',
 				'secret' => 'YOUR_SECRET',
 				'cookie' => true,
@@ -137,10 +137,10 @@ If all you want to use is the share feature of the Facebook plugin you're all do
 
 	$this->Facebook->share('http://www.example.com/url_to_share'); //(default is the current page).
 
-Nothing else is required for the Facebook share feature. Hoever, to use the more advanced features you'll need to prepare your page a little to handle the fbxml tags.  
+Nothing else is required for the Facebook share feature. Hoever, to use the more advanced features you'll need to prepare your page a little to handle the fbxml tags.
 
 ## Edit your Layout to take advantage of *advanced* facebook features
-1. In your layout it's highly suggest you replace your `<html>` tag with `<?php echo $this->Facebook->html(); ?>`  This is required for some of the facebook features to work in IE.
+1. In your layout it's highly suggest you replace your `<html>` tag with `<?php echo $this->Facebook->html(); ?>`	This is required for some of the facebook features to work in IE.
 2. At the bottom of the page include `<?php echo $this->Facebook->init(); ?>` To load the facebook javascript api to scan your page for fbxml and replace them with various dynamic content.
 
 ### Example layout
@@ -158,12 +158,12 @@ Nothing else is required for the Facebook share feature. Hoever, to use the more
 # Authentication (Facebook Connect/Graph System):
 Despite the name, the Facebook Connect component takes immediate advantage of the new powerful Facebook Graph API <http://developers.facebook.com/docs/api>
 
-To use this feature you will first need to update your facebook application with the connect url of your application's url.  This is done on the facebook application settings. <http://www.facebook.com/developers/apps.php>
+To use this feature you will first need to update your facebook application with the connect url of your application's url.	This is done on the facebook application settings. <http://www.facebook.com/developers/apps.php>
 Now all you need to do is add the `Facebook.Connect` component to your app_controller.
 
 	public $components = array('Facebook.Connect');
 
-That's it.  You're now ready to accept facebook authentication.
+That's it.	You're now ready to accept facebook authentication.
 
 ## Login/Logout buttons
 Creates a login button:
@@ -181,10 +181,10 @@ Each button has multiple options, review the API to see all available options
 <http://projects.webtechnick.com/docs/facebook/default/FacebookHelper.html>
 
 ## Registration Form
-Create a registration form with default fields and width.  Default is posting to self.
+Create a registration form with default fields and width.	Default is posting to self.
 
 	<?php echo $this->Facebook->registration(); ?>
-	
+
 Create a custom registration form.
 
 	<?php echo $this->Facebook->registration(array(
@@ -200,10 +200,10 @@ To access the registartion data posted by your registration user, use the convie
 		print_r($user);
 	}
 
-Use the data in $user to finish the registration process on your own (save a new user, find/update the user, etc..) 
+Use the data in $user to finish the registration process on your own (save a new user, find/update the user, etc..)
 
 ## CakePHP Auth + Facebook.Connect
-Facebook.Connect will play nice with a variety of Authentication systems.  It has nearly seamless integration with CakePHP AuthComponent.
+Facebook.Connect will play nice with a variety of Authentication systems.	It has nearly seamless integration with CakePHP AuthComponent.
 
 *note* Since the CakePHP 2.0 AuthComponent revamp, ConnectComponent doesn't have the introspection available anymore. It is necessary to tell Connect what model you store your users data in for the automagic to work like so:
 
@@ -219,7 +219,7 @@ Facebook.Connect will play nice with a variety of Authentication systems.  It ha
 				),
 				'Facebook.Connect' => array('model' => 'User')
 			);
-	
+
 To integrate with CakePHP Auth, you'll need to alter your users table (or whatever table your Auth component uses) and add a new field -> `facebook_id`.
 
 	ALTER TABLE `users` ADD `facebook_id` BIGINT(20) UNSIGNED NOT NULL
@@ -235,20 +235,20 @@ This will log out of the facebook authentication and then redirect to your authe
 
 There are three callbacks available to use, each are defined in the controller and are optional to use.
 
-* `beforeFacebookSave` handle the user to save into the users table.  If returned false, creation is haulted.
+* `beforeFacebookSave` handle the user to save into the users table.	If returned false, creation is haulted.
 
 		//Add an email field to be saved along with creation.
 		function beforeFacebookSave(){
 			$this->Connect->authUser['User']['email'] = $this->Connect->user('email');
 			return true; //Must return true or will not save.
 		}
-	
+
 * `beforeFacebookLogin` Handle the user before logging the user into Auth.
 
 		function beforeFacebookLogin($user){
 			//Logic to happen before a facebook login
 		}
-	
+
 * `afterFacebookLogin` Handle any needed functionality right after a successful Auth Login
 
 		function afterFacebookLogin(){
@@ -282,16 +282,16 @@ PHP version 5.2.x
 PHP 5.3.x
 
 		FB::api('/me');
-	
-	
+
+
 # Internationalization
 You can set the locale of the plugin through the helper declaration or through the `config/facebook.php` configuration file (see top of document).
 
 	public $helpers = array('Facebook.Facebook' => array('locale' => 'en_US'));
-	
+
 Facebook locales: <http://developers.facebook.com/docs/internationalization/>
 
 
 # Read the Docs
-I encourage you to read the documentation and API for this plugin to see all the features and options for each feature.  The API is here:
+I encourage you to read the documentation and API for this plugin to see all the features and options for each feature.	The API is here:
 <http://projects.webtechnick.com/docs/facebook/>
