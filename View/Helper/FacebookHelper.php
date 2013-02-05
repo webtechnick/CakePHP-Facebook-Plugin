@@ -31,7 +31,7 @@ class FacebookHelper extends AppHelper {
  * @access public
  */
 	public $locale = 'en_US';
-	
+
 /**
  * Variable is set from settings parsed from controller
  *
@@ -611,7 +611,7 @@ class FacebookHelper extends AppHelper {
 			$retval .= " " . $name . "='" . $value . "'";
 		}
 		$retval .= ">$label</$tag>";
-		
+
 		//return $retval;
 		//test @author Petr Jerabek
 		$retval = $this->Html->tag($tag, $label, $options);
