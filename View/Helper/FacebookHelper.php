@@ -497,7 +497,6 @@ class FacebookHelper extends AppHelper {
 		), (array)$options);
 		if ($appId = FacebookInfo::getConfig('appId')) {
 			$init = '<div id="fb-root"></div>';
-			$init .= '<script src="//connect.facebook.net/'.$this->locale.'/all.js"></script>';
 			$init .= $this->Html->scriptBlock("
 	window.fbAsyncInit = function() {
 		FB.init({
