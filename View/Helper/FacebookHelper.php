@@ -136,11 +136,12 @@ class FacebookHelper extends AppHelper {
 				'alt' => $options['alt'],
 				'id' => $options['id'],
 				'url' => '#',
-				'onclick' => $onclick));
+				'onclick' => $onclick,
+				'escape' => false));
 			}
 			else {
 				return $this->Html->link($options['label'], '#', array(
-					'onclick' => $onclick, 'id' => $options['id']));
+					'onclick' => $onclick, 'id' => $options['id'], 'escape' => false));
 			}
 		}
 		else {
