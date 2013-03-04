@@ -62,7 +62,7 @@ class FB {
     */
   public static function __callstatic($method, $params){  	
   	try {
-  		if (empty(self::$Facebook) {
+  		if (empty(self::$Facebook)) {
   			$this->__initInstance();
   		}
   		return call_user_func_array(array(self::$Facebook, $method), $params);
