@@ -227,7 +227,13 @@ To integrate with CakePHP Auth, you'll need to alter your users table (or whatev
 Since you already have an authentication system, the logout step will need to also log out the user from your authentication system.
 You do this by passing a redirect to `$facebook->logout()` to your system's logout authentication action.
 
-	<?php echo $this->Facebook->logout(array('redirect' => array('controller' => 'users', 'action' => 'logout'))); ?>
+In this case you should set the label or img option if you want the logout button to be displayed.
+
+	<?php echo $this->Facebook->logout(array('label' => 'Logout', 'redirect' => array('controller' => 'users', 'action' => 'logout'))); ?>
+
+or 
+
+	<?php echo $this->Facebook->logout(array('redirect' => array('controller' => 'users', 'action' => 'logout'), 'img' => '/Facebook/img/facebook-logout.png')); ?>
 
 This will log out of the facebook authentication and then redirect to your authentication logout for you to finish the logout.
 
