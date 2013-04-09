@@ -28,6 +28,8 @@ class FacebookHelper extends AppHelper {
 	*/
 	public $locale = null;
 	
+	public $loginOption = array();
+	
 	/**
 	* Loadable construct, pass in locale settings
 	* Fail safe locale to 'en_US'
@@ -128,6 +130,7 @@ class FacebookHelper extends AppHelper {
 			$options
 		);
 		if((isset($options['redirect']) && $options['redirect']) || $options['custom']){
+			$this->loginOptions = $options;
 			$options['redirect'] = Router::url($options['redirect']);
 			$onclick = "login('".$options['redirect']."');";
 			if($options['img']){
@@ -495,7 +498,7 @@ class FacebookHelper extends AppHelper {
 	public function init($options = null, $reload = true) {
 		$options = array_merge(array(
 			'perms' => 'email'
-		), (array)$options);
+		), (array)$this->loginOptions);
 		if ($appId = FacebookInfo::getConfig('appId')) {
 			$init = '<div id="fb-root"></div>';
 			$init .= $this->Html->scriptBlock("
