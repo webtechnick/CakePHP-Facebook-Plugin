@@ -136,11 +136,12 @@ class FacebookHelper extends AppHelper {
 				'alt' => $options['alt'],
 				'id' => $options['id'],
 				'url' => '#',
-				'onclick' => $onclick));
+				'onclick' => $onclick,
+				'escape' => false));
 			}
 			else {
 				return $this->Html->link($options['label'], '#', array(
-					'onclick' => $onclick, 'id' => $options['id']));
+					'onclick' => $onclick, 'id' => $options['id'], 'escape' => false));
 			}
 		}
 		else {
@@ -497,7 +498,6 @@ class FacebookHelper extends AppHelper {
 		), (array)$options);
 		if ($appId = FacebookInfo::getConfig('appId')) {
 			$init = '<div id="fb-root"></div>';
-			$init .= '<script src="//connect.facebook.net/'.$this->locale.'/all.js"></script>';
 			$init .= $this->Html->scriptBlock("
 	window.fbAsyncInit = function() {
 		FB.init({
