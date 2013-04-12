@@ -129,9 +129,12 @@ class FacebookHelper extends AppHelper {
 		);
 		if((isset($options['redirect']) && $options['redirect']) || $options['custom']){
 			$options['redirect'] = Router::url($options['redirect']);
-			$onclick = "login('".$options['redirect']."');";
-			if($options['img']){
-				$source = '/Facebook/img/'.$options['img'];
+			$onclick = "login('{$options['redirect']}');";
+			if(isset($options['img'])){
+				$source = "/facebook/img/{$options['img']}";
+				if(preg_match('/\//i', $options['img'])){
+					$source = $options['img'];
+				}
 				return $this->Html->image($source, array(
 				'alt' => $options['alt'],
 				'id' => $options['id'],
@@ -501,7 +504,7 @@ class FacebookHelper extends AppHelper {
 			$init .= $this->Html->scriptBlock("
 	window.fbAsyncInit = function() {
 		FB.init({
-			appId      : '$appId', // App ID
+			appId      : '{$appId}', // App ID
 			channelURL : '../../Vendor/channel.php', // Channel File
 			status     : true, // check login status
 			cookie     : true, // enable cookies to allow the server to access the session
@@ -548,7 +551,7 @@ class FacebookHelper extends AppHelper {
 				// user could not log in
 				console.log('User cancelled login or did not fully authorize.');
 			}
-		}, {scope: '" . $options['perms'] . "'});
+		}, {scope: '{$options['perms']}'});
 	}
 
 	// logs the user out of the application and facebook
