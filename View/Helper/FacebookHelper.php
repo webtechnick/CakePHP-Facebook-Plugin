@@ -129,9 +129,12 @@ class FacebookHelper extends AppHelper {
 		);
 		if((isset($options['redirect']) && $options['redirect']) || $options['custom']){
 			$options['redirect'] = Router::url($options['redirect']);
-			$onclick = "login('".$options['redirect']."');";
-			if($options['img']){
-				$source = '/Facebook/img/'.$options['img'];
+			$onclick = "login('{$options['redirect']}');";
+			if(isset($options['img'])){
+				$source = "/facebook/img/{$options['img']}";
+				if(preg_match('/\//i', $options['img'])){
+					$source = $options['img'];
+				}
 				return $this->Html->image($source, array(
 				'alt' => $options['alt'],
 				'id' => $options['id'],
