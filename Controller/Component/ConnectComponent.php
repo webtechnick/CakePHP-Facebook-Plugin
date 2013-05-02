@@ -142,8 +142,8 @@ class ConnectComponent extends Component {
 		}
 		
 		// check if the user already has an account
-		// User is logged in but doesn't have a 
-		if($Auth->user('id')){
+		// User is logged in but doesn't have a
+		if($Auth->user('id') && $Auth->user('facebook_id') == $this->uid){
 			$this->hasAccount = true;
 			$this->User->id = $Auth->user($this->User->primaryKey);
 			if (!$this->User->field('facebook_id')) {
@@ -192,7 +192,7 @@ class ConnectComponent extends Component {
 	*/
 	public function user($field = null){
 		if(isset($this->uid)){
-			if($this->Controller->Session->read('FB.Me') == null){
+			if($this->Controller->Session->read('FB.Me') == null || $this->Controller->Session->read('FB.Me.id') != $this->uid){
 				$this->Controller->Session->write('FB.Me', $this->FB->api('/me'));
 			}
 			$this->me = $this->Controller->Session->read('FB.Me');
