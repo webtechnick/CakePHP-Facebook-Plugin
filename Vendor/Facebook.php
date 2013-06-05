@@ -45,6 +45,9 @@ class Facebook extends BaseFacebook
    * @see BaseFacebook::__construct in facebook.php
    */
   public function __construct($config) {
+    if (Configure::read('Session.cookie')) {
+      session_name(Configure::read('Session.cookie'));
+    }
     if (!session_id()) {
       session_start();
     }
