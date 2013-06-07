@@ -137,7 +137,7 @@ class ConnectComponent extends Component {
 		}
 		// if you don't have a facebook_id field in your user table, throw an error
 		if(!$this->User->hasField('facebook_id')){
-			$this->__error("Facebook.Connect handleFacebookUser Error.  facebook_id not found in {$Auth->userModel} table.");
+			$this->__error("Facebook.Connect handleFacebookUser Error.  facebook_id not found in {$this->model} table.");
 			return false;
 		}
 		
@@ -193,7 +193,7 @@ class ConnectComponent extends Component {
 	*/
 	public function user($field = null){
 		if(isset($this->uid)){
-			if($this->Controller->Session->read('FB.Me') == null){
+			if(!$this->Controller->Session->check('FB.Me')){
 				$this->Controller->Session->write('FB.Me', $this->FB->api('/me'));
 			}
 			$this->me = $this->Controller->Session->read('FB.Me');
