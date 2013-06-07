@@ -553,13 +553,18 @@ class FacebookHelper extends AppHelper {
 
 	// logs the user out of the application and facebook
 	function logout(redirection){
-		FB.logout(function(response) {
-			// user is logged out
-			// redirection if any
-			if(redirection != null && redirection != ''){
-				top.location.href = redirection;
-			}
-		});
+		if (FB.getAuthResponse()) {
+			FB.logout(function(response) {
+	            // user is logged out
+	            // redirection if any
+	            if(redirection != null && redirection != ''){
+	                top.location.href = redirection;
+	            }
+	        });} else {
+		    if(redirection != null && redirection != ''){
+                    	top.location.href = redirection;
+               	    }
+	        };
 	}
 
 	// Load the SDK Asynchronously
