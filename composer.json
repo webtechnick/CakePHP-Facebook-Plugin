@@ -27,9 +27,9 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "master",
-            "2.x": "master",
-            "1.3": "cakephp1.3"
+            "dev-master": "master-dev",
+            "2.x": "master-dev",
+            "1.3": "cakephp1.3-dev"
         },
         "installer-name": "Facebook"
     }
