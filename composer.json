@@ -1,5 +1,5 @@
 {
-    "name": "webtechnick/CakePHP-Facebook-Plugin",
+    "name": "webtechnick/cakephp-facebook-plugin",
     "description": "CakePHP Facebook Plugin",
     "type": "cakephp-plugin",
     "keywords": ["cakephp", "facebook", "auth", "connect"],
