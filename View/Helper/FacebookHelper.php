@@ -533,6 +533,25 @@ class FacebookHelper extends AppHelper {
 				// alert('You just logged out from faceboook');
 			}
 		});
+                
+                // This code trigger a event called 'fbready' on document element
+                var event;
+                if (document.createEvent) {
+                        event = document.createEvent('HTMLEvents');
+                        event.initEvent('fbready', true, true);
+                } else {
+                        event = document.createEventObject();
+                        event.eventType = 'fbready';
+                }
+                
+                event.eventName = 'fbready';
+                event.memo = { };
+                
+                if (document.createEvent) {
+                        document.dispatchEvent(event);
+                } else {
+                        document.fireEvent('on' + event.eventType, event);
+                }
 		
 		// Other javascript code goes here!
 
