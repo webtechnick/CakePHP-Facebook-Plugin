@@ -9,6 +9,7 @@
 */
 App::uses('FacebookInfo', 'Facebook.Lib');
 App::uses('AppHelper','View/Helper');
+App::uses('HttpSocket', 'Network/Http');
 class FacebookHelper extends AppHelper {
 	/**
 	* Helpers to load with this helper.
@@ -20,6 +21,12 @@ class FacebookHelper extends AppHelper {
 	* @access private
 	*/
 	public $__fbShareScript = 'http://static.ak.fbcdn.net/connect.php/js/FB.Share';
+	
+	/**
+	* Default Facebook.feed URL
+	* @access private
+	*/
+	public $__fbFeedUrl = 'https://www.facebook.com/dialog/feed';
 	
 	/**
 	* locale, settable in the constructor
@@ -240,6 +247,32 @@ class FacebookHelper extends AppHelper {
 			$onclick = 'if(confirm("'.$options['confirm'].'")){'.$onclick.'}';
 		}
 		return $this->Html->link($options['label'], '#', array('onclick' => $onclick));
+	}
+	
+	/**
+	* Display a feed URL with custom text and images
+	* @link https://developers.facebook.com/docs/sharing/reference/feed-dialog
+	* @param string text to link
+	* @param options to set
+	* - link : link to share (default current page)
+	* - display : how to share it (default current page)
+	*/
+	public function feed($text = null, $options = array(), $link_options = array()) {
+		$options = array_merge(array(
+			'link' => Router::url(null, true),
+			'display' => 'popup',
+			'app_id' => FacebookInfo::getConfig('appId') ? FacebookInfo::getConfig('appId') : '140586622674265', //AddThis
+			'caption' => 'Check this out',
+			'redirect_uri' => Router::url(null, true),
+			'picture' => null,
+		), (array) $options);
+		$link_options = array_merge(array(
+			'escape' => false,
+			'target' => '_blank',
+		), (array) $link_options);
+		
+		$url = $this->__fbFeedUrl; //'https://www.facebook.com/dialog/feed?';
+		return $this->Html->link($text, $this->__fbFeedUrl . '?' . http_build_query($options), $link_options); 
 	}
 	
 	/**
