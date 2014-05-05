@@ -8,7 +8,7 @@
   * @license MIT
   */
 
-App::uses('Facebook', 'Facebook.Vendor');
+App::uses('facebook', 'Facebook.Vendor');
 App::uses('FacebookInfo', 'Facebook.Lib');
 class FB {
 
