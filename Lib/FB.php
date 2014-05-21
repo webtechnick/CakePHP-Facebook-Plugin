@@ -26,7 +26,8 @@ class FB {
 	 */
 	private function __initInstance() {
 		if (empty(self::$Facebook)) {
-		self::$Facebook = new Facebook(FacebookInfo::getConfig());
+			CakeSession::start();
+			self::$Facebook = new Facebook(FacebookInfo::getConfig());
 		}
 	}
 
