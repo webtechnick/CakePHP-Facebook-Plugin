@@ -41,7 +41,7 @@ class FacebookHelper extends AppHelper {
 	* Loadable construct, pass in locale settings
 	* Fail safe locale to 'en_US'
 	*/
-	public function __construct(View $View, $settings = array()){
+	public function __construct(View $View, $settings = array()) {
 		$this->_set($settings);
 		
 		if(!$this->locale){
@@ -63,11 +63,10 @@ class FacebookHelper extends AppHelper {
 	* - 'license' => License Info
 	* @return string plugin version
 	*/
-	public function info($name = 'version'){
-		if(FacebookInfo::_isAvailable($name)){ 
+	public function info($name = 'version') {
+		if (FacebookInfo::_isAvailable($name)) { 
 			return FacebookInfo::$name();
-		}
-		else {
+		} else {
 			return "$name is not an available option";
 		}
 	}
@@ -77,7 +76,7 @@ class FacebookHelper extends AppHelper {
 	* @return string of html header
 	* @access public
 	*/
-	public function html(){
+	public function html() {
 		return '<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://ogp.me/ns/fb#">';
 	}
 	
@@ -89,7 +88,7 @@ class FacebookHelper extends AppHelper {
 	* - redirect-uri: Url to redirect the user to.  current page by default
 	* - width: width in pixels to show the registration form
 	*/
-	function registration($options = array(), $label = ''){
+	function registration($options = array(), $label = '') {
 		$options = array_merge(
 			array(
 				'fields' => 'name,birthday,gender,location,email', 
@@ -121,7 +120,7 @@ class FacebookHelper extends AppHelper {
 	* @return string XFBML tag
 	* @access public
 	*/
-	public function login($options = array(), $label = ''){
+	public function login($options = array(), $label = '') {
 		$options = array_merge(
 			array(
 				'label' => '',
@@ -136,26 +135,27 @@ class FacebookHelper extends AppHelper {
 			),
 			$options
 		);
-		if((isset($options['redirect']) && $options['redirect']) || $options['custom']){
+		if ((isset($options['redirect']) && $options['redirect']) || $options['custom']) {
 			$this->loginOptions = $options;
 			$options['redirect'] = Router::url($options['redirect']);
 			$onclick = "login('".$options['redirect']."');";
-			if($options['img']){
+			if ($options['img']) {
 				$source = '/Facebook/img/'.$options['img'];
 				return $this->Html->image($source, array(
-				'alt' => $options['alt'],
-				'id' => $options['id'],
-				'url' => '#',
-				'onclick' => $onclick,
-				'escape' => false));
-			}
-			else {
+					'alt' => $options['alt'],
+					'id' => $options['id'],
+					'url' => '#',
+					'onclick' => $onclick,
+					'escape' => false)
+				);
+			} else {
 				return $this->Html->link($options['label'], '#', array(
 					'onclick' => $onclick, 'id' => $options['id'], 'escape' => false));
 			}
-		}
-		else {
-			if(!$options['id']){ unset($options['id']); }
+		} else {
+			if (!$options['id']) { 
+				unset($options['id']); 
+			}
 			unset($options['label'], $options['custom'], $options['redirect'], $options['img'], $options['alt']);
 			return $this->__fbTag('fb:login-button', $label, $options);
 		}
@@ -179,7 +179,7 @@ class FacebookHelper extends AppHelper {
 	* @return string XFBML tag for logout button
 	* @access public
 	*/
-	public function logout($options = array(), $label = ''){
+	public function logout($options = array(), $label = '') {
 		$options = array_merge(
 			array(
 				'label' => '',
@@ -191,23 +191,24 @@ class FacebookHelper extends AppHelper {
 			), 
 			$options
 		);
-		if((isset($options['redirect']) && $options['redirect']) || $options['custom']){
+		if ((isset($options['redirect']) && $options['redirect']) || $options['custom']) {
 			$options['redirect'] = Router::url($options['redirect']);
 			$onclick = "logout('".$options['redirect']."');";
-			if(isset($options['confirm'])){
+			if (isset($options['confirm'])) {
 				$onclick = 'if(confirm("'.$options['confirm'].'")){'.$onclick.'}';
 			}
-			if($options['img']){
+			if ($options['img']) {
 				$source = '/Facebook/img/'.$options['img'];
 				return $this->Html->image($source, array(
-				'alt' => $options['alt'],
-				'id' => $options['id'],
-				'url' => '#',
-				'onclick' => $onclick));
-			}
-			else {
+					'alt' => $options['alt'],
+					'id' => $options['id'],
+					'url' => '#',
+					'onclick' => $onclick)
+				);
+			} else {
 				return $this->Html->link($options['label'], '#', array(
-					'onclick' => $onclick, 'id' => $options['id']));
+					'onclick' => $onclick, 'id' => $options['id'])
+				);
 			}
 		} else {
 			$source = '/Facebook/img/facebook-logout.png';
@@ -215,7 +216,8 @@ class FacebookHelper extends AppHelper {
 				'alt' => 'Facebook logout',
 				'url' => '#',
 				'id' => $options['id'],
-				'onclick' => 'logout();'));
+				'onclick' => 'logout();')
+			);
 		}
 	}
 	
@@ -229,21 +231,21 @@ class FacebookHelper extends AppHelper {
 	* @return string Link for disconnect button
 	* @access public
 	*/
-	public function disconnect($options = array()){
+	public function disconnect($options = array()) {
 		$options = array_merge(
 			array(
 				'label' => 'logout'
 			), 
 			$options
 		);
-		if(isset($options['redirect']) && $options['redirect']){
+		if (isset($options['redirect']) && $options['redirect']) {
 			$options['redirect'] = Router::url($options['redirect']);
 			$response = "window.location = '{$options['redirect']}';";
 		} else {
 			$response = "window.location.reload();";
 		}
 		$onclick = "FB.api({ method: 'Auth.revokeAuthorization' }, function(response) {".$response."});";
-		if(isset($options['confirm'])){
+		if (isset($options['confirm'])) {
 			$onclick = 'if(confirm("'.$options['confirm'].'")){'.$onclick.'}';
 		}
 		return $this->Html->link($options['label'], '#', array('onclick' => $onclick));
@@ -286,8 +288,8 @@ class FacebookHelper extends AppHelper {
 	* @return string XFBML tag along with shareJs script
 	* @access public
 	*/
-	public function share($url = null, $options = array()){
-		if(empty($url)){
+	public function share($url = null, $options = array()) {
+		if (empty($url)) {
 			$url = Router::url(null, true);
 		}
 		$defaults = array(
@@ -300,16 +302,15 @@ class FacebookHelper extends AppHelper {
 		
 		if(!$options['fbxml']){
 			switch($options['style']){
-			case 'link': $options['type'] = 'icon_link'; break;
+				case 'link': $options['type'] = 'icon_link'; break;
 				default: $options['type'] = 'button'; break;
 			}
 		}
 		
-		if($options['fbxml']){
+		if ($options['fbxml']) {
 			unset($options['fbxml']);
 			$retval = $this->__fbTag('fb:share-button','',$options);
-		}
-		else {
+		} else {
 			$retval = $this->Html->link($options['label'], 'http://www.facebook.com/sharer.php', array('share_url' => $url, 'type' => $options['type'], 'name' => $options['anchor']));
 			$retval .= $this->Html->script($this->__fbShareScript);
 		}
@@ -330,7 +331,7 @@ class FacebookHelper extends AppHelper {
 	* @return string fb tag for profile picture or empty string if uid is not present
 	* @access public
 	*/
-	public function picture($uid = null, $options = array()){
+	public function picture($uid = null, $options = array()) {
 		$options = array_merge(
 			array(
 				'uid' => $uid,
@@ -338,10 +339,9 @@ class FacebookHelper extends AppHelper {
 			),
 			$options
 		);
-		if($options['uid']){
+		if ($options['uid']) {
 			return $this->__fbTag('fb:profile-pic', '', $options);
-		}
-		else {
+		} else {
 			return "";
 		}
 	}
@@ -356,8 +356,8 @@ class FacebookHelper extends AppHelper {
 	* @return string XFBML tag along with shareJs script
 	* @access public
 	*/
-	function sendbutton($url = null, $options = array()){
-		if(empty($url)){
+	function sendbutton($url = null, $options = array()) {
+		if (empty($url)) {
 			$url = Router::url(null, true);
 		}
 		$defaults = array(
@@ -380,7 +380,7 @@ class FacebookHelper extends AppHelper {
 	* - connections : number of connections to show (default 10)
 	* - colorscheme : dark | light (default light)
 	*/
-	public function likebox($url = null, $options = array()){
+	public function likebox($url = null, $options = array()) {
 		$options = array_merge(
 			array(
 				'href' => $url,
@@ -405,7 +405,7 @@ class FacebookHelper extends AppHelper {
 	* @return string xfbhtml tag
 	* @access public
 	*/
-	public function fanbox($options = array()){
+	public function fanbox($options = array()) {
 		$options = array_merge(
 			array(
 				'profile_id' => FacebookInfo::getConfig('appId'),
@@ -429,7 +429,7 @@ class FacebookHelper extends AppHelper {
 	* @return string xfbhtml tag
 	* @access public
 	*/
-	public function livestream($options = array()){
+	public function livestream($options = array()) {
 		$options = array_merge(
 			array(
 				'event_app_id' => FacebookInfo::getConfig('appId'),
@@ -451,7 +451,7 @@ class FacebookHelper extends AppHelper {
 	* @return string xfbhtml tag
 	* @access public
 	*/
-	public function comments($options = array()){
+	public function comments($options = array()) {
 		return $this->__fbTag('fb:comments', '', $options);
 	}
 	
@@ -468,7 +468,7 @@ class FacebookHelper extends AppHelper {
 	* @return string xfbhtml tag
 	* @access public
 	*/
-	public function recommendations($options = array()){
+	public function recommendations($options = array()) {
 		return $this->__fbTag('fb:recommendations', '', $options);
 	}
 	
@@ -481,7 +481,7 @@ class FacebookHelper extends AppHelper {
 	* @return string xfbhtml tag
 	* @access public
 	*/
-	public function friendpile($options = array()){
+	public function friendpile($options = array()) {
 		return $this->__fbTag('fb:friendpile', '', $options);
 	}
 	
@@ -499,7 +499,7 @@ class FacebookHelper extends AppHelper {
 	* @return string xfbhtml tag
 	* @access public
 	*/
-	public function activity($options = array()){
+	public function activity($options = array()) {
 		return $this->__fbTag('fb:activity', '', $options);
 	}
 	
@@ -516,7 +516,7 @@ class FacebookHelper extends AppHelper {
 	* @return string xfbhtml tag
 	* @access public
 	*/
-	public function like($options = array()){
+	public function like($options = array()) {
 		return $this->__fbTag('fb:like', '', $options);
 	}
 	
@@ -623,15 +623,16 @@ class FacebookHelper extends AppHelper {
 	* @param array of options as name=>value pairs to add to facebook tag attribute
 	* @access private
 	*/
-	private function __fbTag($tag, $label, $options){
+	private function __fbTag($tag, $label, $options) {
 		//TODO make this a little nicer, pron to errors if a value has a ' in it.
 		$retval = "<$tag";
-		foreach($options as $name => $value){
-			if($value === false) $value = 0;
+		foreach ($options as $name => $value) {
+			if ($value === false) {
+				$value = 0;
+			}
 			$retval .= " " . $name . "='" . $value . "'";
 		}
 		$retval .= ">$label</$tag>";
 		return $retval;
 	}
-	
 }
