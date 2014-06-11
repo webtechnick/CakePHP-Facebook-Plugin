@@ -77,7 +77,7 @@ The purpose of the Facebook plugin is to provide a seamless way to connect your 
 
 # About Plugin
 * Blog: <http://www.webtechnick.com/blogs/view/229/CakePHP_Facebook_Plugin_Auth_Facebook_and_more>
-* Documentation: <http://projects.webtechnick.com/docs/facebook>
+* Documentation: <http://docs.webtechnick.com/facebook>
 * Live Demo: <http://facebook.webtechnick.com> 
 * Screencast: <http://tv.cakephp.org/video/webtechnick/2011/01/12/nick_baker_--_facebook_integration_with_cakephp> 
 
@@ -179,7 +179,7 @@ Create a logout button:
 	<?php echo $this->Facebook->logout() ?>
 
 Each button has multiple options, review the API to see all available options
-<http://projects.webtechnick.com/docs/facebook/default/FacebookHelper.html>
+<http://docs.webtechnick.com/facebook/classes/FacebookHelper.html>
 
 ## Registration Form
 Create a registration form with default fields and width.  Default is posting to self.
@@ -301,4 +301,4 @@ Facebook locales: <http://developers.facebook.com/docs/internationalization/>
 
 # Read the Docs
 I encourage you to read the documentation and API for this plugin to see all the features and options for each feature.  The API is here:
-<http://projects.webtechnick.com/docs/facebook/>
+<http://docs.webtechnick.com/facebook/>

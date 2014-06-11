@@ -8,7 +8,7 @@
   * @license MIT
   */
 
-App::uses('facebook', 'Facebook.Vendor');
+App::uses('Facebook', 'Facebook.Vendor');
 App::uses('FacebookInfo', 'Facebook.Lib');
 class FB {
 
@@ -63,7 +63,7 @@ class FB {
   public static function __callstatic($method, $params){  	
   	try {
   		if (empty(self::$Facebook)) {
-  			$this->__initInstance();
+  			self::__initInstance();
   		}
   		return call_user_func_array(array(self::$Facebook, $method), $params);
   	} catch (FacebookApiException $e) {
