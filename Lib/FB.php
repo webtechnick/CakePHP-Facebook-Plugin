@@ -26,7 +26,7 @@ class FB {
    */
   private function __initInstance() {
   	if (empty(self::$Facebook)) {
-		self::$Facebook = new Facebook(FacebookInfo::getConfig());
+  		self::$Facebook = new Facebook(FacebookInfo::getConfig());
   	}
   }
   
