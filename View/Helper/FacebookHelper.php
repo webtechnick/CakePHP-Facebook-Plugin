@@ -187,7 +187,8 @@ class FacebookHelper extends AppHelper {
 				'redirect' => false,
 				'img' => false,
 				'alt' => '',
-				'id' => ''
+				'id' => '',
+				'class' => ''
 			),
 			$options
 		);
@@ -202,12 +203,13 @@ class FacebookHelper extends AppHelper {
 				return $this->Html->image($source, array(
 					'alt' => $options['alt'],
 					'id' => $options['id'],
+					'class' => $options['class'],
 					'url' => '#',
 					'onclick' => $onclick)
 				);
 			} else {
 				return $this->Html->link($options['label'], '#', array(
-					'onclick' => $onclick, 'id' => $options['id'])
+					'onclick' => $onclick, 'id' => $options['id'], 'class' => $options['class'])
 				);
 			}
 		} else {
@@ -216,6 +218,7 @@ class FacebookHelper extends AppHelper {
 				'alt' => 'Facebook logout',
 				'url' => '#',
 				'id' => $options['id'],
+				'class' => $options['class'],
 				'onclick' => 'logout();')
 			);
 		}
