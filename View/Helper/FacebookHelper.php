@@ -157,6 +157,10 @@ class FacebookHelper extends AppHelper {
 				unset($options['id']);
 			}
 			unset($options['label'], $options['custom'], $options['redirect'], $options['img'], $options['alt']);
+			if(!empty($options['perms'])){
+				$options['data-scope']=$options['perms'];
+				unset($options['perms']);
+			}
 			return $this->__fbTag('fb:login-button', $label, $options);
 		}
 	}
