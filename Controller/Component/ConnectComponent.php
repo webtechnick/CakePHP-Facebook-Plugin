@@ -81,6 +81,7 @@ class ConnectComponent extends Component {
 	public function initialize(Controller $controller, $settings = array()){
 		$this->Controller = $controller;
 		$this->_set($settings);
+		$this->__runCallback('beforeFacebookInit');
 		$this->FB = new FB();
 		$this->uid = $this->FB->getUser();
 	}
@@ -174,7 +175,7 @@ class ConnectComponent extends Component {
 				$this->__runCallback('beforeFacebookLogin', $this->authUser);
 				$Auth->authenticate = array(
 					'Form' => array(
-						'fields' => array('username' => 'facebook_id', 'password' => $this->modelFields['password'])
+						'fields' => array('username' => 'facebook_id', 'password' => $this->modelFields['password']),
 					)
 				);
 				list($plugin, $class) = pluginSplit($this->model, true);
@@ -185,7 +186,10 @@ class ConnectComponent extends Component {
 			return true;
 		}
 	}
-	
+
+	public function logout(){
+		$this->FB->destroySession();
+	}
 	/**
 	* Read the logged in user
 	* @param field key to return (xpath without leading slash)
